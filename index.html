@@ -101,13 +101,14 @@
       position: relative;
       background: var(--surface);
       overflow: hidden;
-      /* No border-bottom — resize handle provides the separator */
+      height: 220px; /* default; overridden by JS resize */
       min-height: 80px;
       max-height: 420px;
     }
 
     #trailerImg {
-      display: block;
+      position: absolute;
+      top: 0; left: 0;
       width: 100%;
       height: 100%;
       object-fit: cover;
@@ -287,7 +288,7 @@
   </aside>
 
   <main>
-    <div class="diagram-panel" id="diagramPanel" style="height:220px;">
+    <div class="diagram-panel" id="diagramPanel">
       <img src="trailer_diagram.png" alt="Trailer layout" id="trailerImg" />
       <canvas id="dotCanvas"></canvas>
       <div id="dotOverlay"></div>
@@ -372,9 +373,8 @@ function setLoading(p) {
 // the actual rendered image, regardless of container size.
 
 function getImageRect() {
-  // The image uses object-fit:cover width:100% height:160px object-position:center top
-  // With cover: the image scales so it fills the container, cropping if needed
-  // Container W x 160px, image is IMG_RATIO : 1
+  // object-fit:cover, object-position:center top
+  // Image is absolutely positioned filling the panel; cover scales to fill, cropping height from bottom
   const panel  = document.getElementById('diagramPanel');
   const cW     = panel.clientWidth;
   const cH     = panel.clientHeight;  // 160
@@ -685,7 +685,7 @@ function renderChart() {
   }
   for (const [name, s] of Object.entries(currentData.serials)) {
     traces.push({
-      type: 'scattergl', mode: 'lines', name,
+      type: 'scatter', mode: 'lines', name,
       x: s.rows.map(r => r.t), y: s.rows.map(r => r.v), yaxis: 'y',
       visible: seriesVis[name] ? true : 'legendonly',
       line: { color: s.color, width: 1.5, shape: 'spline', smoothing: 0.3 },
@@ -694,7 +694,7 @@ function renderChart() {
   }
   if (weatherOn && weatherData) {
     traces.push({
-      type: 'scattergl', mode: 'lines', name: 'Outdoor (Sanford)',
+      type: 'scatter', mode: 'lines', name: 'Outdoor (Sanford)',
       x: weatherData.map(r => r.t), y: weatherData.map(r => r.v), yaxis: 'y',
       line: { color: WEATHER_COLOR, width: 1.5, dash: 'dot' },
       hovertemplate: `<b>Outdoor</b><br>%{x}<br>%{y:.1f} °C<extra></extra>`,
