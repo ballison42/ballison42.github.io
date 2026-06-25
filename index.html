@@ -67,6 +67,37 @@
     .dataset-btn:hover { background: var(--surface2); color: var(--text); }
     .dataset-btn.active { background: rgba(88,53,161,0.25); color: var(--accent-hi); font-weight: 500; }
 
+    /* Individual logger checkboxes */
+    .logger-check-list { display: flex; flex-direction: column; gap: 1px; }
+    .logger-check-row {
+      display: flex; align-items: center; gap: 8px;
+      padding: 4px 8px; border-radius: 6px; cursor: pointer;
+      transition: background 0.1s; user-select: none;
+    }
+    .logger-check-row:hover { background: rgba(255,255,255,0.04); }
+    .check-box {
+      width: 13px; height: 13px; border-radius: 3px; flex-shrink: 0;
+      border: 1.5px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      transition: background 0.1s, border-color 0.1s;
+    }
+    .check-box.checked { border-color: var(--accent-hi); background: var(--accent-hi); }
+    .check-box.checked::after {
+      content: ''; width: 7px; height: 4px;
+      border-left: 1.5px solid #fff; border-bottom: 1.5px solid #fff;
+      transform: rotate(-45deg) translateY(-1px); display: block;
+    }
+    .check-label { font-size: 12px; color: var(--muted); flex: 1; transition: color 0.1s; }
+    .logger-check-row.checked .check-label { color: var(--text); }
+    .select-all-row {
+      display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px;
+    }
+    .select-all-btn {
+      font-size: 10px; color: var(--accent-hi); background: none; border: none;
+      cursor: pointer; font-family: var(--font); padding: 0;
+    }
+    .select-all-btn:hover { text-decoration: underline; }
+
     .series-list { display: flex; flex-direction: column; gap: 2px; }
     .series-row {
       display: flex; align-items: center; gap: 8px;
@@ -256,12 +287,19 @@
   <aside>
     <div class="aside-scroll">
       <div>
-        <div class="section-label">Dataset</div>
+        <div class="section-label">Comparisons</div>
         <div class="dataset-list" id="datasetList"><div style="font-size:12px;color:var(--muted);">Loading…</div></div>
       </div>
       <div>
-        <div class="section-label">Loggers</div>
-        <div class="series-list" id="seriesList"><div style="font-size:12px;color:var(--muted);">Select a dataset.</div></div>
+        <div class="select-all-row">
+          <div class="section-label" style="margin-bottom:0;">Individual Loggers</div>
+          <button class="select-all-btn" id="selectAllBtn">Select all</button>
+        </div>
+        <div class="logger-check-list" id="loggerCheckList"><div style="font-size:12px;color:var(--muted);">Loading…</div></div>
+      </div>
+      <div>
+        <div class="section-label">Active Series</div>
+        <div class="series-list" id="seriesList"><div style="font-size:12px;color:var(--muted);">Select a dataset or logger.</div></div>
       </div>
       <div>
         <div class="section-label">Overlays</div>
@@ -358,7 +396,11 @@ const PALETTE = ['#7c52d4','#38b28a','#e0804a','#e05278','#4ab8e0','#c8d44a','#d
 const WEATHER_COLOR = '#38b2ac';
 const CLOUD_COLOR   = 'rgba(160,180,220,0.25)';
 
-let manifest = [], currentData = null, seriesVis = {};
+let manifest        = [];
+let currentData     = null;  // { label, serials: { name: {rows, color} } }
+let seriesVis       = {};
+let selectedLoggers = new Set(); // individual logger IDs checked
+let loggerCache     = {};        // id → loaded JSON data
 let weatherData = null, cloudData = null;
 let weatherOn = false, cloudOn = false;
 let currentZoomDays = 0, dataExtent = [null, null];
@@ -368,42 +410,24 @@ function setLoading(p) {
   if (p >= 100) setTimeout(() => setLoading(0), 400);
 }
 
-// ── Canvas dot rendering ───────────────────────────────────
-// Uses canvas so dots are always pixel-perfectly placed relative to
-// the actual rendered image, regardless of container size.
-
+// ── Canvas dot rendering ────────────────────────────────────
 function getImageRect() {
-  // object-fit:cover, object-position:center top
-  // Image is absolutely positioned filling the panel; cover scales to fill, cropping height from bottom
-  const panel  = document.getElementById('diagramPanel');
-  const cW     = panel.clientWidth;
-  const cH     = panel.clientHeight;  // 160
-
-  // cover: scale to fill — whichever dimension hits the edge first
-  const scaleW = cW / 5313;
-  const scaleH = cH / 1815;
-  const scale  = Math.max(scaleW, scaleH);  // cover uses max
-
-  const rendW  = 5313 * scale;
-  const rendH  = 1815 * scale;
-
-  // object-position: center top → horizontally centered, top-aligned
-  const offX   = (cW - rendW) / 2;
-  const offY   = 0;  // top
-
+  const panel = document.getElementById('diagramPanel');
+  const cW = panel.clientWidth, cH = panel.clientHeight;
+  const scaleW = cW / 5313, scaleH = cH / 1815;
+  const scale  = Math.max(scaleW, scaleH);
+  const rendW  = 5313 * scale, rendH = 1815 * scale;
+  const offX   = (cW - rendW) / 2, offY = 0;
   return { offX, offY, rendW, rendH };
 }
 
 function drawDots() {
-  // ── Canvas: inactive / toggled-off dots ──────────────────
   const canvas = document.getElementById('dotCanvas');
   const panel  = document.getElementById('diagramPanel');
   canvas.width  = panel.clientWidth;
   canvas.height = panel.clientHeight;
-
   const ctx = canvas.getContext('2d');
   ctx.clearRect(0, 0, canvas.width, canvas.height);
-
   const { offX, offY, rendW, rendH } = getImageRect();
 
   for (const [name, pos] of Object.entries(LOGGER_POSITIONS)) {
@@ -411,110 +435,75 @@ function drawDots() {
     const cy = offY + (pos.y / 100) * rendH;
     const inDataset = currentData && (name in currentData.serials);
     const isVisible = inDataset && seriesVis[name];
-
     if (!inDataset) {
-      ctx.beginPath();
-      ctx.arc(cx, cy, 4, 0, Math.PI * 2);
-      ctx.strokeStyle = 'rgba(255,255,255,0.15)';
-      ctx.lineWidth = 1.5;
-      ctx.stroke();
+      ctx.beginPath(); ctx.arc(cx, cy, 4, 0, Math.PI * 2);
+      ctx.strokeStyle = 'rgba(255,255,255,0.15)'; ctx.lineWidth = 1.5; ctx.stroke();
     } else if (!isVisible) {
       const color = currentData.serials[name].color;
-      ctx.beginPath();
-      ctx.arc(cx, cy, 6, 0, Math.PI * 2);
-      ctx.strokeStyle = color + '70';
-      ctx.lineWidth = 2;
-      ctx.stroke();
+      ctx.beginPath(); ctx.arc(cx, cy, 6, 0, Math.PI * 2);
+      ctx.strokeStyle = color + '70'; ctx.lineWidth = 2; ctx.stroke();
     }
-    // Active dots are handled by HTML markers below
   }
 
-  // ── HTML markers: active dots with hover + photo tooltip ─
   const overlay = document.getElementById('dotOverlay');
   overlay.innerHTML = '';
-
   if (!currentData) return;
 
   for (const [name, pos] of Object.entries(LOGGER_POSITIONS)) {
     const inDataset = name in currentData.serials;
     const isVisible = inDataset && seriesVis[name];
     if (!isVisible) continue;
-
     const color = currentData.serials[name].color;
     const cx = offX + (pos.x / 100) * rendW;
     const cy = offY + (pos.y / 100) * rendH;
-
     const marker = document.createElement('div');
     marker.className = 'logger-marker';
-    marker.style.left = cx + 'px';
-    marker.style.top  = cy + 'px';
-
-    // Glow ring
+    marker.style.left = cx + 'px'; marker.style.top = cy + 'px';
     const ring = document.createElement('div');
     ring.className = 'dot-ring';
     ring.style.background = color;
     ring.style.boxShadow = `0 0 0 3px rgba(255,255,255,0.12), 0 0 10px 3px ${color}99`;
     marker.appendChild(ring);
-
-    // Label
     const lbl = document.createElement('div');
-    lbl.className = 'dot-label';
-    lbl.textContent = name;
+    lbl.className = 'dot-label'; lbl.textContent = name;
     marker.appendChild(lbl);
-
-    // Tooltip on hover
     const photo = LOGGER_PHOTOS[name];
     if (photo) {
       marker.addEventListener('mouseenter', e => showTip(name, photo, e));
       marker.addEventListener('mousemove',  e => moveTip(e));
       marker.addEventListener('mouseleave', hideTip);
     }
-
     overlay.appendChild(marker);
   }
 }
 
-// ── Tooltip ────────────────────────────────────────────────
-const tip     = document.getElementById('installTooltip');
-const tipImg  = document.getElementById('tipImg');
-const tipLbl  = document.getElementById('tipLabel');
+// ── Tooltip ─────────────────────────────────────────────────
+const tip    = document.getElementById('installTooltip');
+const tipImg = document.getElementById('tipImg');
+const tipLbl = document.getElementById('tipLabel');
 
-// Preload all photos so hover is instant
 function preloadPhotos() {
-  const seen = new Set(Object.values(LOGGER_PHOTOS));
-  for (const src of seen) {
-    const img = new Image();
-    img.src = src;
+  for (const src of new Set(Object.values(LOGGER_PHOTOS))) {
+    const img = new Image(); img.src = src;
   }
 }
-
 function showTip(name, src, e) {
-  tipImg.src = src;
-  tipLbl.textContent = name + ' — installation';
-  tip.classList.add('visible');
-  moveTip(e);
+  tipImg.src = src; tipLbl.textContent = name + ' — installation';
+  tip.classList.add('visible'); moveTip(e);
 }
-
 function moveTip(e) {
-  const TW = 320, TH = 260; // approx tooltip size
-  const vw = window.innerWidth, vh = window.innerHeight;
-  let x = e.clientX + 16;
-  let y = e.clientY + 16;
+  const TW = 320, TH = 260, vw = window.innerWidth, vh = window.innerHeight;
+  let x = e.clientX + 16, y = e.clientY + 16;
   if (x + TW > vw - 8) x = e.clientX - TW - 12;
   if (y + TH > vh - 8) y = e.clientY - TH - 12;
-  tip.style.left = x + 'px';
-  tip.style.top  = y + 'px';
+  tip.style.left = x + 'px'; tip.style.top = y + 'px';
 }
+function hideTip() { tip.classList.remove('visible'); }
 
-function hideTip() {
-  tip.classList.remove('visible');
-}
-
-// Redraw dots on resize
 const ro = new ResizeObserver(() => drawDots());
 ro.observe(document.getElementById('diagramPanel'));
 
-// ── Boot ───────────────────────────────────────────────────
+// ── Boot ────────────────────────────────────────────────────
 async function boot() {
   setDiagramNaturalHeight();
   preloadPhotos();
@@ -522,24 +511,114 @@ async function boot() {
   try {
     manifest = await (await fetch('data/manifest.json')).json();
     renderDatasetList();
+    renderLoggerCheckList();
   } catch(e) {
     document.getElementById('datasetList').innerHTML = '<div style="font-size:12px;color:#e05278;">Could not load manifest.json</div>';
   }
 }
 
-// ── Dataset list ───────────────────────────────────────────
+// ── Comparisons list ────────────────────────────────────────
 function renderDatasetList() {
   const el = document.getElementById('datasetList');
-  const sorted = [...manifest].sort((a, b) => a.label.localeCompare(b.label));
-  el.innerHTML = sorted.map(ds =>
-    `<button class="dataset-btn" data-id="${ds.id}" onclick="loadDataset('${ds.id}')">${ds.label}</button>`
+  const comparisons = manifest.filter(d => d.type === 'comparison').sort((a,b) => a.label.localeCompare(b.label));
+  el.innerHTML = comparisons.map(ds =>
+    `<button class="dataset-btn" data-id="${ds.id}" onclick="loadComparison('${ds.id}')">${ds.label}</button>`
   ).join('');
 }
 
-// ── Load dataset ───────────────────────────────────────────
-async function loadDataset(id) {
+// ── Individual logger checkboxes ────────────────────────────
+function renderLoggerCheckList() {
+  const el = document.getElementById('loggerCheckList');
+  const individuals = manifest.filter(d => d.type === 'individual');
+  el.innerHTML = individuals.map(ds => `
+    <div class="logger-check-row ${selectedLoggers.has(ds.id) ? 'checked' : ''}"
+         onclick="toggleLoggerCheck('${ds.id}')">
+      <div class="check-box ${selectedLoggers.has(ds.id) ? 'checked' : ''}"></div>
+      <span class="check-label">${ds.label}</span>
+    </div>`).join('');
+}
+
+document.getElementById('selectAllBtn').addEventListener('click', () => {
+  const individuals = manifest.filter(d => d.type === 'individual');
+  const allSelected = individuals.every(d => selectedLoggers.has(d.id));
+  if (allSelected) {
+    individuals.forEach(d => selectedLoggers.delete(d.id));
+  } else {
+    individuals.forEach(d => selectedLoggers.add(d.id));
+  }
+  // Deactivate comparison selection
+  document.querySelectorAll('.dataset-btn').forEach(b => b.classList.remove('active'));
+  renderLoggerCheckList();
+  rebuildFromChecked();
+});
+
+async function toggleLoggerCheck(id) {
+  if (selectedLoggers.has(id)) {
+    selectedLoggers.delete(id);
+  } else {
+    selectedLoggers.add(id);
+  }
+  // Deactivate comparison
+  document.querySelectorAll('.dataset-btn').forEach(b => b.classList.remove('active'));
+  renderLoggerCheckList();
+  await rebuildFromChecked();
+}
+
+async function rebuildFromChecked() {
+  if (selectedLoggers.size === 0) {
+    currentData = null;
+    seriesVis = {};
+    drawDots(); renderSeriesList(); renderStats(); renderChart();
+    return;
+  }
+
+  setLoading(15);
+  // Load any uncached files
+  const toLoad = [...selectedLoggers].filter(id => !loggerCache[id]);
+  await Promise.all(toLoad.map(async id => {
+    const ds = manifest.find(d => d.id === id);
+    if (!ds) return;
+    try {
+      loggerCache[id] = await (await fetch(ds.file)).json();
+    } catch(e) { console.error('Failed to load', ds.file); }
+  }));
+  setLoading(70);
+
+  // Merge all selected loggers into one currentData
+  const serials = {};
+  let ci = 0;
+  for (const id of [...selectedLoggers].sort()) {
+    const data = loggerCache[id];
+    if (!data) continue;
+    for (const [name, rows] of Object.entries(data)) {
+      serials[name] = { rows, color: PALETTE[ci++ % PALETTE.length] };
+      if (!(name in seriesVis)) seriesVis[name] = true;
+    }
+  }
+  // Remove seriesVis entries no longer present
+  for (const name of Object.keys(seriesVis)) {
+    if (!(name in serials)) delete seriesVis[name];
+  }
+
+  currentData = { label: `${selectedLoggers.size} logger${selectedLoggers.size > 1 ? 's' : ''}`, serials };
+  computeExtent();
+
+  weatherData = null; cloudData = null;
+  if (weatherOn || cloudOn) await fetchWeatherAndCloud();
+
+  currentZoomDays = 0;
+  document.querySelectorAll('#zoomBtns .btn').forEach(b => b.classList.toggle('active', b.dataset.days === '0'));
+  drawDots(); renderSeriesList(); renderStats(); renderChart();
+  setLoading(100);
+}
+
+// ── Load comparison dataset ─────────────────────────────────
+async function loadComparison(id) {
   const ds = manifest.find(d => d.id === id);
   if (!ds) return;
+  // Clear individual selections
+  selectedLoggers.clear();
+  renderLoggerCheckList();
   document.querySelectorAll('.dataset-btn').forEach(b => b.classList.remove('active'));
   document.querySelector(`[data-id="${id}"]`).classList.add('active');
   setLoading(20);
@@ -554,38 +633,37 @@ async function loadDataset(id) {
       seriesVis[name] = true;
     }
     currentData = { label: ds.label, serials };
-
-    let minT = Infinity, maxT = -Infinity;
-    for (const s of Object.values(serials)) {
-      if (!s.rows.length) continue;
-      const t0 = new Date(s.rows[0].t).getTime();
-      const tN = new Date(s.rows[s.rows.length - 1].t).getTime();
-      if (t0 < minT) minT = t0;
-      if (tN > maxT) maxT = tN;
-    }
-    dataExtent = [new Date(minT).toISOString(), new Date(maxT).toISOString()];
-
+    computeExtent();
     weatherData = null; cloudData = null;
     if (weatherOn || cloudOn) await fetchWeatherAndCloud();
-
     currentZoomDays = 0;
     document.querySelectorAll('#zoomBtns .btn').forEach(b => b.classList.toggle('active', b.dataset.days === '0'));
-
-    drawDots();
-    renderSeriesList();
-    renderStats();
-    renderChart();
+    drawDots(); renderSeriesList(); renderStats(); renderChart();
     setLoading(100);
   } catch(e) {
-    console.error(e); setLoading(0);
-    alert(`Failed to load ${ds.file}`);
+    console.error(e); setLoading(0); alert(`Failed to load ${ds.file}`);
   }
 }
 
-// ── Series toggles ─────────────────────────────────────────
+function computeExtent() {
+  let minT = Infinity, maxT = -Infinity;
+  for (const s of Object.values(currentData.serials)) {
+    if (!s.rows.length) continue;
+    const t0 = new Date(s.rows[0].t).getTime();
+    const tN = new Date(s.rows[s.rows.length - 1].t).getTime();
+    if (t0 < minT) minT = t0;
+    if (tN > maxT) maxT = tN;
+  }
+  dataExtent = [new Date(minT).toISOString(), new Date(maxT).toISOString()];
+}
+
+// ── Active series list ──────────────────────────────────────
 function renderSeriesList() {
   const el = document.getElementById('seriesList');
-  if (!currentData) { el.innerHTML = '<div style="font-size:12px;color:var(--muted);">Select a dataset.</div>'; return; }
+  if (!currentData || !Object.keys(currentData.serials).length) {
+    el.innerHTML = '<div style="font-size:12px;color:var(--muted);">Select a dataset or logger.</div>';
+    return;
+  }
   el.innerHTML = Object.entries(currentData.serials).map(([name, s]) => `
     <div class="series-row ${seriesVis[name] ? '' : 'hidden'}" onclick="toggleSeries('${name}')">
       <div class="swatch" style="background:${s.color}"></div>
@@ -598,7 +676,7 @@ function toggleSeries(name) {
   renderSeriesList(); renderStats(); drawDots(); renderChart();
 }
 
-// ── Stats ──────────────────────────────────────────────────
+// ── Stats ───────────────────────────────────────────────────
 function renderStats() {
   if (!currentData) return;
   const vals = []; let pts = 0, series = 0;
