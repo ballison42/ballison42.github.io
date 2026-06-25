@@ -56,6 +56,25 @@
       text-transform: uppercase; color: var(--muted); margin-bottom: 5px;
     }
 
+    /* Collapsible sidebar sections */
+    .collapsible-header {
+      display: flex; align-items: center; justify-content: space-between;
+      cursor: pointer; user-select: none; margin-bottom: 5px;
+    }
+    .collapsible-header:hover .section-label { color: var(--text); }
+    .collapsible-chevron {
+      font-size: 10px; color: var(--muted);
+      transition: transform 0.2s;
+      flex-shrink: 0;
+    }
+    .collapsible-chevron.open { transform: rotate(180deg); }
+    .collapsible-body {
+      overflow: hidden;
+      transition: max-height 0.2s ease, opacity 0.2s ease;
+      max-height: 0; opacity: 0;
+    }
+    .collapsible-body.open { max-height: 600px; opacity: 1; }
+
     .dataset-list { display: flex; flex-direction: column; gap: 1px; }
     .dataset-btn {
       display: block; width: 100%; text-align: left;
@@ -132,9 +151,9 @@
       position: relative;
       background: var(--surface);
       overflow: hidden;
-      height: 220px; /* overwritten by JS on load to fit full image */
+      height: 200px;
       min-height: 80px;
-      max-height: 600px;
+      max-height: 400px;
     }
 
     #trailerImg {
@@ -142,8 +161,8 @@
       top: 0; left: 0;
       width: 100%;
       height: 100%;
-      object-fit: cover;
-      object-position: center top;
+      object-fit: contain;
+      object-position: center center;
     }
 
     #dotCanvas {
@@ -287,15 +306,25 @@
   <aside>
     <div class="aside-scroll">
       <div>
-        <div class="section-label">Comparisons</div>
-        <div class="dataset-list" id="datasetList"><div style="font-size:12px;color:var(--muted);">Loading…</div></div>
+        <div class="collapsible-header" onclick="toggleSection('comparisons')">
+          <div class="section-label" style="margin-bottom:0;">Comparisons</div>
+          <span class="collapsible-chevron open" id="chevron-comparisons">▼</span>
+        </div>
+        <div class="collapsible-body open" id="body-comparisons">
+          <div class="dataset-list" id="datasetList"><div style="font-size:12px;color:var(--muted);">Loading…</div></div>
+        </div>
       </div>
       <div>
-        <div class="select-all-row">
-          <div class="section-label" style="margin-bottom:0;">Individual Loggers</div>
-          <button class="select-all-btn" id="selectAllBtn">Select all</button>
+        <div class="collapsible-header" onclick="toggleSection('individuals')">
+          <div class="select-all-row" style="flex:1;margin-bottom:0;">
+            <div class="section-label" style="margin-bottom:0;">Individual Loggers</div>
+            <button class="select-all-btn" id="selectAllBtn" onclick="event.stopPropagation()">Select all</button>
+          </div>
+          <span class="collapsible-chevron" id="chevron-individuals" style="margin-left:6px;">▼</span>
         </div>
-        <div class="logger-check-list" id="loggerCheckList"><div style="font-size:12px;color:var(--muted);">Loading…</div></div>
+        <div class="collapsible-body" id="body-individuals">
+          <div class="logger-check-list" id="loggerCheckList"><div style="font-size:12px;color:var(--muted);">Loading…</div></div>
+        </div>
       </div>
       <div>
         <div class="section-label">Active Series</div>
@@ -412,12 +441,14 @@ function setLoading(p) {
 
 // ── Canvas dot rendering ────────────────────────────────────
 function getImageRect() {
+  // object-fit: contain — scale to fit, letterboxed, centered both axes
   const panel = document.getElementById('diagramPanel');
   const cW = panel.clientWidth, cH = panel.clientHeight;
   const scaleW = cW / 5313, scaleH = cH / 1815;
-  const scale  = Math.max(scaleW, scaleH);
+  const scale  = Math.min(scaleW, scaleH);  // contain uses min
   const rendW  = 5313 * scale, rendH = 1815 * scale;
-  const offX   = (cW - rendW) / 2, offY = 0;
+  const offX   = (cW - rendW) / 2;
+  const offY   = (cH - rendH) / 2;
   return { offX, offY, rendW, rendH };
 }
 
@@ -502,6 +533,15 @@ function hideTip() { tip.classList.remove('visible'); }
 
 const ro = new ResizeObserver(() => drawDots());
 ro.observe(document.getElementById('diagramPanel'));
+
+// ── Collapsible sections ────────────────────────────────────
+function toggleSection(id) {
+  const body    = document.getElementById('body-' + id);
+  const chevron = document.getElementById('chevron-' + id);
+  const isOpen  = body.classList.contains('open');
+  body.classList.toggle('open', !isOpen);
+  chevron.classList.toggle('open', !isOpen);
+}
 
 // ── Boot ────────────────────────────────────────────────────
 async function boot() {
@@ -836,14 +876,11 @@ window.addEventListener('resize', () => {
   if (currentData) Plotly.Plots.resize('chart');
 });
 
-// ── Set diagram panel height to fit full image ─────────────
+// ── Set diagram panel height ────────────────────────────────
 function setDiagramNaturalHeight() {
   const panel = document.getElementById('diagramPanel');
-  const w = panel.clientWidth;
-  // Image is 5313x1815 (ratio 2.9273); height = width / ratio
-  const naturalH = Math.round(w / IMG_RATIO);
-  const clamped  = Math.min(600, Math.max(80, naturalH));
-  panel.style.height = clamped + 'px';
+  // Fixed compact height — image is contained (letterboxed) within it
+  panel.style.height = '200px';
   drawDots();
   if (currentData) Plotly.Plots.resize('chart');
 }
