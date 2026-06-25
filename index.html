@@ -32,67 +32,46 @@
     }
 
     header {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-      padding: 14px 24px;
-      border-bottom: 1px solid var(--border);
-      flex-shrink: 0;
+      display: flex; align-items: center; gap: 16px;
+      padding: 14px 24px; border-bottom: 1px solid var(--border); flex-shrink: 0;
     }
     .logo-mark {
-      width: 28px; height: 28px;
-      background: var(--accent);
-      border-radius: 6px;
+      width: 28px; height: 28px; background: var(--accent); border-radius: 6px;
       display: flex; align-items: center; justify-content: center;
-      font-weight: 700; font-size: 12px; color: #fff;
-      flex-shrink: 0;
+      font-weight: 700; font-size: 12px; color: #fff; flex-shrink: 0;
     }
     header h1 { font-size: 14px; font-weight: 600; }
     header h1 span { font-weight: 400; color: var(--muted); }
 
-    .app {
-      display: grid;
-      grid-template-columns: 210px 1fr;
-      height: calc(100vh - 51px);
-    }
+    .app { display: grid; grid-template-columns: 210px 1fr; height: calc(100vh - 51px); }
 
-    /* ── Sidebar ─────────────────────────────────────── */
-    aside {
-      border-right: 1px solid var(--border);
-      display: flex; flex-direction: column;
-      overflow: hidden;
-    }
+    aside { border-right: 1px solid var(--border); display: flex; flex-direction: column; overflow: hidden; }
     .aside-scroll {
-      flex: 1; overflow-y: auto;
-      padding: 14px 12px;
+      flex: 1; overflow-y: auto; padding: 14px 12px;
       display: flex; flex-direction: column; gap: 16px;
     }
 
     .section-label {
-      font-size: 10px; font-weight: 600;
-      letter-spacing: 0.09em; text-transform: uppercase;
-      color: var(--muted); margin-bottom: 5px;
+      font-size: 10px; font-weight: 600; letter-spacing: 0.09em;
+      text-transform: uppercase; color: var(--muted); margin-bottom: 5px;
     }
 
     .dataset-list { display: flex; flex-direction: column; gap: 1px; }
     .dataset-btn {
       display: block; width: 100%; text-align: left;
-      padding: 6px 10px; border-radius: 6px;
-      border: none; background: transparent;
-      color: var(--muted); font-size: 12px; font-family: var(--font);
-      cursor: pointer; transition: background 0.1s, color 0.1s;
+      padding: 6px 10px; border-radius: 6px; border: none;
+      background: transparent; color: var(--muted);
+      font-size: 12px; font-family: var(--font); cursor: pointer;
+      transition: background 0.1s, color 0.1s;
     }
     .dataset-btn:hover { background: var(--surface2); color: var(--text); }
-    .dataset-btn.active {
-      background: rgba(88,53,161,0.25);
-      color: var(--accent-hi); font-weight: 500;
-    }
+    .dataset-btn.active { background: rgba(88,53,161,0.25); color: var(--accent-hi); font-weight: 500; }
 
     .series-list { display: flex; flex-direction: column; gap: 2px; }
     .series-row {
       display: flex; align-items: center; gap: 8px;
-      padding: 4px 8px; border-radius: 6px;
-      cursor: pointer; transition: background 0.1s; user-select: none;
+      padding: 4px 8px; border-radius: 6px; cursor: pointer;
+      transition: background 0.1s; user-select: none;
     }
     .series-row:hover { background: rgba(255,255,255,0.04); }
     .series-row.hidden { opacity: 0.3; }
@@ -102,107 +81,58 @@
     .overlay-row { display: flex; align-items: center; gap: 10px; padding: 3px 0; }
     .toggle { position: relative; width: 32px; height: 17px; cursor: pointer; }
     .toggle input { opacity: 0; width: 0; height: 0; }
-    .toggle-track {
-      position: absolute; inset: 0;
-      background: var(--border); border-radius: 20px; transition: background 0.2s;
-    }
+    .toggle-track { position: absolute; inset: 0; background: var(--border); border-radius: 20px; transition: background 0.2s; }
     .toggle input:checked + .toggle-track { background: var(--accent-hi); }
-    .toggle-thumb {
-      position: absolute; top: 2px; left: 2px;
-      width: 13px; height: 13px; background: #fff;
-      border-radius: 50%; transition: transform 0.2s;
-    }
+    .toggle-thumb { position: absolute; top: 2px; left: 2px; width: 13px; height: 13px; background: #fff; border-radius: 50%; transition: transform 0.2s; }
     .toggle input:checked ~ .toggle-thumb { transform: translateX(15px); }
     .overlay-label { font-size: 12px; }
     .overlay-status { font-size: 10px; color: var(--muted); margin-top: 1px; }
 
     .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; }
-    .stat-card {
-      background: var(--surface); border: 1px solid var(--border);
-      border-radius: 6px; padding: 8px 9px;
-    }
+    .stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: 6px; padding: 8px 9px; }
     .stat-val { font-size: 15px; font-weight: 600; line-height: 1; margin-bottom: 3px; }
     .stat-key { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; }
 
-    /* ── Main area ───────────────────────────────────── */
-    main {
-      display: flex; flex-direction: column;
-      overflow: hidden;
-    }
+    main { display: flex; flex-direction: column; overflow: hidden; }
 
-    /* ── Trailer diagram panel ───────────────────────── */
+    /* ── Trailer diagram ─────────────────────────────── */
     .diagram-panel {
       flex-shrink: 0;
       position: relative;
       background: var(--surface);
       border-bottom: 1px solid var(--border);
-      overflow: hidden;
       height: 160px;
+      overflow: hidden;
     }
 
-    .diagram-panel img {
-      width: 100%;
-      height: 100%;
-      object-fit: contain;
-      object-position: center;
+    /* The image fills the panel width, height auto — no letterboxing */
+    #trailerImg {
       display: block;
+      width: 100%;
+      height: 160px;
+      object-fit: cover;
+      object-position: center top;
     }
 
-    /* Logger dot overlay */
-    .logger-dot {
+    /* Dot canvas sits exactly over the image */
+    #dotCanvas {
       position: absolute;
-      width: 18px; height: 18px;
-      border-radius: 50%;
-      transform: translate(-50%, -50%);
+      top: 0; left: 0;
+      width: 100%; height: 100%;
       pointer-events: none;
-      transition: all 0.25s ease;
     }
-    /* Inactive: small dim ring */
-    .logger-dot.inactive {
-      background: transparent;
-      border: 2px solid rgba(255,255,255,0.25);
-      width: 12px; height: 12px;
-    }
-    /* Active: filled colored circle with glow */
-    .logger-dot.active {
-      border: 2px solid rgba(255,255,255,0.6);
-      box-shadow: 0 0 0 3px rgba(255,255,255,0.15), 0 0 8px 2px var(--dot-color);
-      width: 18px; height: 18px;
-    }
-    /* Not in dataset: hidden */
-    .logger-dot.absent { opacity: 0; }
-
-    /* Label that appears on active dots */
-    .logger-dot-label {
-      position: absolute;
-      font-size: 9px;
-      font-weight: 600;
-      font-family: var(--font);
-      color: #fff;
-      white-space: nowrap;
-      pointer-events: none;
-      text-shadow: 0 1px 3px rgba(0,0,0,0.9);
-      transform: translateX(-50%);
-      top: calc(100% + 3px);
-      left: 50%;
-      opacity: 0;
-      transition: opacity 0.2s;
-    }
-    .logger-dot.active .logger-dot-label { opacity: 1; }
 
     /* ── Chart area ──────────────────────────────────── */
     .toolbar {
       display: flex; align-items: center; gap: 10px;
-      padding: 9px 16px; border-bottom: 1px solid var(--border);
-      flex-shrink: 0;
+      padding: 9px 16px; border-bottom: 1px solid var(--border); flex-shrink: 0;
     }
     .toolbar-label { font-size: 12px; color: var(--muted); }
     .btn-group { display: flex; gap: 3px; }
     .btn {
-      padding: 4px 10px; border-radius: 5px;
-      border: 1px solid var(--border); background: transparent;
-      color: var(--muted); font-size: 12px; font-family: var(--font);
-      cursor: pointer; transition: all 0.12s;
+      padding: 4px 10px; border-radius: 5px; border: 1px solid var(--border);
+      background: transparent; color: var(--muted);
+      font-size: 12px; font-family: var(--font); cursor: pointer; transition: all 0.12s;
     }
     .btn:hover { border-color: var(--accent-hi); color: var(--text); }
     .btn.active { background: var(--accent); border-color: var(--accent); color: #fff; }
@@ -211,20 +141,14 @@
     #chart { flex: 1; min-height: 0; }
 
     .empty-state {
-      display: flex; flex-direction: column;
-      align-items: center; justify-content: center;
-      flex: 1; gap: 10px; color: var(--muted);
-      padding: 40px; text-align: center;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      flex: 1; gap: 10px; color: var(--muted); padding: 40px; text-align: center;
     }
     .empty-icon { font-size: 32px; opacity: 0.35; }
     .empty-state h2 { font-size: 14px; font-weight: 500; color: var(--text); }
     .empty-state p { font-size: 12px; max-width: 280px; line-height: 1.6; }
 
-    .loading-bar {
-      height: 2px; background: var(--accent);
-      width: 0%; transition: width 0.3s;
-      position: fixed; top: 0; left: 0; z-index: 100;
-    }
+    .loading-bar { height: 2px; background: var(--accent); width: 0%; transition: width 0.3s; position: fixed; top: 0; left: 0; z-index: 100; }
   </style>
 </head>
 <body>
@@ -241,47 +165,24 @@
     <div class="aside-scroll">
       <div>
         <div class="section-label">Dataset</div>
-        <div class="dataset-list" id="datasetList">
-          <div style="font-size:12px;color:var(--muted);">Loading…</div>
-        </div>
+        <div class="dataset-list" id="datasetList"><div style="font-size:12px;color:var(--muted);">Loading…</div></div>
       </div>
-
       <div>
         <div class="section-label">Loggers</div>
-        <div class="series-list" id="seriesList">
-          <div style="font-size:12px;color:var(--muted);">Select a dataset.</div>
-        </div>
+        <div class="series-list" id="seriesList"><div style="font-size:12px;color:var(--muted);">Select a dataset.</div></div>
       </div>
-
       <div>
         <div class="section-label">Overlays</div>
         <div class="overlay-row">
-          <label class="toggle">
-            <input type="checkbox" id="weatherToggle" />
-            <div class="toggle-track"></div>
-            <div class="toggle-thumb"></div>
-          </label>
-          <div>
-            <div class="overlay-label">Outdoor temp</div>
-            <div class="overlay-status" id="weatherStatus">Off</div>
-          </div>
+          <label class="toggle"><input type="checkbox" id="weatherToggle" /><div class="toggle-track"></div><div class="toggle-thumb"></div></label>
+          <div><div class="overlay-label">Outdoor temp</div><div class="overlay-status" id="weatherStatus">Off</div></div>
         </div>
         <div class="overlay-row">
-          <label class="toggle">
-            <input type="checkbox" id="cloudToggle" />
-            <div class="toggle-track"></div>
-            <div class="toggle-thumb"></div>
-          </label>
-          <div>
-            <div class="overlay-label">Cloud cover</div>
-            <div class="overlay-status" id="cloudStatus">Off</div>
-          </div>
+          <label class="toggle"><input type="checkbox" id="cloudToggle" /><div class="toggle-track"></div><div class="toggle-thumb"></div></label>
+          <div><div class="overlay-label">Cloud cover</div><div class="overlay-status" id="cloudStatus">Off</div></div>
         </div>
-        <div style="margin-top:5px;font-size:10px;color:var(--muted);line-height:1.5;">
-          Open-Meteo · 28.8007°N 81.2730°W
-        </div>
+        <div style="margin-top:5px;font-size:10px;color:var(--muted);line-height:1.5;">Open-Meteo · 28.8007°N 81.2730°W</div>
       </div>
-
       <div>
         <div class="section-label">Summary</div>
         <div class="stats-grid">
@@ -295,13 +196,11 @@
   </aside>
 
   <main>
-    <!-- Trailer diagram -->
     <div class="diagram-panel" id="diagramPanel">
       <img src="trailer_diagram.png" alt="Trailer layout" id="trailerImg" />
-      <!-- Logger dots injected by JS -->
+      <canvas id="dotCanvas"></canvas>
     </div>
 
-    <!-- Toolbar -->
     <div class="toolbar">
       <span class="toolbar-label">Zoom to</span>
       <div class="btn-group" id="zoomBtns">
@@ -323,119 +222,154 @@
 </div>
 
 <script>
-// ── Logger positions as % of image dimensions ──────────────
-// Derived from the labeled reference photo (pixel-accurate)
+// ── Logger positions as % of the PNG image's own dimensions ──
+// Derived by pixel-accurate cluster detection on the source PNG (5313x1815)
 const LOGGER_POSITIONS = {
-  "HW003 T6": { x: 32.8, y:  7.6 },
-  "HW003 T4": { x: 16.0, y: 54.0 },
-  "HW003 T7": { x: 13.3, y: 55.3 },
-  "HW003 T5": { x: 12.1, y: 59.8 },
-  "HW003 T1": { x: 41.7, y: 55.4 },
-  "HW003 T2": { x: 42.4, y: 62.2 },
-  "HW003 T3": { x: 42.4, y: 76.8 },
-  "HW004 T4": { x: 86.4, y:  9.5 },
-  "HW004 T2": { x: 65.7, y: 55.4 },
-  "HW004 T1": { x: 67.1, y: 55.5 },
-  "HW004 T3": { x: 64.4, y: 60.6 },
+  "HW003 T6": { x: 34.97, y:  7.26 },
+  "HW003 T4": { x: 16.62, y: 53.43 },
+  "HW003 T7": { x: 14.59, y: 55.04 },
+  "HW003 T5": { x: 13.37, y: 59.67 },
+  "HW003 T1": { x: 44.16, y: 55.25 },
+  "HW003 T2": { x: 44.91, y: 61.98 },
+  "HW003 T3": { x: 44.91, y: 76.64 },
+  "HW004 T4": { x: 85.25, y:  9.13 },
+  "HW004 T2": { x: 64.09, y: 56.47 },
+  "HW004 T1": { x: 64.92, y: 56.47 },
+  "HW004 T3": { x: 62.44, y: 60.55 },
 };
 
-const PALETTE = [
-  '#7c52d4','#38b28a','#e0804a','#e05278',
-  '#4ab8e0','#c8d44a','#d44ab2','#4ad4a4',
-  '#e0c84a','#a44ae0'
-];
+// Image natural dimensions (5313x1815, ratio 2.9273)
+const IMG_RATIO = 5313 / 1815;
+
+const PALETTE = ['#7c52d4','#38b28a','#e0804a','#e05278','#4ab8e0','#c8d44a','#d44ab2','#4ad4a4','#e0c84a','#a44ae0'];
 const WEATHER_COLOR = '#38b2ac';
 const CLOUD_COLOR   = 'rgba(160,180,220,0.25)';
 
-let manifest        = [];
-let currentData     = null;
-let seriesVis       = {};
-let weatherData     = null;
-let cloudData       = null;
-let weatherOn       = false;
-let cloudOn         = false;
-let currentZoomDays = 0;
-let dataExtent      = [null, null];
+let manifest = [], currentData = null, seriesVis = {};
+let weatherData = null, cloudData = null;
+let weatherOn = false, cloudOn = false;
+let currentZoomDays = 0, dataExtent = [null, null];
 
-// ── Loading bar ────────────────────────────────────────────
-function setLoading(pct) {
-  document.getElementById('loadingBar').style.width = pct + '%';
-  if (pct >= 100) setTimeout(() => setLoading(0), 400);
+function setLoading(p) {
+  document.getElementById('loadingBar').style.width = p + '%';
+  if (p >= 100) setTimeout(() => setLoading(0), 400);
 }
 
-// ── Build logger dots on diagram ───────────────────────────
-function buildDots() {
-  const panel = document.getElementById('diagramPanel');
-  // Remove existing dots
-  panel.querySelectorAll('.logger-dot').forEach(d => d.remove());
+// ── Canvas dot rendering ───────────────────────────────────
+// Uses canvas so dots are always pixel-perfectly placed relative to
+// the actual rendered image, regardless of container size.
+
+function getImageRect() {
+  // The image uses object-fit:cover width:100% height:160px object-position:center top
+  // With cover: the image scales so it fills the container, cropping if needed
+  // Container W x 160px, image is IMG_RATIO : 1
+  const panel  = document.getElementById('diagramPanel');
+  const cW     = panel.clientWidth;
+  const cH     = panel.clientHeight;  // 160
+
+  // cover: scale to fill — whichever dimension hits the edge first
+  const scaleW = cW / 5313;
+  const scaleH = cH / 1815;
+  const scale  = Math.max(scaleW, scaleH);  // cover uses max
+
+  const rendW  = 5313 * scale;
+  const rendH  = 1815 * scale;
+
+  // object-position: center top → horizontally centered, top-aligned
+  const offX   = (cW - rendW) / 2;
+  const offY   = 0;  // top
+
+  return { offX, offY, rendW, rendH };
+}
+
+function drawDots() {
+  const canvas = document.getElementById('dotCanvas');
+  const panel  = document.getElementById('diagramPanel');
+  canvas.width  = panel.clientWidth;
+  canvas.height = panel.clientHeight;
+
+  const ctx = canvas.getContext('2d');
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  const { offX, offY, rendW, rendH } = getImageRect();
 
   for (const [name, pos] of Object.entries(LOGGER_POSITIONS)) {
-    const dot = document.createElement('div');
-    dot.className = 'logger-dot absent';
-    dot.id = `dot-${name.replace(/\s/g, '-')}`;
-    dot.style.left = pos.x + '%';
-    dot.style.top  = pos.y + '%';
+    // Convert image-% to canvas pixels
+    const cx = offX + (pos.x / 100) * rendW;
+    const cy = offY + (pos.y / 100) * rendH;
 
-    const lbl = document.createElement('div');
-    lbl.className = 'logger-dot-label';
-    lbl.textContent = name;
-    dot.appendChild(lbl);
-
-    panel.appendChild(dot);
-  }
-}
-
-// ── Update dot states based on current dataset + visibility ─
-function updateDots() {
-  for (const [name] of Object.entries(LOGGER_POSITIONS)) {
-    const dotId = `dot-${name.replace(/\s/g, '-')}`;
-    const dot = document.getElementById(dotId);
-    if (!dot) continue;
-
-    if (!currentData) {
-      dot.className = 'logger-dot absent';
-      dot.style.removeProperty('background');
-      dot.style.removeProperty('--dot-color');
-      continue;
-    }
-
-    const inDataset = name in currentData.serials;
-    const isVisible = seriesVis[name];
+    const inDataset = currentData && (name in currentData.serials);
+    const isVisible = inDataset && seriesVis[name];
     const color     = inDataset ? currentData.serials[name].color : null;
 
     if (!inDataset) {
-      dot.className = 'logger-dot inactive';
-      dot.style.removeProperty('background');
-      dot.style.removeProperty('--dot-color');
+      // Not in current dataset — small dim ring
+      ctx.beginPath();
+      ctx.arc(cx, cy, 5, 0, Math.PI * 2);
+      ctx.strokeStyle = 'rgba(255,255,255,0.18)';
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
     } else if (!isVisible) {
-      // In dataset but toggled off — show faint ring in dataset color
-      dot.className = 'logger-dot inactive';
-      dot.style.background = 'transparent';
-      dot.style.setProperty('--dot-color', color);
-      dot.style.borderColor = color + '60';
+      // In dataset but toggled off — ring in dataset color
+      ctx.beginPath();
+      ctx.arc(cx, cy, 6, 0, Math.PI * 2);
+      ctx.strokeStyle = color + '80';
+      ctx.lineWidth = 2;
+      ctx.stroke();
     } else {
-      // Active and visible
-      dot.className = 'logger-dot active';
-      dot.style.background = color;
-      dot.style.setProperty('--dot-color', color);
+      // Active — filled dot with glow
+      // Outer glow
+      const grad = ctx.createRadialGradient(cx, cy, 4, cx, cy, 16);
+      grad.addColorStop(0, color + 'aa');
+      grad.addColorStop(1, color + '00');
+      ctx.beginPath();
+      ctx.arc(cx, cy, 16, 0, Math.PI * 2);
+      ctx.fillStyle = grad;
+      ctx.fill();
+
+      // Filled circle
+      ctx.beginPath();
+      ctx.arc(cx, cy, 8, 0, Math.PI * 2);
+      ctx.fillStyle = color;
+      ctx.fill();
+
+      // White border
+      ctx.beginPath();
+      ctx.arc(cx, cy, 8, 0, Math.PI * 2);
+      ctx.strokeStyle = 'rgba(255,255,255,0.7)';
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+
+      // Label
+      ctx.font = '600 9px Inter, system-ui, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'top';
+      // Shadow
+      ctx.shadowColor = 'rgba(0,0,0,0.9)';
+      ctx.shadowBlur = 4;
+      ctx.fillStyle = '#ffffff';
+      ctx.fillText(name, cx, cy + 11);
+      ctx.shadowBlur = 0;
     }
   }
 }
 
+// Redraw dots on resize
+const ro = new ResizeObserver(() => drawDots());
+ro.observe(document.getElementById('diagramPanel'));
+
 // ── Boot ───────────────────────────────────────────────────
 async function boot() {
-  buildDots();
+  drawDots();
   try {
-    const res = await fetch('data/manifest.json');
-    manifest = await res.json();
+    manifest = await (await fetch('data/manifest.json')).json();
     renderDatasetList();
   } catch(e) {
-    document.getElementById('datasetList').innerHTML =
-      '<div style="font-size:12px;color:#e05278;">Could not load manifest.json</div>';
+    document.getElementById('datasetList').innerHTML = '<div style="font-size:12px;color:#e05278;">Could not load manifest.json</div>';
   }
 }
 
-// ── Dataset list (flat, alphabetical) ─────────────────────
+// ── Dataset list ───────────────────────────────────────────
 function renderDatasetList() {
   const el = document.getElementById('datasetList');
   const sorted = [...manifest].sort((a, b) => a.label.localeCompare(b.label));
@@ -448,28 +382,21 @@ function renderDatasetList() {
 async function loadDataset(id) {
   const ds = manifest.find(d => d.id === id);
   if (!ds) return;
-
   document.querySelectorAll('.dataset-btn').forEach(b => b.classList.remove('active'));
   document.querySelector(`[data-id="${id}"]`).classList.add('active');
-
   setLoading(20);
   try {
-    const res = await fetch(ds.file);
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const json = await res.json();
+    const json = await (await fetch(ds.file)).json();
     setLoading(70);
-
     seriesVis = {};
-    let colorIdx = 0;
+    let ci = 0;
     const serials = {};
     for (const [name, rows] of Object.entries(json)) {
-      serials[name] = { rows, color: PALETTE[colorIdx % PALETTE.length] };
+      serials[name] = { rows, color: PALETTE[ci++ % PALETTE.length] };
       seriesVis[name] = true;
-      colorIdx++;
     }
     currentData = { label: ds.label, serials };
 
-    // Data extent for x-lock
     let minT = Infinity, maxT = -Infinity;
     for (const s of Object.values(serials)) {
       if (!s.rows.length) continue;
@@ -484,10 +411,9 @@ async function loadDataset(id) {
     if (weatherOn || cloudOn) await fetchWeatherAndCloud();
 
     currentZoomDays = 0;
-    document.querySelectorAll('#zoomBtns .btn').forEach(b =>
-      b.classList.toggle('active', b.dataset.days === '0'));
+    document.querySelectorAll('#zoomBtns .btn').forEach(b => b.classList.toggle('active', b.dataset.days === '0'));
 
-    updateDots();
+    drawDots();
     renderSeriesList();
     renderStats();
     renderChart();
@@ -501,10 +427,7 @@ async function loadDataset(id) {
 // ── Series toggles ─────────────────────────────────────────
 function renderSeriesList() {
   const el = document.getElementById('seriesList');
-  if (!currentData) {
-    el.innerHTML = '<div style="font-size:12px;color:var(--muted);">Select a dataset.</div>';
-    return;
-  }
+  if (!currentData) { el.innerHTML = '<div style="font-size:12px;color:var(--muted);">Select a dataset.</div>'; return; }
   el.innerHTML = Object.entries(currentData.serials).map(([name, s]) => `
     <div class="series-row ${seriesVis[name] ? '' : 'hidden'}" onclick="toggleSeries('${name}')">
       <div class="swatch" style="background:${s.color}"></div>
@@ -514,10 +437,7 @@ function renderSeriesList() {
 
 function toggleSeries(name) {
   seriesVis[name] = !seriesVis[name];
-  renderSeriesList();
-  renderStats();
-  updateDots();
-  renderChart();
+  renderSeriesList(); renderStats(); drawDots(); renderChart();
 }
 
 // ── Stats ──────────────────────────────────────────────────
@@ -525,10 +445,7 @@ function renderStats() {
   if (!currentData) return;
   const vals = []; let pts = 0, series = 0;
   for (const [name, s] of Object.entries(currentData.serials)) {
-    if (seriesVis[name]) {
-      vals.push(...s.rows.map(r => r.v));
-      pts += s.rows.length; series++;
-    }
+    if (seriesVis[name]) { vals.push(...s.rows.map(r => r.v)); pts += s.rows.length; series++; }
   }
   document.getElementById('statMin').textContent = vals.length ? Math.min(...vals).toFixed(1) : '—';
   document.getElementById('statMax').textContent = vals.length ? Math.max(...vals).toFixed(1) : '—';
@@ -536,11 +453,10 @@ function renderStats() {
   document.getElementById('statPoints').textContent = pts ? pts.toLocaleString() : '—';
 }
 
-// ── Weather + cloud ────────────────────────────────────────
+// ── Weather / cloud ────────────────────────────────────────
 async function fetchWeatherAndCloud() {
   if (!currentData) return;
-  const minT = dataExtent[0].slice(0, 10);
-  const maxT = dataExtent[1].slice(0, 10);
+  const minT = dataExtent[0].slice(0,10), maxT = dataExtent[1].slice(0,10);
   if (weatherOn) document.getElementById('weatherStatus').textContent = 'Fetching…';
   if (cloudOn)   document.getElementById('cloudStatus').textContent   = 'Fetching…';
   try {
@@ -561,15 +477,13 @@ async function handleOverlayToggle(which, checked) {
   if (which === 'weather') weatherOn = checked;
   if (which === 'cloud')   cloudOn   = checked;
   if (!checked) {
-    if (which === 'weather') document.getElementById('weatherStatus').textContent = 'Off';
-    if (which === 'cloud')   document.getElementById('cloudStatus').textContent   = 'Off';
+    document.getElementById(which === 'weather' ? 'weatherStatus' : 'cloudStatus').textContent = 'Off';
     renderChart(); return;
   }
   if (!currentData) {
-    const tog = which === 'weather' ? 'weatherToggle' : 'cloudToggle';
-    document.getElementById(tog).checked = false;
+    document.getElementById(which === 'weather' ? 'weatherToggle' : 'cloudToggle').checked = false;
     if (which === 'weather') { weatherOn = false; document.getElementById('weatherStatus').textContent = 'Load data first'; }
-    if (which === 'cloud')   { cloudOn   = false; document.getElementById('cloudStatus').textContent   = 'Load data first'; }
+    else                     { cloudOn   = false; document.getElementById('cloudStatus').textContent   = 'Load data first'; }
     return;
   }
   if (!weatherData || !cloudData) { setLoading(30); await fetchWeatherAndCloud(); setLoading(100); }
@@ -600,37 +514,31 @@ function getZoomRange(days) {
 function renderChart() {
   const hasData = !!currentData;
   document.getElementById('emptyState').style.display = hasData ? 'none' : 'flex';
-  document.getElementById('chart').style.display = hasData ? 'block' : 'none';
+  document.getElementById('chart').style.display      = hasData ? 'block' : 'none';
   if (!hasData) return;
 
   const traces = [];
-
   if (cloudOn && cloudData) {
     traces.push({
       type: 'bar', name: 'Cloud cover',
-      x: cloudData.map(r => r.t), y: cloudData.map(r => r.v),
-      yaxis: 'y2',
+      x: cloudData.map(r => r.t), y: cloudData.map(r => r.v), yaxis: 'y2',
       marker: { color: CLOUD_COLOR, line: { width: 0 } },
       hovertemplate: `<b>Cloud cover</b><br>%{x}<br>%{y:.0f}%<extra></extra>`,
     });
   }
-
   for (const [name, s] of Object.entries(currentData.serials)) {
     traces.push({
       type: 'scattergl', mode: 'lines', name,
-      x: s.rows.map(r => r.t), y: s.rows.map(r => r.v),
-      yaxis: 'y',
+      x: s.rows.map(r => r.t), y: s.rows.map(r => r.v), yaxis: 'y',
       visible: seriesVis[name] ? true : 'legendonly',
       line: { color: s.color, width: 1.5, shape: 'spline', smoothing: 0.3 },
       hovertemplate: `<b>${name}</b><br>%{x}<br>%{y:.1f} °C<extra></extra>`,
     });
   }
-
   if (weatherOn && weatherData) {
     traces.push({
       type: 'scattergl', mode: 'lines', name: 'Outdoor (Sanford)',
-      x: weatherData.map(r => r.t), y: weatherData.map(r => r.v),
-      yaxis: 'y',
+      x: weatherData.map(r => r.t), y: weatherData.map(r => r.v), yaxis: 'y',
       line: { color: WEATHER_COLOR, width: 1.5, dash: 'dot' },
       hovertemplate: `<b>Outdoor</b><br>%{x}<br>%{y:.1f} °C<extra></extra>`,
     });
@@ -645,20 +553,18 @@ function renderChart() {
     margin: { l: 50, r: cloudOn ? 50 : 16, t: 12, b: 52 },
     xaxis: {
       type: 'date', gridcolor: '#22222e', tickfont: { size: 11 },
-      range: [r0, r1],
-      minallowed: dataExtent[0], maxallowed: dataExtent[1],
+      range: [r0, r1], minallowed: dataExtent[0], maxallowed: dataExtent[1],
       showline: false, zeroline: false,
     },
     yaxis: {
       title: { text: '°C', font: { size: 11 }, standoff: 6 },
-      gridcolor: '#22222e', tickfont: { size: 11 },
-      showline: false, zeroline: false,
+      gridcolor: '#22222e', tickfont: { size: 11 }, showline: false, zeroline: false,
     },
     yaxis2: {
       title: { text: 'Cloud (%)', font: { size: 10, color: 'rgba(160,180,220,0.5)' }, standoff: 6 },
       tickfont: { size: 10, color: 'rgba(160,180,220,0.5)' },
-      overlaying: 'y', side: 'right',
-      range: [0, 200], showgrid: false, zeroline: false, showline: false,
+      overlaying: 'y', side: 'right', range: [0, 200],
+      showgrid: false, zeroline: false, showline: false,
       visible: cloudOn, fixedrange: true,
     },
     legend: {
@@ -680,9 +586,7 @@ function fmt(iso) {
   return new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
 }
 
-window.addEventListener('resize', () => {
-  if (currentData) Plotly.Plots.resize('chart');
-});
+window.addEventListener('resize', () => { if (currentData) Plotly.Plots.resize('chart'); });
 
 boot();
 </script>
