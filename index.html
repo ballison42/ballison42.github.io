@@ -101,9 +101,9 @@
       position: relative;
       background: var(--surface);
       overflow: hidden;
-      height: 220px; /* default; overridden by JS resize */
+      height: 220px; /* overwritten by JS on load to fit full image */
       min-height: 80px;
-      max-height: 420px;
+      max-height: 600px;
     }
 
     #trailerImg {
@@ -324,8 +324,8 @@
 // ── Logger positions as % of the PNG image's own dimensions ──
 const LOGGER_POSITIONS = {
   "HW003 T6": { x: 34.97, y:  7.26 },
-  "HW003 T4": { x: 16.62, y: 53.43 },
-  "HW003 T7": { x: 14.59, y: 55.04 },
+  "HW003 T4": { x: 14.59, y: 55.04 },
+  "HW003 T7": { x: 16.62, y: 53.43 },
   "HW003 T5": { x: 13.37, y: 59.67 },
   "HW003 T1": { x: 44.16, y: 55.25 },
   "HW003 T2": { x: 44.91, y: 61.98 },
@@ -516,6 +516,7 @@ ro.observe(document.getElementById('diagramPanel'));
 
 // ── Boot ───────────────────────────────────────────────────
 async function boot() {
+  setDiagramNaturalHeight();
   preloadPhotos();
   drawDots();
   try {
@@ -720,7 +721,7 @@ function renderChart() {
     yaxis2: {
       title: { text: 'Cloud (%)', font: { size: 10, color: 'rgba(160,180,220,0.5)' }, standoff: 6 },
       tickfont: { size: 10, color: 'rgba(160,180,220,0.5)' },
-      overlaying: 'y', side: 'right', range: [0, 200],
+      overlaying: 'y', side: 'right', range: [0, 100],
       showgrid: false, zeroline: false, showline: false,
       visible: cloudOn, fixedrange: true,
     },
@@ -743,7 +744,22 @@ function fmt(iso) {
   return new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
 }
 
-window.addEventListener('resize', () => { if (currentData) Plotly.Plots.resize('chart'); });
+window.addEventListener('resize', () => {
+  setDiagramNaturalHeight();
+  if (currentData) Plotly.Plots.resize('chart');
+});
+
+// ── Set diagram panel height to fit full image ─────────────
+function setDiagramNaturalHeight() {
+  const panel = document.getElementById('diagramPanel');
+  const w = panel.clientWidth;
+  // Image is 5313x1815 (ratio 2.9273); height = width / ratio
+  const naturalH = Math.round(w / IMG_RATIO);
+  const clamped  = Math.min(600, Math.max(80, naturalH));
+  panel.style.height = clamped + 'px';
+  drawDots();
+  if (currentData) Plotly.Plots.resize('chart');
+}
 
 // ── Resizable diagram panel ────────────────────────────────
 (function() {
