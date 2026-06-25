@@ -520,7 +520,12 @@ async function boot() {
 // ── Comparisons list ────────────────────────────────────────
 function renderDatasetList() {
   const el = document.getElementById('datasetList');
-  const comparisons = manifest.filter(d => d.type === 'comparison').sort((a,b) => a.label.localeCompare(b.label));
+  // Support old manifest (no type field) by treating everything without type='individual' as comparison
+  const comparisons = manifest.filter(d => d.type !== 'individual').sort((a,b) => a.label.localeCompare(b.label));
+  if (!comparisons.length) {
+    el.innerHTML = '<div style="font-size:12px;color:var(--muted);">None found.</div>';
+    return;
+  }
   el.innerHTML = comparisons.map(ds =>
     `<button class="dataset-btn" data-id="${ds.id}" onclick="loadComparison('${ds.id}')">${ds.label}</button>`
   ).join('');
@@ -530,6 +535,10 @@ function renderDatasetList() {
 function renderLoggerCheckList() {
   const el = document.getElementById('loggerCheckList');
   const individuals = manifest.filter(d => d.type === 'individual');
+  if (!individuals.length) {
+    el.innerHTML = '<div style="font-size:12px;color:var(--muted);">No individual logger files found.<br>Upload the hw00x_tx.json files to data/.</div>';
+    return;
+  }
   el.innerHTML = individuals.map(ds => `
     <div class="logger-check-row ${selectedLoggers.has(ds.id) ? 'checked' : ''}"
          onclick="toggleLoggerCheck('${ds.id}')">
