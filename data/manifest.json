@@ -3,60 +3,147 @@
     "id": "0623_exterior_compare",
     "label": "Exterior",
     "file": "data/0623_exterior_compare.json",
-    "group": "Jun 23"
+    "group": "Comparisons",
+    "type": "comparison"
   },
   {
     "id": "0623_wall_compare",
     "label": "Wall-mounted",
     "file": "data/0623_wall_compare.json",
-    "group": "Jun 23"
+    "group": "Comparisons",
+    "type": "comparison"
   },
   {
     "id": "0624_ceiling_all",
     "label": "Ceiling, all",
     "file": "data/0624_ceiling_all.json",
-    "group": "Jun 24"
+    "group": "Comparisons",
+    "type": "comparison"
   },
   {
     "id": "0624_ceiling_shielded",
     "label": "Ceiling, shielded",
     "file": "data/0624_ceiling_shielded.json",
-    "group": "Jun 24"
+    "group": "Comparisons",
+    "type": "comparison"
   },
   {
     "id": "0624_ceiling_unshielded",
     "label": "Ceiling, unshielded",
     "file": "data/0624_ceiling_unshielded.json",
-    "group": "Jun 24"
+    "group": "Comparisons",
+    "type": "comparison"
   },
   {
     "id": "hw003_all",
     "label": "HW003, all",
     "file": "data/hw003_all.json",
-    "group": "HW003"
+    "group": "Comparisons",
+    "type": "comparison"
   },
   {
     "id": "hw003_front_grouping",
     "label": "HW003, front",
     "file": "data/hw003_front_grouping.json",
-    "group": "HW003"
+    "group": "Comparisons",
+    "type": "comparison"
   },
   {
     "id": "hw003_rear_grouping",
     "label": "HW003, rear",
     "file": "data/hw003_rear_grouping.json",
-    "group": "HW003"
+    "group": "Comparisons",
+    "type": "comparison"
   },
   {
     "id": "hw004_all",
     "label": "HW004, all",
     "file": "data/hw004_all.json",
-    "group": "HW004"
+    "group": "Comparisons",
+    "type": "comparison"
   },
   {
     "id": "hw004_interior_grouping",
     "label": "HW004, interior",
     "file": "data/hw004_interior_grouping.json",
-    "group": "HW004"
+    "group": "Comparisons",
+    "type": "comparison"
+  },
+  {
+    "id": "hw003_t1",
+    "label": "HW003 T1",
+    "file": "data/hw003_t1.json",
+    "group": "Individual",
+    "type": "individual"
+  },
+  {
+    "id": "hw003_t2",
+    "label": "HW003 T2",
+    "file": "data/hw003_t2.json",
+    "group": "Individual",
+    "type": "individual"
+  },
+  {
+    "id": "hw003_t3",
+    "label": "HW003 T3",
+    "file": "data/hw003_t3.json",
+    "group": "Individual",
+    "type": "individual"
+  },
+  {
+    "id": "hw003_t4",
+    "label": "HW003 T4",
+    "file": "data/hw003_t4.json",
+    "group": "Individual",
+    "type": "individual"
+  },
+  {
+    "id": "hw003_t5",
+    "label": "HW003 T5",
+    "file": "data/hw003_t5.json",
+    "group": "Individual",
+    "type": "individual"
+  },
+  {
+    "id": "hw003_t6",
+    "label": "HW003 T6",
+    "file": "data/hw003_t6.json",
+    "group": "Individual",
+    "type": "individual"
+  },
+  {
+    "id": "hw003_t7",
+    "label": "HW003 T7",
+    "file": "data/hw003_t7.json",
+    "group": "Individual",
+    "type": "individual"
+  },
+  {
+    "id": "hw004_t1",
+    "label": "HW004 T1",
+    "file": "data/hw004_t1.json",
+    "group": "Individual",
+    "type": "individual"
+  },
+  {
+    "id": "hw004_t2",
+    "label": "HW004 T2",
+    "file": "data/hw004_t2.json",
+    "group": "Individual",
+    "type": "individual"
+  },
+  {
+    "id": "hw004_t3",
+    "label": "HW004 T3",
+    "file": "data/hw004_t3.json",
+    "group": "Individual",
+    "type": "individual"
+  },
+  {
+    "id": "hw004_t4",
+    "label": "HW004 T4",
+    "file": "data/hw004_t4.json",
+    "group": "Individual",
+    "type": "individual"
   }
 ]
