@@ -1,0 +1,62 @@
+[
+  {
+    "id": "0623_exterior_compare",
+    "label": "Exterior",
+    "file": "data/0623_exterior_compare.json",
+    "group": "Jun 23"
+  },
+  {
+    "id": "0623_wall_compare",
+    "label": "Wall-mounted",
+    "file": "data/0623_wall_compare.json",
+    "group": "Jun 23"
+  },
+  {
+    "id": "0624_ceiling_all",
+    "label": "Ceiling, all",
+    "file": "data/0624_ceiling_all.json",
+    "group": "Jun 24"
+  },
+  {
+    "id": "0624_ceiling_shielded",
+    "label": "Ceiling, shielded",
+    "file": "data/0624_ceiling_shielded.json",
+    "group": "Jun 24"
+  },
+  {
+    "id": "0624_ceiling_unshielded",
+    "label": "Ceiling, unshielded",
+    "file": "data/0624_ceiling_unshielded.json",
+    "group": "Jun 24"
+  },
+  {
+    "id": "hw003_all",
+    "label": "HW003, all",
+    "file": "data/hw003_all.json",
+    "group": "HW003"
+  },
+  {
+    "id": "hw003_front_grouping",
+    "label": "HW003, front",
+    "file": "data/hw003_front_grouping.json",
+    "group": "HW003"
+  },
+  {
+    "id": "hw003_rear_grouping",
+    "label": "HW003, rear",
+    "file": "data/hw003_rear_grouping.json",
+    "group": "HW003"
+  },
+  {
+    "id": "hw004_all",
+    "label": "HW004, all",
+    "file": "data/hw004_all.json",
+    "group": "HW004"
+  },
+  {
+    "id": "hw004_interior_grouping",
+    "label": "HW004, interior",
+    "file": "data/hw004_interior_grouping.json",
+    "group": "HW004"
+  }
+]
