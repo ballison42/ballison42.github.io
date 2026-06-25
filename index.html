@@ -121,6 +121,16 @@
       pointer-events: none;
     }
 
+    #dotOverlay {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      pointer-events: none; /* markers inside set their own pointer-events */
+    }
+    #dotOverlay .logger-marker {
+      pointer-events: auto;
+    }
+
     /* ── Resize handle ───────────────────────────────── */
     .resize-handle {
       flex-shrink: 0;
@@ -142,6 +152,65 @@
       width: 32px; height: 2px;
       border-radius: 2px;
       background: rgba(255,255,255,0.25);
+    }
+
+    /* ── Logger dot HTML overlays ────────────────────── */
+    .logger-marker {
+      position: absolute;
+      transform: translate(-50%, -50%);
+      cursor: pointer;
+      z-index: 5;
+    }
+    .logger-marker .dot-ring {
+      width: 18px; height: 18px;
+      border-radius: 50%;
+      border: 2px solid rgba(255,255,255,0.7);
+      box-shadow: 0 0 0 3px rgba(255,255,255,0.12);
+      transition: transform 0.15s;
+    }
+    .logger-marker:hover .dot-ring {
+      transform: scale(1.3);
+    }
+    .logger-marker .dot-label {
+      position: absolute;
+      left: 50%; top: calc(100% + 4px);
+      transform: translateX(-50%);
+      font-size: 9px; font-weight: 600;
+      font-family: var(--font);
+      color: #fff;
+      white-space: nowrap;
+      text-shadow: 0 1px 4px rgba(0,0,0,1);
+      pointer-events: none;
+    }
+
+    /* ── Install photo tooltip ───────────────────────── */
+    #installTooltip {
+      position: fixed;
+      z-index: 1000;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.15s;
+      background: #0e0e12;
+      border: 1px solid #3a3a4a;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.7);
+      max-width: 320px;
+    }
+    #installTooltip.visible { opacity: 1; }
+    #installTooltip img {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+    #installTooltip .tip-label {
+      padding: 7px 10px;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text);
+      font-family: var(--font);
+      background: #16161c;
+      border-top: 1px solid #2a2a35;
     }
 
     /* ── Chart area ──────────────────────────────────── */
@@ -221,6 +290,12 @@
     <div class="diagram-panel" id="diagramPanel" style="height:220px;">
       <img src="trailer_diagram.png" alt="Trailer layout" id="trailerImg" />
       <canvas id="dotCanvas"></canvas>
+      <div id="dotOverlay"></div>
+    </div>
+    <!-- Install photo tooltip -->
+    <div id="installTooltip">
+      <img id="tipImg" src="" alt="" />
+      <div class="tip-label" id="tipLabel"></div>
     </div>
     <div class="resize-handle" id="resizeHandle" title="Drag to resize"></div>
 
@@ -246,7 +321,6 @@
 
 <script>
 // ── Logger positions as % of the PNG image's own dimensions ──
-// Derived by pixel-accurate cluster detection on the source PNG (5313x1815)
 const LOGGER_POSITIONS = {
   "HW003 T6": { x: 34.97, y:  7.26 },
   "HW003 T4": { x: 16.62, y: 53.43 },
@@ -259,6 +333,21 @@ const LOGGER_POSITIONS = {
   "HW004 T2": { x: 64.09, y: 56.47 },
   "HW004 T1": { x: 64.92, y: 56.47 },
   "HW004 T3": { x: 62.44, y: 60.55 },
+};
+
+// Install photo per logger
+const LOGGER_PHOTOS = {
+  "HW003 T1": "install_photos/hw003t1t2t3.jpg",
+  "HW003 T2": "install_photos/hw003t1t2t3.jpg",
+  "HW003 T3": "install_photos/hw003t1t2t3.jpg",
+  "HW003 T4": "install_photos/hw003t4t5.jpg",
+  "HW003 T5": "install_photos/hw003t4t5.jpg",
+  "HW003 T6": "install_photos/hw003t6.jpg",
+  "HW003 T7": "install_photos/hw003t7.jpg",
+  "HW004 T1": "install_photos/hw004t1t2t3.jpg",
+  "HW004 T2": "install_photos/hw004t1t2t3.jpg",
+  "HW004 T3": "install_photos/hw004t1t2t3.jpg",
+  "HW004 T4": "install_photos/hw004t4.jpg",
 };
 
 // Image natural dimensions (5313x1815, ratio 2.9273)
@@ -306,6 +395,7 @@ function getImageRect() {
 }
 
 function drawDots() {
+  // ── Canvas: inactive / toggled-off dots ──────────────────
   const canvas = document.getElementById('dotCanvas');
   const panel  = document.getElementById('diagramPanel');
   canvas.width  = panel.clientWidth;
@@ -317,64 +407,107 @@ function drawDots() {
   const { offX, offY, rendW, rendH } = getImageRect();
 
   for (const [name, pos] of Object.entries(LOGGER_POSITIONS)) {
-    // Convert image-% to canvas pixels
     const cx = offX + (pos.x / 100) * rendW;
     const cy = offY + (pos.y / 100) * rendH;
-
     const inDataset = currentData && (name in currentData.serials);
     const isVisible = inDataset && seriesVis[name];
-    const color     = inDataset ? currentData.serials[name].color : null;
 
     if (!inDataset) {
-      // Not in current dataset — small dim ring
       ctx.beginPath();
-      ctx.arc(cx, cy, 5, 0, Math.PI * 2);
-      ctx.strokeStyle = 'rgba(255,255,255,0.18)';
+      ctx.arc(cx, cy, 4, 0, Math.PI * 2);
+      ctx.strokeStyle = 'rgba(255,255,255,0.15)';
       ctx.lineWidth = 1.5;
       ctx.stroke();
     } else if (!isVisible) {
-      // In dataset but toggled off — ring in dataset color
+      const color = currentData.serials[name].color;
       ctx.beginPath();
       ctx.arc(cx, cy, 6, 0, Math.PI * 2);
-      ctx.strokeStyle = color + '80';
+      ctx.strokeStyle = color + '70';
       ctx.lineWidth = 2;
       ctx.stroke();
-    } else {
-      // Active — filled dot with glow
-      // Outer glow
-      const grad = ctx.createRadialGradient(cx, cy, 4, cx, cy, 16);
-      grad.addColorStop(0, color + 'aa');
-      grad.addColorStop(1, color + '00');
-      ctx.beginPath();
-      ctx.arc(cx, cy, 16, 0, Math.PI * 2);
-      ctx.fillStyle = grad;
-      ctx.fill();
-
-      // Filled circle
-      ctx.beginPath();
-      ctx.arc(cx, cy, 8, 0, Math.PI * 2);
-      ctx.fillStyle = color;
-      ctx.fill();
-
-      // White border
-      ctx.beginPath();
-      ctx.arc(cx, cy, 8, 0, Math.PI * 2);
-      ctx.strokeStyle = 'rgba(255,255,255,0.7)';
-      ctx.lineWidth = 1.5;
-      ctx.stroke();
-
-      // Label
-      ctx.font = '600 9px Inter, system-ui, sans-serif';
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'top';
-      // Shadow
-      ctx.shadowColor = 'rgba(0,0,0,0.9)';
-      ctx.shadowBlur = 4;
-      ctx.fillStyle = '#ffffff';
-      ctx.fillText(name, cx, cy + 11);
-      ctx.shadowBlur = 0;
     }
+    // Active dots are handled by HTML markers below
   }
+
+  // ── HTML markers: active dots with hover + photo tooltip ─
+  const overlay = document.getElementById('dotOverlay');
+  overlay.innerHTML = '';
+
+  if (!currentData) return;
+
+  for (const [name, pos] of Object.entries(LOGGER_POSITIONS)) {
+    const inDataset = name in currentData.serials;
+    const isVisible = inDataset && seriesVis[name];
+    if (!isVisible) continue;
+
+    const color = currentData.serials[name].color;
+    const cx = offX + (pos.x / 100) * rendW;
+    const cy = offY + (pos.y / 100) * rendH;
+
+    const marker = document.createElement('div');
+    marker.className = 'logger-marker';
+    marker.style.left = cx + 'px';
+    marker.style.top  = cy + 'px';
+
+    // Glow ring
+    const ring = document.createElement('div');
+    ring.className = 'dot-ring';
+    ring.style.background = color;
+    ring.style.boxShadow = `0 0 0 3px rgba(255,255,255,0.12), 0 0 10px 3px ${color}99`;
+    marker.appendChild(ring);
+
+    // Label
+    const lbl = document.createElement('div');
+    lbl.className = 'dot-label';
+    lbl.textContent = name;
+    marker.appendChild(lbl);
+
+    // Tooltip on hover
+    const photo = LOGGER_PHOTOS[name];
+    if (photo) {
+      marker.addEventListener('mouseenter', e => showTip(name, photo, e));
+      marker.addEventListener('mousemove',  e => moveTip(e));
+      marker.addEventListener('mouseleave', hideTip);
+    }
+
+    overlay.appendChild(marker);
+  }
+}
+
+// ── Tooltip ────────────────────────────────────────────────
+const tip     = document.getElementById('installTooltip');
+const tipImg  = document.getElementById('tipImg');
+const tipLbl  = document.getElementById('tipLabel');
+
+// Preload all photos so hover is instant
+function preloadPhotos() {
+  const seen = new Set(Object.values(LOGGER_PHOTOS));
+  for (const src of seen) {
+    const img = new Image();
+    img.src = src;
+  }
+}
+
+function showTip(name, src, e) {
+  tipImg.src = src;
+  tipLbl.textContent = name + ' — installation';
+  tip.classList.add('visible');
+  moveTip(e);
+}
+
+function moveTip(e) {
+  const TW = 320, TH = 260; // approx tooltip size
+  const vw = window.innerWidth, vh = window.innerHeight;
+  let x = e.clientX + 16;
+  let y = e.clientY + 16;
+  if (x + TW > vw - 8) x = e.clientX - TW - 12;
+  if (y + TH > vh - 8) y = e.clientY - TH - 12;
+  tip.style.left = x + 'px';
+  tip.style.top  = y + 'px';
+}
+
+function hideTip() {
+  tip.classList.remove('visible');
 }
 
 // Redraw dots on resize
@@ -383,6 +516,7 @@ ro.observe(document.getElementById('diagramPanel'));
 
 // ── Boot ───────────────────────────────────────────────────
 async function boot() {
+  preloadPhotos();
   drawDots();
   try {
     manifest = await (await fetch('data/manifest.json')).json();
