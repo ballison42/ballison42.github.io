@@ -11,6 +11,7 @@
     :root {
       --bg:        #0e0e12;
       --surface:   #16161c;
+      --surface2:  #1d1d26;
       --border:    #2a2a35;
       --text:      #e4e4ec;
       --muted:     #7a7a92;
@@ -29,259 +30,169 @@
       min-height: 100vh;
     }
 
-    /* ── Header ─────────────────────────────────────────── */
+    /* ── Header ─────────────────────────────────────── */
     header {
       display: flex;
       align-items: center;
       gap: 16px;
-      padding: 20px 28px;
+      padding: 16px 24px;
       border-bottom: 1px solid var(--border);
     }
     .logo-mark {
-      width: 32px; height: 32px;
+      width: 30px; height: 30px;
       background: var(--accent);
-      border-radius: 8px;
+      border-radius: 7px;
       display: flex; align-items: center; justify-content: center;
-      font-weight: 700; font-size: 14px; color: #fff; letter-spacing: -0.5px;
+      font-weight: 700; font-size: 13px; color: #fff; letter-spacing: -0.5px;
+      flex-shrink: 0;
     }
-    header h1 {
-      font-size: 15px;
-      font-weight: 600;
-      letter-spacing: -0.2px;
-    }
-    header span {
-      font-size: 13px;
-      color: var(--muted);
-      font-weight: 400;
-    }
+    header h1 { font-size: 14px; font-weight: 600; }
+    header h1 span { font-weight: 400; color: var(--muted); }
 
-    /* ── Layout ─────────────────────────────────────────── */
+    /* ── Layout ──────────────────────────────────────── */
     .app {
       display: grid;
-      grid-template-columns: 280px 1fr;
-      min-height: calc(100vh - 62px);
+      grid-template-columns: 260px 1fr;
+      height: calc(100vh - 55px);
     }
 
-    /* ── Sidebar ─────────────────────────────────────────── */
+    /* ── Sidebar ──────────────────────────────────────── */
     aside {
       border-right: 1px solid var(--border);
-      padding: 20px 16px;
       display: flex;
       flex-direction: column;
-      gap: 20px;
+      overflow: hidden;
+    }
+
+    .aside-scroll {
+      flex: 1;
       overflow-y: auto;
+      padding: 16px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
     }
 
     .section-label {
       font-size: 10px;
       font-weight: 600;
-      letter-spacing: 0.08em;
+      letter-spacing: 0.09em;
       text-transform: uppercase;
       color: var(--muted);
-      margin-bottom: 8px;
-    }
-
-    /* ── File drop zone ─────────────────────────────────── */
-    .drop-zone {
-      border: 1.5px dashed var(--border);
-      border-radius: 8px;
-      padding: 16px;
-      text-align: center;
-      cursor: pointer;
-      transition: border-color 0.15s, background 0.15s;
-    }
-    .drop-zone:hover, .drop-zone.dragover {
-      border-color: var(--accent-hi);
-      background: rgba(88, 53, 161, 0.08);
-    }
-    .drop-zone input { display: none; }
-    .drop-zone .dz-icon {
-      font-size: 22px;
       margin-bottom: 6px;
-      opacity: 0.6;
-    }
-    .drop-zone p {
-      font-size: 12px;
-      color: var(--muted);
-      line-height: 1.5;
-    }
-    .drop-zone p strong {
-      color: var(--accent-hi);
-      font-weight: 500;
     }
 
-    /* ── Loaded files list ───────────────────────────────── */
-    .file-list {
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
+    /* ── Dataset selector ─────────────────────────────── */
+    .group-block { margin-bottom: 4px; }
+    .group-name {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      color: var(--muted);
+      padding: 4px 6px 2px;
     }
-    .file-item {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
+    .dataset-btn {
+      display: block;
+      width: 100%;
+      text-align: left;
       padding: 7px 10px;
       border-radius: 6px;
-      font-size: 12px;
-      background: var(--surface);
-      border: 1px solid var(--border);
-    }
-    .file-item .file-name { font-weight: 500; color: var(--text); }
-    .file-item .file-meta { font-size: 11px; color: var(--muted); }
-    .file-item button {
-      background: none; border: none; cursor: pointer;
-      color: var(--muted); font-size: 14px; line-height: 1;
-      padding: 2px 4px; border-radius: 3px;
-    }
-    .file-item button:hover { color: #e05252; background: rgba(224,82,82,0.1); }
-
-    /* ── Series toggles ──────────────────────────────────── */
-    .series-list {
-      display: flex;
-      flex-direction: column;
-      gap: 3px;
-    }
-    .series-row {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding: 6px 8px;
-      border-radius: 6px;
-      cursor: pointer;
-      transition: background 0.1s;
-      user-select: none;
-    }
-    .series-row:hover { background: rgba(255,255,255,0.04); }
-    .series-row.hidden { opacity: 0.35; }
-    .swatch {
-      width: 10px; height: 10px;
-      border-radius: 2px;
-      flex-shrink: 0;
-    }
-    .series-label { font-size: 12px; flex: 1; }
-    .series-file { font-size: 11px; color: var(--muted); }
-
-    /* ── Weather toggle ──────────────────────────────────── */
-    .weather-row {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-    .toggle {
-      position: relative;
-      width: 36px; height: 20px;
-      cursor: pointer;
-    }
-    .toggle input { opacity: 0; width: 0; height: 0; }
-    .toggle-track {
-      position: absolute; inset: 0;
-      background: var(--border);
-      border-radius: 20px;
-      transition: background 0.2s;
-    }
-    .toggle input:checked + .toggle-track { background: var(--weather); }
-    .toggle-thumb {
-      position: absolute;
-      top: 3px; left: 3px;
-      width: 14px; height: 14px;
-      background: #fff;
-      border-radius: 50%;
-      transition: transform 0.2s;
-    }
-    .toggle input:checked ~ .toggle-thumb { transform: translateX(16px); }
-    .weather-label { font-size: 12px; color: var(--text); }
-    .weather-status { font-size: 11px; color: var(--muted); margin-top: 2px; }
-
-    /* ── Stats strip ─────────────────────────────────────── */
-    .stats-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 6px;
-    }
-    .stat-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 7px;
-      padding: 10px;
-    }
-    .stat-card .stat-val {
-      font-size: 18px;
-      font-weight: 600;
-      line-height: 1;
-      margin-bottom: 3px;
-    }
-    .stat-card .stat-key {
-      font-size: 10px;
-      color: var(--muted);
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
-    }
-
-    /* ── Main chart area ─────────────────────────────────── */
-    main {
-      display: flex;
-      flex-direction: column;
-    }
-    .toolbar {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 12px 20px;
-      border-bottom: 1px solid var(--border);
-    }
-    .toolbar-label { font-size: 12px; color: var(--muted); }
-    .btn-group {
-      display: flex;
-      gap: 4px;
-    }
-    .btn {
-      padding: 5px 12px;
-      border-radius: 5px;
-      border: 1px solid var(--border);
+      border: none;
       background: transparent;
       color: var(--muted);
       font-size: 12px;
       font-family: var(--font);
       cursor: pointer;
-      transition: all 0.12s;
+      transition: background 0.1s, color 0.1s;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .dataset-btn:hover { background: var(--surface2); color: var(--text); }
+    .dataset-btn.active {
+      background: rgba(88,53,161,0.25);
+      color: var(--accent-hi);
+      font-weight: 500;
+    }
+
+    /* ── Series toggles ───────────────────────────────── */
+    .series-list { display: flex; flex-direction: column; gap: 2px; }
+    .series-row {
+      display: flex; align-items: center; gap: 8px;
+      padding: 5px 8px; border-radius: 6px;
+      cursor: pointer; transition: background 0.1s; user-select: none;
+    }
+    .series-row:hover { background: rgba(255,255,255,0.04); }
+    .series-row.hidden { opacity: 0.3; }
+    .swatch { width: 10px; height: 10px; border-radius: 2px; flex-shrink: 0; }
+    .series-label { font-size: 12px; flex: 1; }
+
+    /* ── Weather toggle ───────────────────────────────── */
+    .weather-row { display: flex; align-items: center; gap: 10px; }
+    .toggle { position: relative; width: 34px; height: 18px; cursor: pointer; }
+    .toggle input { opacity: 0; width: 0; height: 0; }
+    .toggle-track {
+      position: absolute; inset: 0;
+      background: var(--border); border-radius: 20px; transition: background 0.2s;
+    }
+    .toggle input:checked + .toggle-track { background: var(--weather); }
+    .toggle-thumb {
+      position: absolute; top: 2px; left: 2px;
+      width: 14px; height: 14px; background: #fff;
+      border-radius: 50%; transition: transform 0.2s;
+    }
+    .toggle input:checked ~ .toggle-thumb { transform: translateX(16px); }
+    .weather-label { font-size: 12px; }
+    .weather-status { font-size: 11px; color: var(--muted); margin-top: 1px; }
+
+    /* ── Stats ────────────────────────────────────────── */
+    .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; }
+    .stat-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 7px; padding: 9px 10px;
+    }
+    .stat-val { font-size: 17px; font-weight: 600; line-height: 1; margin-bottom: 3px; }
+    .stat-key { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; }
+
+    /* ── Main ─────────────────────────────────────────── */
+    main { display: flex; flex-direction: column; overflow: hidden; }
+
+    .toolbar {
+      display: flex; align-items: center; gap: 10px;
+      padding: 10px 18px; border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+    .toolbar-label { font-size: 12px; color: var(--muted); }
+    .btn-group { display: flex; gap: 3px; }
+    .btn {
+      padding: 4px 11px; border-radius: 5px;
+      border: 1px solid var(--border); background: transparent;
+      color: var(--muted); font-size: 12px; font-family: var(--font);
+      cursor: pointer; transition: all 0.12s;
     }
     .btn:hover { border-color: var(--accent-hi); color: var(--text); }
-    .btn.active {
-      background: var(--accent);
-      border-color: var(--accent);
-      color: #fff;
-    }
+    .btn.active { background: var(--accent); border-color: var(--accent); color: #fff; }
     .toolbar-right { margin-left: auto; font-size: 11px; color: var(--muted); }
 
-    #chart {
-      flex: 1;
-      min-height: 0;
-    }
+    #chart { flex: 1; min-height: 0; }
 
-    /* ── Empty state ─────────────────────────────────────── */
+    /* ── Empty state ──────────────────────────────────── */
     .empty-state {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      flex: 1;
-      gap: 12px;
-      color: var(--muted);
-      padding: 40px;
-      text-align: center;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      flex: 1; gap: 10px; color: var(--muted);
+      padding: 40px; text-align: center;
     }
-    .empty-icon { font-size: 40px; opacity: 0.4; }
-    .empty-state h2 { font-size: 16px; font-weight: 500; color: var(--text); }
-    .empty-state p { font-size: 13px; max-width: 320px; line-height: 1.6; }
+    .empty-icon { font-size: 36px; opacity: 0.35; }
+    .empty-state h2 { font-size: 15px; font-weight: 500; color: var(--text); }
+    .empty-state p { font-size: 12px; max-width: 280px; line-height: 1.6; }
 
-    /* ── Loading indicator ───────────────────────────────── */
+    /* ── Loading bar ──────────────────────────────────── */
     .loading-bar {
-      height: 2px;
-      background: var(--accent);
-      width: 0%;
-      transition: width 0.3s;
-      position: fixed;
-      top: 0; left: 0;
+      height: 2px; background: var(--accent);
+      width: 0%; transition: width 0.3s;
+      position: fixed; top: 0; left: 0; z-index: 100;
     }
   </style>
 </head>
@@ -296,66 +207,54 @@
 
 <div class="app">
   <aside>
-    <!-- File loader -->
-    <div>
-      <div class="section-label">Data Files</div>
-      <div class="drop-zone" id="dropZone">
-        <input type="file" id="fileInput" accept=".json,.xls,.xlsx,.csv" multiple />
-        <div class="dz-icon">📂</div>
-        <p><strong>Add a file</strong><br>Drop JSON here or click to browse</p>
-      </div>
-      <div class="file-list" id="fileList" style="margin-top:8px;"></div>
-    </div>
+    <div class="aside-scroll">
 
-    <!-- Series visibility -->
-    <div>
-      <div class="section-label">Loggers</div>
-      <div class="series-list" id="seriesList">
-        <div style="font-size:12px;color:var(--muted);">No data loaded yet.</div>
+      <!-- Dataset selector -->
+      <div>
+        <div class="section-label">Dataset</div>
+        <div id="datasetList">
+          <div style="font-size:12px;color:var(--muted);">Loading…</div>
+        </div>
       </div>
-    </div>
 
-    <!-- Weather overlay -->
-    <div>
-      <div class="section-label">Ambient Weather</div>
-      <div class="weather-row">
-        <label class="toggle">
-          <input type="checkbox" id="weatherToggle" />
-          <div class="toggle-track"></div>
-          <div class="toggle-thumb"></div>
-        </label>
-        <div>
-          <div class="weather-label">Outdoor air temp</div>
-          <div class="weather-status" id="weatherStatus">Off — enable to fetch</div>
+      <!-- Series toggles -->
+      <div>
+        <div class="section-label">Loggers</div>
+        <div class="series-list" id="seriesList">
+          <div style="font-size:12px;color:var(--muted);">Select a dataset.</div>
         </div>
       </div>
-      <div style="margin-top:8px;font-size:11px;color:var(--muted);line-height:1.5;">
-        Pulls hourly data from Open-Meteo for 28.8007°N, 81.2730°W (Sanford, FL).
-        Requires data to be loaded first.
-      </div>
-    </div>
 
-    <!-- Stats -->
-    <div>
-      <div class="section-label">Summary</div>
-      <div class="stats-grid" id="statsGrid">
-        <div class="stat-card">
-          <div class="stat-val" id="statMin">—</div>
-          <div class="stat-key">Min °C</div>
+      <!-- Weather -->
+      <div>
+        <div class="section-label">Ambient Weather</div>
+        <div class="weather-row">
+          <label class="toggle">
+            <input type="checkbox" id="weatherToggle" />
+            <div class="toggle-track"></div>
+            <div class="toggle-thumb"></div>
+          </label>
+          <div>
+            <div class="weather-label">Outdoor air temp</div>
+            <div class="weather-status" id="weatherStatus">Off</div>
+          </div>
         </div>
-        <div class="stat-card">
-          <div class="stat-val" id="statMax">—</div>
-          <div class="stat-key">Max °C</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-val" id="statSeries">—</div>
-          <div class="stat-key">Loggers</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-val" id="statPoints">—</div>
-          <div class="stat-key">Data pts</div>
+        <div style="margin-top:7px;font-size:11px;color:var(--muted);line-height:1.5;">
+          Hourly from Open-Meteo,<br>28.8007°N 81.2730°W (Sanford, FL)
         </div>
       </div>
+
+      <!-- Stats -->
+      <div>
+        <div class="section-label">Summary</div>
+        <div class="stats-grid">
+          <div class="stat-card"><div class="stat-val" id="statMin">—</div><div class="stat-key">Min °C</div></div>
+          <div class="stat-card"><div class="stat-val" id="statMax">—</div><div class="stat-key">Max °C</div></div>
+          <div class="stat-card"><div class="stat-val" id="statSeries">—</div><div class="stat-key">Loggers</div></div>
+          <div class="stat-card"><div class="stat-val" id="statPoints">—</div><div class="stat-key">Data pts</div></div>
+        </div>
+      </div>
+
     </div>
   </aside>
 
@@ -370,291 +269,204 @@
       </div>
       <div class="toolbar-right" id="rangeLabel">—</div>
     </div>
-    <div id="chartContainer" style="display:flex;flex:1;flex-direction:column;">
-      <div class="empty-state" id="emptyState">
-        <div class="empty-icon">🌡️</div>
-        <h2>No data loaded</h2>
-        <p>Drop a JSON data file in the sidebar to get started, or load the sample file below.</p>
-        <button class="btn active" id="loadSampleBtn" style="margin-top:8px;">
-          Load 0623_wall_compare
-        </button>
-      </div>
-      <div id="chart" style="display:none;"></div>
+
+    <div id="emptyState" class="empty-state">
+      <div class="empty-icon">🌡️</div>
+      <h2>No dataset selected</h2>
+      <p>Choose a dataset from the sidebar to view the chart.</p>
     </div>
+    <div id="chart" style="display:none;"></div>
   </main>
 </div>
 
 <script>
-// ── Palette ────────────────────────────────────────────────
 const PALETTE = [
-  '#7c52d4', '#38b28a', '#e0804a', '#e05278',
-  '#4ab8e0', '#c8d44a', '#d44ab2', '#4ad4a4'
+  '#7c52d4','#38b28a','#e0804a','#e05278',
+  '#4ab8e0','#c8d44a','#d44ab2','#4ad4a4',
+  '#e0c84a','#a44ae0'
 ];
 const WEATHER_COLOR = '#38b2ac';
 
-// ── State ──────────────────────────────────────────────────
-let loadedFiles  = {};   // filename → { serials: { serial: [{t,v}] } }
-let seriesVis    = {};   // "filename::serial" → bool
-let seriesColors = {};   // "filename::serial" → hex
-let colorIndex   = 0;
-let weatherData  = null; // [{t, v}] or null
-let weatherOn    = false;
+let manifest      = [];
+let currentData   = null;  // { label, serials: { name: [{t,v}] } }
+let seriesVis     = {};
+let weatherData   = null;
+let weatherOn     = false;
 let currentZoomDays = 0;
 
-// ── Utilities ──────────────────────────────────────────────
+// ── Loading bar ───────────────────────────────────────────
 function setLoading(pct) {
   document.getElementById('loadingBar').style.width = pct + '%';
   if (pct >= 100) setTimeout(() => setLoading(0), 400);
 }
 
-function formatDate(iso) {
-  const d = new Date(iso);
-  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+// ── Boot: load manifest ───────────────────────────────────
+async function boot() {
+  try {
+    const res = await fetch('data/manifest.json');
+    manifest = await res.json();
+    renderDatasetList();
+  } catch(e) {
+    document.getElementById('datasetList').innerHTML =
+      '<div style="font-size:12px;color:#e05278;">Could not load manifest.json</div>';
+  }
 }
 
-function allPoints() {
-  const pts = [];
-  for (const [fname, fdata] of Object.entries(loadedFiles)) {
-    for (const [serial, rows] of Object.entries(fdata.serials)) {
-      const key = `${fname}::${serial}`;
-      if (seriesVis[key]) pts.push(...rows.map(r => r.v));
+// ── Render dataset selector ───────────────────────────────
+function renderDatasetList() {
+  const el = document.getElementById('datasetList');
+  const groups = {};
+  for (const ds of manifest) {
+    if (!groups[ds.group]) groups[ds.group] = [];
+    groups[ds.group].push(ds);
+  }
+
+  let html = '';
+  for (const [group, items] of Object.entries(groups)) {
+    html += `<div class="group-block"><div class="group-name">${group}</div>`;
+    for (const ds of items) {
+      html += `<button class="dataset-btn" data-id="${ds.id}" onclick="loadDataset('${ds.id}')">${ds.label}</button>`;
     }
+    html += '</div>';
   }
-  return pts;
+  el.innerHTML = html;
 }
 
-// ── Load JSON data file ────────────────────────────────────
-function ingestJSON(filename, jsonObj) {
-  // Expected format: { "SERIAL_ID": [ {t: "2026-06-08T10:59:31", v: 28.8}, ... ] }
-  loadedFiles[filename] = { serials: {} };
-  for (const [serial, rows] of Object.entries(jsonObj)) {
-    loadedFiles[filename].serials[serial] = rows;
-    const key = `${filename}::${serial}`;
-    if (!(key in seriesVis)) {
-      seriesVis[key] = true;
-      seriesColors[key] = PALETTE[colorIndex % PALETTE.length];
-      colorIndex++;
+// ── Load a dataset ────────────────────────────────────────
+async function loadDataset(id) {
+  const ds = manifest.find(d => d.id === id);
+  if (!ds) return;
+
+  // Highlight active
+  document.querySelectorAll('.dataset-btn').forEach(b => b.classList.remove('active'));
+  document.querySelector(`[data-id="${id}"]`).classList.add('active');
+
+  setLoading(20);
+  try {
+    const res = await fetch(ds.file);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const json = await res.json();
+    setLoading(70);
+
+    // Reset series visibility
+    seriesVis = {};
+    let colorIdx = 0;
+    const serials = {};
+    for (const [name, rows] of Object.entries(json)) {
+      serials[name] = { rows, color: PALETTE[colorIdx % PALETTE.length] };
+      seriesVis[name] = true;
+      colorIdx++;
     }
+    currentData = { label: ds.label, serials };
+
+    // If weather was on, re-fetch for new date range
+    if (weatherOn) {
+      weatherData = null;
+      await fetchWeather();
+    }
+
+    currentZoomDays = 0;
+    document.querySelectorAll('#zoomBtns .btn').forEach(b =>
+      b.classList.toggle('active', b.dataset.days === '0'));
+
+    renderSeriesList();
+    renderStats();
+    renderChart();
+    setLoading(100);
+  } catch(e) {
+    console.error(e);
+    setLoading(0);
+    alert(`Failed to load ${ds.file}`);
   }
 }
 
-// ── Render sidebar components ──────────────────────────────
-function renderFileList() {
-  const el = document.getElementById('fileList');
-  if (Object.keys(loadedFiles).length === 0) {
-    el.innerHTML = '';
-    return;
-  }
-  el.innerHTML = Object.keys(loadedFiles).map(fname => {
-    const count = Object.keys(loadedFiles[fname].serials).length;
-    return `
-      <div class="file-item">
-        <div>
-          <div class="file-name">${fname}</div>
-          <div class="file-meta">${count} logger${count !== 1 ? 's' : ''}</div>
-        </div>
-        <button onclick="removeFile('${fname}')" title="Remove">✕</button>
-      </div>`;
-  }).join('');
-}
-
+// ── Sidebar: series toggles ───────────────────────────────
 function renderSeriesList() {
   const el = document.getElementById('seriesList');
-  const entries = [];
-  for (const [fname, fdata] of Object.entries(loadedFiles)) {
-    for (const serial of Object.keys(fdata.serials)) {
-      entries.push({ fname, serial, key: `${fname}::${serial}` });
-    }
-  }
-  if (entries.length === 0) {
-    el.innerHTML = '<div style="font-size:12px;color:var(--muted);">No data loaded yet.</div>';
+  if (!currentData) {
+    el.innerHTML = '<div style="font-size:12px;color:var(--muted);">Select a dataset.</div>';
     return;
   }
-  el.innerHTML = entries.map(({ fname, serial, key }) => {
-    const vis = seriesVis[key];
-    const color = seriesColors[key];
-    const shortSerial = serial.length > 12 ? '…' + serial.slice(-8) : serial;
-    return `
-      <div class="series-row ${vis ? '' : 'hidden'}" onclick="toggleSeries('${key}')">
-        <div class="swatch" style="background:${color}"></div>
-        <span class="series-label">${shortSerial}</span>
-        <span class="series-file">${Object.keys(loadedFiles).length > 1 ? fname.replace('.json','') : ''}</span>
-      </div>`;
-  }).join('');
+  el.innerHTML = Object.entries(currentData.serials).map(([name, s]) => `
+    <div class="series-row ${seriesVis[name] ? '' : 'hidden'}" onclick="toggleSeries('${name}')">
+      <div class="swatch" style="background:${s.color}"></div>
+      <span class="series-label">${name}</span>
+    </div>`).join('');
 }
 
+function toggleSeries(name) {
+  seriesVis[name] = !seriesVis[name];
+  renderSeriesList();
+  renderStats();
+  renderChart();
+}
+
+// ── Stats ─────────────────────────────────────────────────
 function renderStats() {
-  const pts = allPoints();
-  document.getElementById('statMin').textContent = pts.length ? Math.min(...pts).toFixed(1) : '—';
-  document.getElementById('statMax').textContent = pts.length ? Math.max(...pts).toFixed(1) : '—';
-
-  let totalSeries = 0, totalPoints = 0;
-  for (const [fname, fdata] of Object.entries(loadedFiles)) {
-    for (const rows of Object.values(fdata.serials)) {
-      totalSeries++;
-      totalPoints += rows.length;
+  if (!currentData) return;
+  const vals = [];
+  let pts = 0, series = 0;
+  for (const [name, s] of Object.entries(currentData.serials)) {
+    if (seriesVis[name]) {
+      vals.push(...s.rows.map(r => r.v));
+      pts += s.rows.length;
+      series++;
     }
   }
-  document.getElementById('statSeries').textContent = totalSeries || '—';
-  document.getElementById('statPoints').textContent = totalPoints ? totalPoints.toLocaleString() : '—';
+  document.getElementById('statMin').textContent = vals.length ? Math.min(...vals).toFixed(1) : '—';
+  document.getElementById('statMax').textContent = vals.length ? Math.max(...vals).toFixed(1) : '—';
+  document.getElementById('statSeries').textContent = series || '—';
+  document.getElementById('statPoints').textContent = pts ? pts.toLocaleString() : '—';
 }
 
-// ── Toggle series visibility ───────────────────────────────
-function toggleSeries(key) {
-  seriesVis[key] = !seriesVis[key];
-  renderSeriesList();
-  renderStats();
+// ── Weather ───────────────────────────────────────────────
+async function fetchWeather() {
+  if (!currentData) return;
+
+  // Date range from current dataset
+  let minT = null, maxT = null;
+  for (const s of Object.values(currentData.serials)) {
+    if (!s.rows.length) continue;
+    const t0 = s.rows[0].t.slice(0, 10);
+    const tN = s.rows[s.rows.length - 1].t.slice(0, 10);
+    if (!minT || t0 < minT) minT = t0;
+    if (!maxT || tN > maxT) maxT = tN;
+  }
+  if (!minT) return;
+
+  document.getElementById('weatherStatus').textContent = 'Fetching…';
+  try {
+    const url = `https://archive-api.open-meteo.com/v1/archive?latitude=28.8007&longitude=-81.2730&start_date=${minT}&end_date=${maxT}&hourly=temperature_2m&temperature_unit=celsius&timezone=America%2FNew_York`;
+    const res = await fetch(url);
+    const json = await res.json();
+    weatherData = json.hourly.time
+      .map((t, i) => ({ t, v: json.hourly.temperature_2m[i] }))
+      .filter(r => r.v !== null);
+    document.getElementById('weatherStatus').textContent = `${weatherData.length} hourly pts`;
+  } catch(e) {
+    document.getElementById('weatherStatus').textContent = 'Fetch failed';
+    weatherData = null;
+  }
+}
+
+document.getElementById('weatherToggle').addEventListener('change', async function() {
+  weatherOn = this.checked;
+  if (!weatherOn) {
+    document.getElementById('weatherStatus').textContent = 'Off';
+    renderChart();
+    return;
+  }
+  if (!currentData) {
+    document.getElementById('weatherStatus').textContent = 'Load data first';
+    this.checked = false; weatherOn = false; return;
+  }
+  setLoading(30);
+  await fetchWeather();
+  setLoading(100);
   renderChart();
-}
+});
 
-function removeFile(fname) {
-  delete loadedFiles[fname];
-  for (const key of Object.keys(seriesVis)) {
-    if (key.startsWith(fname + '::')) {
-      delete seriesVis[key];
-      delete seriesColors[key];
-    }
-  }
-  renderAll();
-}
-
-// ── Build Plotly traces ────────────────────────────────────
-function buildTraces() {
-  const traces = [];
-
-  for (const [fname, fdata] of Object.entries(loadedFiles)) {
-    for (const [serial, rows] of Object.entries(fdata.serials)) {
-      const key = `${fname}::${serial}`;
-      const vis = seriesVis[key];
-      const color = seriesColors[key];
-      const shortSerial = serial.length > 12 ? '…' + serial.slice(-8) : serial;
-      traces.push({
-        type: 'scattergl',
-        mode: 'lines',
-        name: shortSerial,
-        x: rows.map(r => r.t),
-        y: rows.map(r => r.v),
-        visible: vis ? true : 'legendonly',
-        line: { color, width: 1.5, shape: 'spline', smoothing: 0.4 },
-        hovertemplate: `<b>${shortSerial}</b><br>%{x}<br>%{y:.1f} °C<extra></extra>`,
-      });
-    }
-  }
-
-  if (weatherOn && weatherData) {
-    traces.push({
-      type: 'scattergl',
-      mode: 'lines',
-      name: 'Outdoor (Sanford)',
-      x: weatherData.map(r => r.t),
-      y: weatherData.map(r => r.v),
-      line: { color: WEATHER_COLOR, width: 1.5, dash: 'dot' },
-      hovertemplate: `<b>Outdoor</b><br>%{x}<br>%{y:.1f} °C<extra></extra>`,
-    });
-  }
-
-  return traces;
-}
-
-// ── Get zoom range ─────────────────────────────────────────
-function getZoomRange(days) {
-  if (days === 0) return [null, null];
-  // Find latest point across all data
-  let latest = new Date(0);
-  for (const fdata of Object.values(loadedFiles)) {
-    for (const rows of Object.values(fdata.serials)) {
-      const last = new Date(rows[rows.length - 1].t);
-      if (last > latest) latest = last;
-    }
-  }
-  const start = new Date(latest.getTime() - days * 24 * 60 * 60 * 1000);
-  return [start.toISOString(), latest.toISOString()];
-}
-
-// ── Render chart ───────────────────────────────────────────
-function renderChart() {
-  const hasData = Object.keys(loadedFiles).length > 0;
-  document.getElementById('emptyState').style.display = hasData ? 'none' : 'flex';
-  document.getElementById('chart').style.display = hasData ? 'block' : 'none';
-  if (!hasData) return;
-
-  const traces = buildTraces();
-  const [rangeStart, rangeEnd] = getZoomRange(currentZoomDays);
-
-  // Update range label
-  if (rangeStart) {
-    document.getElementById('rangeLabel').textContent =
-      `${formatDate(rangeStart)} – ${formatDate(rangeEnd)}`;
-  } else {
-    // Find full range
-    let minT = Infinity, maxT = -Infinity;
-    for (const fdata of Object.values(loadedFiles)) {
-      for (const rows of Object.values(fdata.serials)) {
-        const ts0 = new Date(rows[0].t).getTime();
-        const tsN = new Date(rows[rows.length-1].t).getTime();
-        if (ts0 < minT) minT = ts0;
-        if (tsN > maxT) maxT = tsN;
-      }
-    }
-    document.getElementById('rangeLabel').textContent =
-      `${formatDate(new Date(minT).toISOString())} – ${formatDate(new Date(maxT).toISOString())}`;
-  }
-
-  const layout = {
-    paper_bgcolor: 'transparent',
-    plot_bgcolor: '#13131a',
-    font: { family: 'Inter, system-ui, sans-serif', color: '#e4e4ec', size: 11 },
-    margin: { l: 52, r: 20, t: 20, b: 48 },
-    xaxis: {
-      type: 'date',
-      gridcolor: '#22222e',
-      tickfont: { size: 11 },
-      range: rangeStart ? [rangeStart, rangeEnd] : undefined,
-      showline: false,
-      zeroline: false,
-    },
-    yaxis: {
-      title: { text: '°C', font: { size: 11 }, standoff: 8 },
-      gridcolor: '#22222e',
-      tickfont: { size: 11 },
-      showline: false,
-      zeroline: false,
-    },
-    legend: {
-      orientation: 'h',
-      x: 0, y: -0.12,
-      font: { size: 11 },
-      bgcolor: 'transparent',
-      borderwidth: 0,
-    },
-    hovermode: 'x unified',
-    hoverlabel: {
-      bgcolor: '#1e1e28',
-      bordercolor: '#3a3a4a',
-      font: { family: 'Inter, system-ui', size: 12 },
-    },
-  };
-
-  const config = {
-    responsive: true,
-    displayModeBar: true,
-    modeBarButtonsToRemove: ['sendDataToCloud', 'autoScale2d', 'toggleSpikelines'],
-    displaylogo: false,
-    scrollZoom: true,
-    toImageButtonOptions: { format: 'png', filename: 'hatchwing_temp', scale: 2 },
-  };
-
-  Plotly.react('chart', traces, layout, config);
-}
-
-function renderAll() {
-  renderFileList();
-  renderSeriesList();
-  renderStats();
-  renderChart();
-}
-
-// ── Zoom controls ──────────────────────────────────────────
+// ── Zoom ──────────────────────────────────────────────────
 document.getElementById('zoomBtns').addEventListener('click', e => {
   const btn = e.target.closest('[data-days]');
   if (!btn) return;
@@ -664,116 +476,108 @@ document.getElementById('zoomBtns').addEventListener('click', e => {
   renderChart();
 });
 
-// ── Weather toggle ─────────────────────────────────────────
-document.getElementById('weatherToggle').addEventListener('change', async function () {
-  weatherOn = this.checked;
-  if (!weatherOn) {
-    document.getElementById('weatherStatus').textContent = 'Off — enable to fetch';
-    renderChart();
-    return;
+function getZoomRange(days) {
+  if (!days || !currentData) return [null, null];
+  let latest = new Date(0);
+  for (const s of Object.values(currentData.serials)) {
+    if (!s.rows.length) continue;
+    const t = new Date(s.rows[s.rows.length - 1].t);
+    if (t > latest) latest = t;
   }
-
-  // Find date range from loaded data
-  let minT = null, maxT = null;
-  for (const fdata of Object.values(loadedFiles)) {
-    for (const rows of Object.values(fdata.serials)) {
-      if (!rows.length) continue;
-      const t0 = rows[0].t.slice(0, 10);
-      const tN = rows[rows.length - 1].t.slice(0, 10);
-      if (!minT || t0 < minT) minT = t0;
-      if (!maxT || tN > maxT) maxT = tN;
-    }
-  }
-
-  if (!minT) {
-    document.getElementById('weatherStatus').textContent = 'Load data first';
-    this.checked = false;
-    weatherOn = false;
-    return;
-  }
-
-  document.getElementById('weatherStatus').textContent = 'Fetching…';
-  setLoading(30);
-
-  try {
-    const url = `https://archive-api.open-meteo.com/v1/archive?latitude=28.8007&longitude=-81.2730&start_date=${minT}&end_date=${maxT}&hourly=temperature_2m&temperature_unit=celsius&timezone=America%2FNew_York`;
-    const res = await fetch(url);
-    const json = await res.json();
-    setLoading(80);
-
-    weatherData = json.hourly.time.map((t, i) => ({
-      t: t,
-      v: json.hourly.temperature_2m[i]
-    })).filter(r => r.v !== null);
-
-    document.getElementById('weatherStatus').textContent =
-      `${weatherData.length} hourly readings`;
-    setLoading(100);
-    renderChart();
-  } catch (err) {
-    document.getElementById('weatherStatus').textContent = 'Fetch failed — check console';
-    console.error('Open-Meteo error:', err);
-    this.checked = false;
-    weatherOn = false;
-    setLoading(0);
-  }
-});
-
-// ── File input handling ────────────────────────────────────
-function handleFiles(files) {
-  for (const file of files) {
-    const fname = file.name;
-    const reader = new FileReader();
-    reader.onload = e => {
-      try {
-        const json = JSON.parse(e.target.result);
-        ingestJSON(fname, json);
-        renderAll();
-      } catch (err) {
-        alert(`Could not parse ${fname} — make sure it's a valid JSON file converted from your XLS.`);
-      }
-    };
-    reader.readAsText(file);
-  }
+  return [new Date(latest - days * 86400000).toISOString(), latest.toISOString()];
 }
 
-const dropZone = document.getElementById('dropZone');
-const fileInput = document.getElementById('fileInput');
+// ── Chart ─────────────────────────────────────────────────
+function renderChart() {
+  const hasData = !!currentData;
+  document.getElementById('emptyState').style.display = hasData ? 'none' : 'flex';
+  document.getElementById('chart').style.display = hasData ? 'block' : 'none';
+  if (!hasData) return;
 
-dropZone.addEventListener('click', () => fileInput.click());
-fileInput.addEventListener('change', e => handleFiles(e.target.files));
-dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('dragover'); });
-dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
-dropZone.addEventListener('drop', e => {
-  e.preventDefault();
-  dropZone.classList.remove('dragover');
-  handleFiles(e.dataTransfer.files);
-});
-
-// ── Load sample file ───────────────────────────────────────
-document.getElementById('loadSampleBtn').addEventListener('click', async () => {
-  setLoading(20);
-  try {
-    const res = await fetch('data/0623_wall_compare.json');
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const json = await res.json();
-    setLoading(70);
-    ingestJSON('0623_wall_compare.json', json);
-    renderAll();
-    setLoading(100);
-  } catch (err) {
-    alert('Could not load sample data. Make sure data/0623_wall_compare.json is in your repo.');
-    console.error(err);
-    setLoading(0);
+  const traces = [];
+  for (const [name, s] of Object.entries(currentData.serials)) {
+    traces.push({
+      type: 'scattergl', mode: 'lines', name,
+      x: s.rows.map(r => r.t),
+      y: s.rows.map(r => r.v),
+      visible: seriesVis[name] ? true : 'legendonly',
+      line: { color: s.color, width: 1.5, shape: 'spline', smoothing: 0.3 },
+      hovertemplate: `<b>${name}</b><br>%{x}<br>%{y:.1f} °C<extra></extra>`,
+    });
   }
-});
 
-// ── Resize chart on window resize ─────────────────────────
+  if (weatherOn && weatherData) {
+    traces.push({
+      type: 'scattergl', mode: 'lines', name: 'Outdoor (Sanford)',
+      x: weatherData.map(r => r.t),
+      y: weatherData.map(r => r.v),
+      line: { color: WEATHER_COLOR, width: 1.5, dash: 'dot' },
+      hovertemplate: `<b>Outdoor</b><br>%{x}<br>%{y:.1f} °C<extra></extra>`,
+    });
+  }
+
+  const [r0, r1] = getZoomRange(currentZoomDays);
+
+  // Range label
+  if (r0) {
+    document.getElementById('rangeLabel').textContent =
+      `${fmt(r0)} – ${fmt(r1)}`;
+  } else {
+    let mn = Infinity, mx = -Infinity;
+    for (const s of Object.values(currentData.serials)) {
+      if (!s.rows.length) continue;
+      const t0 = new Date(s.rows[0].t).getTime();
+      const tN = new Date(s.rows[s.rows.length-1].t).getTime();
+      if (t0 < mn) mn = t0;
+      if (tN > mx) mx = tN;
+    }
+    document.getElementById('rangeLabel').textContent =
+      `${fmt(new Date(mn).toISOString())} – ${fmt(new Date(mx).toISOString())}`;
+  }
+
+  Plotly.react('chart', traces, {
+    paper_bgcolor: 'transparent',
+    plot_bgcolor: '#13131a',
+    font: { family: 'Inter, system-ui, sans-serif', color: '#e4e4ec', size: 11 },
+    margin: { l: 52, r: 20, t: 16, b: 48 },
+    xaxis: {
+      type: 'date', gridcolor: '#22222e', tickfont: { size: 11 },
+      range: r0 ? [r0, r1] : undefined,
+      showline: false, zeroline: false,
+    },
+    yaxis: {
+      title: { text: '°C', font: { size: 11 }, standoff: 8 },
+      gridcolor: '#22222e', tickfont: { size: 11 },
+      showline: false, zeroline: false,
+    },
+    legend: {
+      orientation: 'h', x: 0, y: -0.12,
+      font: { size: 11 }, bgcolor: 'transparent', borderwidth: 0,
+    },
+    hovermode: 'x unified',
+    hoverlabel: {
+      bgcolor: '#1e1e28', bordercolor: '#3a3a4a',
+      font: { family: 'Inter, system-ui', size: 12 },
+    },
+  }, {
+    responsive: true,
+    displayModeBar: true,
+    modeBarButtonsToRemove: ['sendDataToCloud','autoScale2d','toggleSpikelines'],
+    displaylogo: false,
+    scrollZoom: true,
+    toImageButtonOptions: { format: 'png', filename: 'hatchwing_temp', scale: 2 },
+  });
+}
+
+function fmt(iso) {
+  return new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+}
+
 window.addEventListener('resize', () => {
-  if (document.getElementById('chart').style.display !== 'none') {
-    Plotly.Plots.resize('chart');
-  }
+  if (currentData) Plotly.Plots.resize('chart');
 });
+
+boot();
 </script>
 </body>
 </html>
