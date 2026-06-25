@@ -30,7 +30,6 @@
       min-height: 100vh;
     }
 
-    /* ── Header ─────────────────────────────────────── */
     header {
       display: flex;
       align-items: center;
@@ -49,14 +48,12 @@
     header h1 { font-size: 14px; font-weight: 600; }
     header h1 span { font-weight: 400; color: var(--muted); }
 
-    /* ── Layout ──────────────────────────────────────── */
     .app {
       display: grid;
-      grid-template-columns: 260px 1fr;
+      grid-template-columns: 220px 1fr;
       height: calc(100vh - 55px);
     }
 
-    /* ── Sidebar ──────────────────────────────────────── */
     aside {
       border-right: 1px solid var(--border);
       display: flex;
@@ -67,10 +64,10 @@
     .aside-scroll {
       flex: 1;
       overflow-y: auto;
-      padding: 16px 14px;
+      padding: 14px 12px;
       display: flex;
       flex-direction: column;
-      gap: 18px;
+      gap: 16px;
     }
 
     .section-label {
@@ -79,24 +76,16 @@
       letter-spacing: 0.09em;
       text-transform: uppercase;
       color: var(--muted);
-      margin-bottom: 6px;
+      margin-bottom: 5px;
     }
 
-    /* ── Dataset selector ─────────────────────────────── */
-    .group-block { margin-bottom: 4px; }
-    .group-name {
-      font-size: 10px;
-      font-weight: 600;
-      letter-spacing: 0.07em;
-      text-transform: uppercase;
-      color: var(--muted);
-      padding: 4px 6px 2px;
-    }
+    /* Flat dataset list */
+    .dataset-list { display: flex; flex-direction: column; gap: 1px; }
     .dataset-btn {
       display: block;
       width: 100%;
       text-align: left;
-      padding: 7px 10px;
+      padding: 6px 10px;
       border-radius: 6px;
       border: none;
       background: transparent;
@@ -105,9 +94,6 @@
       font-family: var(--font);
       cursor: pointer;
       transition: background 0.1s, color 0.1s;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
     }
     .dataset-btn:hover { background: var(--surface2); color: var(--text); }
     .dataset-btn.active {
@@ -116,7 +102,7 @@
       font-weight: 500;
     }
 
-    /* ── Series toggles ───────────────────────────────── */
+    /* Series toggles */
     .series-list { display: flex; flex-direction: column; gap: 2px; }
     .series-row {
       display: flex; align-items: center; gap: 8px;
@@ -128,25 +114,28 @@
     .swatch { width: 10px; height: 10px; border-radius: 2px; flex-shrink: 0; }
     .series-label { font-size: 12px; flex: 1; }
 
-    /* ── Weather toggle ───────────────────────────────── */
-    .weather-row { display: flex; align-items: center; gap: 10px; }
+    /* Overlay toggles */
+    .overlay-row {
+      display: flex; align-items: center; gap: 10px;
+      padding: 4px 0;
+    }
     .toggle { position: relative; width: 34px; height: 18px; cursor: pointer; }
     .toggle input { opacity: 0; width: 0; height: 0; }
     .toggle-track {
       position: absolute; inset: 0;
       background: var(--border); border-radius: 20px; transition: background 0.2s;
     }
-    .toggle input:checked + .toggle-track { background: var(--weather); }
+    .toggle input:checked + .toggle-track { background: var(--accent-hi); }
     .toggle-thumb {
       position: absolute; top: 2px; left: 2px;
       width: 14px; height: 14px; background: #fff;
       border-radius: 50%; transition: transform 0.2s;
     }
     .toggle input:checked ~ .toggle-thumb { transform: translateX(16px); }
-    .weather-label { font-size: 12px; }
-    .weather-status { font-size: 11px; color: var(--muted); margin-top: 1px; }
+    .overlay-label { font-size: 12px; }
+    .overlay-status { font-size: 11px; color: var(--muted); margin-top: 1px; }
 
-    /* ── Stats ────────────────────────────────────────── */
+    /* Stats */
     .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; }
     .stat-card {
       background: var(--surface); border: 1px solid var(--border);
@@ -155,7 +144,6 @@
     .stat-val { font-size: 17px; font-weight: 600; line-height: 1; margin-bottom: 3px; }
     .stat-key { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; }
 
-    /* ── Main ─────────────────────────────────────────── */
     main { display: flex; flex-direction: column; overflow: hidden; }
 
     .toolbar {
@@ -177,7 +165,6 @@
 
     #chart { flex: 1; min-height: 0; }
 
-    /* ── Empty state ──────────────────────────────────── */
     .empty-state {
       display: flex; flex-direction: column;
       align-items: center; justify-content: center;
@@ -188,7 +175,6 @@
     .empty-state h2 { font-size: 15px; font-weight: 500; color: var(--text); }
     .empty-state p { font-size: 12px; max-width: 280px; line-height: 1.6; }
 
-    /* ── Loading bar ──────────────────────────────────── */
     .loading-bar {
       height: 2px; background: var(--accent);
       width: 0%; transition: width 0.3s;
@@ -209,15 +195,13 @@
   <aside>
     <div class="aside-scroll">
 
-      <!-- Dataset selector -->
       <div>
         <div class="section-label">Dataset</div>
-        <div id="datasetList">
+        <div class="dataset-list" id="datasetList">
           <div style="font-size:12px;color:var(--muted);">Loading…</div>
         </div>
       </div>
 
-      <!-- Series toggles -->
       <div>
         <div class="section-label">Loggers</div>
         <div class="series-list" id="seriesList">
@@ -225,26 +209,35 @@
         </div>
       </div>
 
-      <!-- Weather -->
       <div>
-        <div class="section-label">Ambient Weather</div>
-        <div class="weather-row">
+        <div class="section-label">Overlays</div>
+        <div class="overlay-row">
           <label class="toggle">
             <input type="checkbox" id="weatherToggle" />
             <div class="toggle-track"></div>
             <div class="toggle-thumb"></div>
           </label>
           <div>
-            <div class="weather-label">Outdoor air temp</div>
-            <div class="weather-status" id="weatherStatus">Off</div>
+            <div class="overlay-label">Outdoor temp</div>
+            <div class="overlay-status" id="weatherStatus">Off</div>
           </div>
         </div>
-        <div style="margin-top:7px;font-size:11px;color:var(--muted);line-height:1.5;">
-          Hourly from Open-Meteo,<br>28.8007°N 81.2730°W (Sanford, FL)
+        <div class="overlay-row">
+          <label class="toggle">
+            <input type="checkbox" id="cloudToggle" />
+            <div class="toggle-track"></div>
+            <div class="toggle-thumb"></div>
+          </label>
+          <div>
+            <div class="overlay-label">Cloud cover</div>
+            <div class="overlay-status" id="cloudStatus">Off</div>
+          </div>
+        </div>
+        <div style="margin-top:6px;font-size:11px;color:var(--muted);line-height:1.5;">
+          Open-Meteo · 28.8007°N 81.2730°W
         </div>
       </div>
 
-      <!-- Stats -->
       <div>
         <div class="section-label">Summary</div>
         <div class="stats-grid">
@@ -286,21 +279,24 @@ const PALETTE = [
   '#e0c84a','#a44ae0'
 ];
 const WEATHER_COLOR = '#38b2ac';
+const CLOUD_COLOR   = 'rgba(160,180,220,0.25)';
 
-let manifest      = [];
-let currentData   = null;  // { label, serials: { name: [{t,v}] } }
-let seriesVis     = {};
-let weatherData   = null;
-let weatherOn     = false;
+let manifest        = [];
+let currentData     = null;
+let seriesVis       = {};
+let weatherData     = null;
+let cloudData       = null;
+let weatherOn       = false;
+let cloudOn         = false;
 let currentZoomDays = 0;
+let dataExtent      = [null, null]; // [minISO, maxISO] locked x range
 
-// ── Loading bar ───────────────────────────────────────────
 function setLoading(pct) {
   document.getElementById('loadingBar').style.width = pct + '%';
   if (pct >= 100) setTimeout(() => setLoading(0), 400);
 }
 
-// ── Boot: load manifest ───────────────────────────────────
+// ── Boot ──────────────────────────────────────────────────
 async function boot() {
   try {
     const res = await fetch('data/manifest.json');
@@ -312,32 +308,21 @@ async function boot() {
   }
 }
 
-// ── Render dataset selector ───────────────────────────────
+// ── Dataset list — flat, alphabetical ─────────────────────
 function renderDatasetList() {
   const el = document.getElementById('datasetList');
-  const groups = {};
-  for (const ds of manifest) {
-    if (!groups[ds.group]) groups[ds.group] = [];
-    groups[ds.group].push(ds);
-  }
-
-  let html = '';
-  for (const [group, items] of Object.entries(groups)) {
-    html += `<div class="group-block"><div class="group-name">${group}</div>`;
-    for (const ds of items) {
-      html += `<button class="dataset-btn" data-id="${ds.id}" onclick="loadDataset('${ds.id}')">${ds.label}</button>`;
-    }
-    html += '</div>';
-  }
-  el.innerHTML = html;
+  // Sort alphabetically by label
+  const sorted = [...manifest].sort((a, b) => a.label.localeCompare(b.label));
+  el.innerHTML = sorted.map(ds =>
+    `<button class="dataset-btn" data-id="${ds.id}" onclick="loadDataset('${ds.id}')">${ds.label}</button>`
+  ).join('');
 }
 
-// ── Load a dataset ────────────────────────────────────────
+// ── Load dataset ───────────────────────────────────────────
 async function loadDataset(id) {
   const ds = manifest.find(d => d.id === id);
   if (!ds) return;
 
-  // Highlight active
   document.querySelectorAll('.dataset-btn').forEach(b => b.classList.remove('active'));
   document.querySelector(`[data-id="${id}"]`).classList.add('active');
 
@@ -348,7 +333,6 @@ async function loadDataset(id) {
     const json = await res.json();
     setLoading(70);
 
-    // Reset series visibility
     seriesVis = {};
     let colorIdx = 0;
     const serials = {};
@@ -359,10 +343,23 @@ async function loadDataset(id) {
     }
     currentData = { label: ds.label, serials };
 
-    // If weather was on, re-fetch for new date range
-    if (weatherOn) {
-      weatherData = null;
-      await fetchWeather();
+    // Compute data extent for x-axis lock
+    let minT = Infinity, maxT = -Infinity;
+    for (const s of Object.values(serials)) {
+      if (!s.rows.length) continue;
+      const t0 = new Date(s.rows[0].t).getTime();
+      const tN = new Date(s.rows[s.rows.length - 1].t).getTime();
+      if (t0 < minT) minT = t0;
+      if (tN > maxT) maxT = tN;
+    }
+    dataExtent = [new Date(minT).toISOString(), new Date(maxT).toISOString()];
+
+    // Clear weather/cloud cache so it re-fetches for new date range
+    weatherData = null;
+    cloudData   = null;
+
+    if (weatherOn || cloudOn) {
+      await fetchWeatherAndCloud();
     }
 
     currentZoomDays = 0;
@@ -380,7 +377,7 @@ async function loadDataset(id) {
   }
 }
 
-// ── Sidebar: series toggles ───────────────────────────────
+// ── Series toggles ─────────────────────────────────────────
 function renderSeriesList() {
   const el = document.getElementById('seriesList');
   if (!currentData) {
@@ -401,7 +398,7 @@ function toggleSeries(name) {
   renderChart();
 }
 
-// ── Stats ─────────────────────────────────────────────────
+// ── Stats ──────────────────────────────────────────────────
 function renderStats() {
   if (!currentData) return;
   const vals = [];
@@ -419,54 +416,82 @@ function renderStats() {
   document.getElementById('statPoints').textContent = pts ? pts.toLocaleString() : '—';
 }
 
-// ── Weather ───────────────────────────────────────────────
-async function fetchWeather() {
+// ── Weather + cloud fetch (single API call) ────────────────
+async function fetchWeatherAndCloud() {
   if (!currentData) return;
 
-  // Date range from current dataset
-  let minT = null, maxT = null;
-  for (const s of Object.values(currentData.serials)) {
-    if (!s.rows.length) continue;
-    const t0 = s.rows[0].t.slice(0, 10);
-    const tN = s.rows[s.rows.length - 1].t.slice(0, 10);
-    if (!minT || t0 < minT) minT = t0;
-    if (!maxT || tN > maxT) maxT = tN;
-  }
-  if (!minT) return;
+  const [minISO, maxISO] = dataExtent;
+  const minT = minISO.slice(0, 10);
+  const maxT = maxISO.slice(0, 10);
 
-  document.getElementById('weatherStatus').textContent = 'Fetching…';
+  const statusEl_w = document.getElementById('weatherStatus');
+  const statusEl_c = document.getElementById('cloudStatus');
+  if (weatherOn) statusEl_w.textContent = 'Fetching…';
+  if (cloudOn)   statusEl_c.textContent = 'Fetching…';
+
   try {
-    const url = `https://archive-api.open-meteo.com/v1/archive?latitude=28.8007&longitude=-81.2730&start_date=${minT}&end_date=${maxT}&hourly=temperature_2m&temperature_unit=celsius&timezone=America%2FNew_York`;
-    const res = await fetch(url);
+    const url = `https://archive-api.open-meteo.com/v1/archive?latitude=28.8007&longitude=-81.2730&start_date=${minT}&end_date=${maxT}&hourly=temperature_2m,cloudcover&temperature_unit=celsius&timezone=America%2FNew_York`;
+    const res  = await fetch(url);
     const json = await res.json();
+
     weatherData = json.hourly.time
       .map((t, i) => ({ t, v: json.hourly.temperature_2m[i] }))
       .filter(r => r.v !== null);
-    document.getElementById('weatherStatus').textContent = `${weatherData.length} hourly pts`;
+
+    cloudData = json.hourly.time
+      .map((t, i) => ({ t, v: json.hourly.cloudcover[i] }))
+      .filter(r => r.v !== null);
+
+    if (weatherOn) statusEl_w.textContent = `${weatherData.length} pts`;
+    if (cloudOn)   statusEl_c.textContent = `${cloudData.length} pts`;
   } catch(e) {
-    document.getElementById('weatherStatus').textContent = 'Fetch failed';
+    console.error('Open-Meteo error:', e);
+    if (weatherOn) statusEl_w.textContent = 'Fetch failed';
+    if (cloudOn)   statusEl_c.textContent = 'Fetch failed';
     weatherData = null;
+    cloudData   = null;
   }
 }
 
-document.getElementById('weatherToggle').addEventListener('change', async function() {
-  weatherOn = this.checked;
-  if (!weatherOn) {
-    document.getElementById('weatherStatus').textContent = 'Off';
+// ── Overlay toggles ────────────────────────────────────────
+async function handleOverlayToggle(which, checked) {
+  if (which === 'weather') weatherOn = checked;
+  if (which === 'cloud')   cloudOn   = checked;
+
+  const statusW = document.getElementById('weatherStatus');
+  const statusC = document.getElementById('cloudStatus');
+
+  if (!checked) {
+    if (which === 'weather') statusW.textContent = 'Off';
+    if (which === 'cloud')   statusC.textContent = 'Off';
     renderChart();
     return;
   }
+
   if (!currentData) {
-    document.getElementById('weatherStatus').textContent = 'Load data first';
-    this.checked = false; weatherOn = false; return;
+    if (which === 'weather') { statusW.textContent = 'Load data first'; document.getElementById('weatherToggle').checked = false; weatherOn = false; }
+    if (which === 'cloud')   { statusC.textContent = 'Load data first'; document.getElementById('cloudToggle').checked   = false; cloudOn   = false; }
+    return;
   }
-  setLoading(30);
-  await fetchWeather();
-  setLoading(100);
+
+  // Only fetch if we don't already have data for this range
+  if (!weatherData || !cloudData) {
+    setLoading(30);
+    await fetchWeatherAndCloud();
+    setLoading(100);
+  }
+
   renderChart();
+}
+
+document.getElementById('weatherToggle').addEventListener('change', function() {
+  handleOverlayToggle('weather', this.checked);
+});
+document.getElementById('cloudToggle').addEventListener('change', function() {
+  handleOverlayToggle('cloud', this.checked);
 });
 
-// ── Zoom ──────────────────────────────────────────────────
+// ── Zoom controls ──────────────────────────────────────────
 document.getElementById('zoomBtns').addEventListener('click', e => {
   const btn = e.target.closest('[data-days]');
   if (!btn) return;
@@ -477,17 +502,15 @@ document.getElementById('zoomBtns').addEventListener('click', e => {
 });
 
 function getZoomRange(days) {
-  if (!days || !currentData) return [null, null];
-  let latest = new Date(0);
-  for (const s of Object.values(currentData.serials)) {
-    if (!s.rows.length) continue;
-    const t = new Date(s.rows[s.rows.length - 1].t);
-    if (t > latest) latest = t;
-  }
-  return [new Date(latest - days * 86400000).toISOString(), latest.toISOString()];
+  if (!days || !currentData) return [dataExtent[0], dataExtent[1]];
+  const end   = new Date(dataExtent[1]);
+  const start = new Date(end.getTime() - days * 86400000);
+  // Clamp start to data extent
+  const clampedStart = new Date(Math.max(start.getTime(), new Date(dataExtent[0]).getTime()));
+  return [clampedStart.toISOString(), dataExtent[1]];
 }
 
-// ── Chart ─────────────────────────────────────────────────
+// ── Render chart ───────────────────────────────────────────
 function renderChart() {
   const hasData = !!currentData;
   document.getElementById('emptyState').style.display = hasData ? 'none' : 'flex';
@@ -495,22 +518,41 @@ function renderChart() {
   if (!hasData) return;
 
   const traces = [];
+
+  // Cloud cover bars — on yaxis2, behind everything
+  if (cloudOn && cloudData) {
+    traces.push({
+      type: 'bar',
+      name: 'Cloud cover',
+      x: cloudData.map(r => r.t),
+      y: cloudData.map(r => r.v),
+      yaxis: 'y2',
+      marker: { color: CLOUD_COLOR, line: { width: 0 } },
+      hovertemplate: `<b>Cloud cover</b><br>%{x}<br>%{y:.0f}%<extra></extra>`,
+      showlegend: true,
+    });
+  }
+
+  // Temperature series
   for (const [name, s] of Object.entries(currentData.serials)) {
     traces.push({
       type: 'scattergl', mode: 'lines', name,
       x: s.rows.map(r => r.t),
       y: s.rows.map(r => r.v),
+      yaxis: 'y',
       visible: seriesVis[name] ? true : 'legendonly',
       line: { color: s.color, width: 1.5, shape: 'spline', smoothing: 0.3 },
       hovertemplate: `<b>${name}</b><br>%{x}<br>%{y:.1f} °C<extra></extra>`,
     });
   }
 
+  // Outdoor temp line
   if (weatherOn && weatherData) {
     traces.push({
       type: 'scattergl', mode: 'lines', name: 'Outdoor (Sanford)',
       x: weatherData.map(r => r.t),
       y: weatherData.map(r => r.v),
+      yaxis: 'y',
       line: { color: WEATHER_COLOR, width: 1.5, dash: 'dot' },
       hovertemplate: `<b>Outdoor</b><br>%{x}<br>%{y:.1f} °C<extra></extra>`,
     });
@@ -519,39 +561,51 @@ function renderChart() {
   const [r0, r1] = getZoomRange(currentZoomDays);
 
   // Range label
-  if (r0) {
-    document.getElementById('rangeLabel').textContent =
-      `${fmt(r0)} – ${fmt(r1)}`;
-  } else {
-    let mn = Infinity, mx = -Infinity;
-    for (const s of Object.values(currentData.serials)) {
-      if (!s.rows.length) continue;
-      const t0 = new Date(s.rows[0].t).getTime();
-      const tN = new Date(s.rows[s.rows.length-1].t).getTime();
-      if (t0 < mn) mn = t0;
-      if (tN > mx) mx = tN;
-    }
-    document.getElementById('rangeLabel').textContent =
-      `${fmt(new Date(mn).toISOString())} – ${fmt(new Date(mx).toISOString())}`;
-  }
+  document.getElementById('rangeLabel').textContent =
+    `${fmt(dataExtent[0])} – ${fmt(dataExtent[1])}`;
 
-  Plotly.react('chart', traces, {
+  const layout = {
     paper_bgcolor: 'transparent',
     plot_bgcolor: '#13131a',
     font: { family: 'Inter, system-ui, sans-serif', color: '#e4e4ec', size: 11 },
-    margin: { l: 52, r: 20, t: 16, b: 48 },
+    margin: { l: 52, r: cloudOn ? 52 : 20, t: 16, b: 56 },
+
     xaxis: {
-      type: 'date', gridcolor: '#22222e', tickfont: { size: 11 },
-      range: r0 ? [r0, r1] : undefined,
+      type: 'date',
+      gridcolor: '#22222e',
+      tickfont: { size: 11 },
+      range: [r0, r1],
+      // Lock to data extent — prevent panning/zooming beyond it
+      rangemode: 'normal',
+      fixedrange: false,
+      minallowed: dataExtent[0],
+      maxallowed: dataExtent[1],
       showline: false, zeroline: false,
     },
+
     yaxis: {
       title: { text: '°C', font: { size: 11 }, standoff: 8 },
-      gridcolor: '#22222e', tickfont: { size: 11 },
+      gridcolor: '#22222e',
+      tickfont: { size: 11 },
       showline: false, zeroline: false,
+      domain: [0, 1],
     },
+
+    yaxis2: {
+      title: { text: 'Cloud cover (%)', font: { size: 11, color: 'rgba(160,180,220,0.6)' }, standoff: 8 },
+      tickfont: { size: 11, color: 'rgba(160,180,220,0.6)' },
+      overlaying: 'y',
+      side: 'right',
+      range: [0, 200], // keep bars short so they sit behind temp lines
+      showgrid: false,
+      zeroline: false,
+      showline: false,
+      visible: cloudOn,
+      fixedrange: true,
+    },
+
     legend: {
-      orientation: 'h', x: 0, y: -0.12,
+      orientation: 'h', x: 0, y: -0.14,
       font: { size: 11 }, bgcolor: 'transparent', borderwidth: 0,
     },
     hovermode: 'x unified',
@@ -559,7 +613,10 @@ function renderChart() {
       bgcolor: '#1e1e28', bordercolor: '#3a3a4a',
       font: { family: 'Inter, system-ui', size: 12 },
     },
-  }, {
+    barmode: 'overlay',
+  };
+
+  Plotly.react('chart', traces, layout, {
     responsive: true,
     displayModeBar: true,
     modeBarButtonsToRemove: ['sendDataToCloud','autoScale2d','toggleSpikelines'],
