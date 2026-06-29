@@ -1,0 +1,943 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hatchwing — Trailer Temperature Analysis</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/plotly.js/2.27.0/plotly.min.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:        #0e0e12;
+      --surface:   #16161c;
+      --surface2:  #1d1d26;
+      --border:    #2a2a35;
+      --text:      #e4e4ec;
+      --muted:     #7a7a92;
+      --accent:    #5835a1;
+      --accent-hi: #7c52d4;
+      --weather:   #38b2ac;
+      --font:      'Inter', system-ui, sans-serif;
+    }
+
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+    html, body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font);
+      min-height: 100vh;
+      overflow: hidden;
+    }
+
+    header {
+      display: flex; align-items: center; gap: 16px;
+      padding: 14px 24px; border-bottom: 1px solid var(--border); flex-shrink: 0;
+    }
+    .logo-mark {
+      width: 28px; height: 28px; background: var(--accent); border-radius: 6px;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 700; font-size: 12px; color: #fff; flex-shrink: 0;
+    }
+    header h1 { font-size: 14px; font-weight: 600; }
+    header h1 span { font-weight: 400; color: var(--muted); }
+
+    .app { display: grid; grid-template-columns: 210px 1fr; height: calc(100vh - 51px); }
+
+    aside { border-right: 1px solid var(--border); display: flex; flex-direction: column; overflow: hidden; }
+    .aside-scroll {
+      flex: 1; overflow-y: auto; padding: 14px 12px;
+      display: flex; flex-direction: column; gap: 16px;
+    }
+
+    .section-label {
+      font-size: 10px; font-weight: 600; letter-spacing: 0.09em;
+      text-transform: uppercase; color: var(--muted); margin-bottom: 5px;
+    }
+
+    /* Collapsible sidebar sections */
+    .collapsible-header {
+      display: flex; align-items: center; justify-content: space-between;
+      cursor: pointer; user-select: none; margin-bottom: 5px;
+    }
+    .collapsible-header:hover .section-label { color: var(--text); }
+    .collapsible-chevron {
+      font-size: 10px; color: var(--muted);
+      transition: transform 0.2s;
+      flex-shrink: 0;
+    }
+    .collapsible-chevron.open { transform: rotate(180deg); }
+    .collapsible-body {
+      overflow: hidden;
+      transition: max-height 0.2s ease, opacity 0.2s ease;
+      max-height: 0; opacity: 0;
+    }
+    .collapsible-body.open { max-height: 600px; opacity: 1; }
+
+    .dataset-list { display: flex; flex-direction: column; gap: 1px; }
+    .dataset-btn {
+      display: block; width: 100%; text-align: left;
+      padding: 6px 10px; border-radius: 6px; border: none;
+      background: transparent; color: var(--muted);
+      font-size: 12px; font-family: var(--font); cursor: pointer;
+      transition: background 0.1s, color 0.1s;
+    }
+    .dataset-btn:hover { background: var(--surface2); color: var(--text); }
+    .dataset-btn.active { background: rgba(88,53,161,0.25); color: var(--accent-hi); font-weight: 500; }
+
+    /* Individual logger checkboxes */
+    .logger-check-list { display: flex; flex-direction: column; gap: 1px; }
+    .logger-check-row {
+      display: flex; align-items: center; gap: 8px;
+      padding: 4px 8px; border-radius: 6px; cursor: pointer;
+      transition: background 0.1s; user-select: none;
+    }
+    .logger-check-row:hover { background: rgba(255,255,255,0.04); }
+    .check-box {
+      width: 13px; height: 13px; border-radius: 3px; flex-shrink: 0;
+      border: 1.5px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      transition: background 0.1s, border-color 0.1s;
+    }
+    .check-box.checked { border-color: var(--accent-hi); background: var(--accent-hi); }
+    .check-box.checked::after {
+      content: ''; width: 7px; height: 4px;
+      border-left: 1.5px solid #fff; border-bottom: 1.5px solid #fff;
+      transform: rotate(-45deg) translateY(-1px); display: block;
+    }
+    .check-label { font-size: 12px; color: var(--muted); flex: 1; transition: color 0.1s; }
+    .logger-check-row.checked .check-label { color: var(--text); }
+    .select-all-row {
+      display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px;
+    }
+    .select-all-btn {
+      font-size: 10px; color: var(--accent-hi); background: none; border: none;
+      cursor: pointer; font-family: var(--font); padding: 0;
+    }
+    .select-all-btn:hover { text-decoration: underline; }
+
+    .series-list { display: flex; flex-direction: column; gap: 2px; }
+    .series-row {
+      display: flex; align-items: center; gap: 8px;
+      padding: 4px 8px; border-radius: 6px; cursor: pointer;
+      transition: background 0.1s; user-select: none;
+    }
+    .series-row:hover { background: rgba(255,255,255,0.04); }
+    .series-row.hidden { opacity: 0.3; }
+    .swatch { width: 9px; height: 9px; border-radius: 2px; flex-shrink: 0; }
+    .series-label { font-size: 12px; flex: 1; }
+
+    .overlay-row { display: flex; align-items: center; gap: 10px; padding: 3px 0; }
+    .toggle { position: relative; width: 32px; height: 17px; cursor: pointer; }
+    .toggle input { opacity: 0; width: 0; height: 0; }
+    .toggle-track { position: absolute; inset: 0; background: var(--border); border-radius: 20px; transition: background 0.2s; }
+    .toggle input:checked + .toggle-track { background: var(--accent-hi); }
+    .toggle-thumb { position: absolute; top: 2px; left: 2px; width: 13px; height: 13px; background: #fff; border-radius: 50%; transition: transform 0.2s; }
+    .toggle input:checked ~ .toggle-thumb { transform: translateX(15px); }
+    .overlay-label { font-size: 12px; }
+    .overlay-status { font-size: 10px; color: var(--muted); margin-top: 1px; }
+
+    .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; }
+    .stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: 6px; padding: 8px 9px; }
+    .stat-val { font-size: 15px; font-weight: 600; line-height: 1; margin-bottom: 3px; }
+    .stat-key { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; }
+
+    main { display: flex; flex-direction: column; overflow: hidden; }
+
+    /* ── Trailer diagram ─────────────────────────────── */
+    .diagram-panel {
+      flex-shrink: 0;
+      position: relative;
+      background: var(--surface);
+      overflow: hidden;
+      height: 200px;
+      min-height: 80px;
+      max-height: 400px;
+    }
+
+    #trailerImg {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      object-position: center center;
+    }
+
+    #dotCanvas {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      pointer-events: none;
+    }
+
+    #dotOverlay {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      pointer-events: none; /* markers inside set their own pointer-events */
+    }
+    #dotOverlay .logger-marker {
+      pointer-events: auto;
+    }
+
+    /* ── Resize handle ───────────────────────────────── */
+    .resize-handle {
+      flex-shrink: 0;
+      height: 6px;
+      background: var(--border);
+      cursor: ns-resize;
+      position: relative;
+      transition: background 0.15s;
+      z-index: 10;
+    }
+    .resize-handle:hover, .resize-handle.dragging {
+      background: var(--accent-hi);
+    }
+    .resize-handle::after {
+      content: '';
+      position: absolute;
+      left: 50%; top: 50%;
+      transform: translate(-50%, -50%);
+      width: 32px; height: 2px;
+      border-radius: 2px;
+      background: rgba(255,255,255,0.25);
+    }
+
+    /* ── Logger dot HTML overlays ────────────────────── */
+    .logger-marker {
+      position: absolute;
+      transform: translate(-50%, -50%);
+      cursor: pointer;
+      z-index: 5;
+    }
+    .logger-marker .dot-ring {
+      width: 18px; height: 18px;
+      border-radius: 50%;
+      border: 2px solid rgba(255,255,255,0.7);
+      box-shadow: 0 0 0 3px rgba(255,255,255,0.12);
+      transition: transform 0.15s;
+    }
+    .logger-marker:hover .dot-ring {
+      transform: scale(1.3);
+    }
+    .logger-marker .dot-label {
+      position: absolute;
+      left: 50%; top: calc(100% + 4px);
+      transform: translateX(-50%);
+      font-size: 9px; font-weight: 600;
+      font-family: var(--font);
+      color: #fff;
+      white-space: nowrap;
+      text-shadow: 0 1px 4px rgba(0,0,0,1);
+      pointer-events: none;
+    }
+
+    /* ── Install photo tooltip ───────────────────────── */
+    #installTooltip {
+      position: fixed;
+      z-index: 1000;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.15s;
+      background: #0e0e12;
+      border: 1px solid #3a3a4a;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.7);
+      max-width: 320px;
+    }
+    #installTooltip.visible { opacity: 1; }
+    #installTooltip img {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+    #installTooltip .tip-label {
+      padding: 7px 10px;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text);
+      font-family: var(--font);
+      background: #16161c;
+      border-top: 1px solid #2a2a35;
+    }
+
+    /* ── Chart area ──────────────────────────────────── */
+    .toolbar {
+      display: flex; align-items: center; gap: 10px;
+      padding: 9px 16px; border-bottom: 1px solid var(--border); flex-shrink: 0;
+    }
+    .toolbar-label { font-size: 12px; color: var(--muted); }
+    .btn-group { display: flex; gap: 3px; }
+    .btn {
+      padding: 4px 10px; border-radius: 5px; border: 1px solid var(--border);
+      background: transparent; color: var(--muted);
+      font-size: 12px; font-family: var(--font); cursor: pointer; transition: all 0.12s;
+    }
+    .btn:hover { border-color: var(--accent-hi); color: var(--text); }
+    .btn.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+    .toolbar-right { margin-left: auto; font-size: 11px; color: var(--muted); }
+
+    #chart { flex: 1; min-height: 0; }
+
+    .empty-state {
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      flex: 1; gap: 10px; color: var(--muted); padding: 40px; text-align: center;
+    }
+    .empty-icon { font-size: 32px; opacity: 0.35; }
+    .empty-state h2 { font-size: 14px; font-weight: 500; color: var(--text); }
+    .empty-state p { font-size: 12px; max-width: 280px; line-height: 1.6; }
+
+    .loading-bar { height: 2px; background: var(--accent); width: 0%; transition: width 0.3s; position: fixed; top: 0; left: 0; z-index: 100; }
+  </style>
+</head>
+<body>
+
+<div class="loading-bar" id="loadingBar"></div>
+
+<header>
+  <div class="logo-mark">HW</div>
+  <h1>Temperature Analysis <span>/ Trailer Field Data</span></h1>
+</header>
+
+<div class="app">
+  <aside>
+    <div class="aside-scroll">
+      <div>
+        <div class="collapsible-header" onclick="toggleSection('comparisons')">
+          <div class="section-label" style="margin-bottom:0;">Comparisons</div>
+          <span class="collapsible-chevron open" id="chevron-comparisons">▼</span>
+        </div>
+        <div class="collapsible-body open" id="body-comparisons">
+          <div class="dataset-list" id="datasetList"><div style="font-size:12px;color:var(--muted);">Loading…</div></div>
+        </div>
+      </div>
+      <div>
+        <div class="collapsible-header" onclick="toggleSection('individuals')">
+          <div class="select-all-row" style="flex:1;margin-bottom:0;">
+            <div class="section-label" style="margin-bottom:0;">Individual Loggers</div>
+            <button class="select-all-btn" id="selectAllBtn" onclick="event.stopPropagation()">Select all</button>
+          </div>
+          <span class="collapsible-chevron" id="chevron-individuals" style="margin-left:6px;">▼</span>
+        </div>
+        <div class="collapsible-body" id="body-individuals">
+          <div class="logger-check-list" id="loggerCheckList"><div style="font-size:12px;color:var(--muted);">Loading…</div></div>
+        </div>
+      </div>
+      <div>
+        <div class="section-label">Active Series</div>
+        <div class="series-list" id="seriesList"><div style="font-size:12px;color:var(--muted);">Select a dataset or logger.</div></div>
+      </div>
+      <div>
+        <div class="section-label">Overlays</div>
+        <div class="overlay-row">
+          <label class="toggle"><input type="checkbox" id="weatherToggle" /><div class="toggle-track"></div><div class="toggle-thumb"></div></label>
+          <div><div class="overlay-label">Outdoor temp</div><div class="overlay-status" id="weatherStatus">Off</div></div>
+        </div>
+        <div class="overlay-row">
+          <label class="toggle"><input type="checkbox" id="cloudToggle" /><div class="toggle-track"></div><div class="toggle-thumb"></div></label>
+          <div><div class="overlay-label">Cloud cover</div><div class="overlay-status" id="cloudStatus">Off</div></div>
+        </div>
+        <div style="margin-top:5px;font-size:10px;color:var(--muted);line-height:1.5;">Open-Meteo · 28.8007°N 81.2730°W</div>
+      </div>
+      <div>
+        <div class="section-label">Summary</div>
+        <div class="stats-grid">
+          <div class="stat-card"><div class="stat-val" id="statMin">—</div><div class="stat-key">Min °C</div></div>
+          <div class="stat-card"><div class="stat-val" id="statMax">—</div><div class="stat-key">Max °C</div></div>
+          <div class="stat-card"><div class="stat-val" id="statSeries">—</div><div class="stat-key">Loggers</div></div>
+          <div class="stat-card"><div class="stat-val" id="statPoints">—</div><div class="stat-key">Data pts</div></div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <main>
+    <div class="diagram-panel" id="diagramPanel">
+      <img src="trailer_diagram.png" alt="Trailer layout" id="trailerImg" />
+      <canvas id="dotCanvas"></canvas>
+      <div id="dotOverlay"></div>
+    </div>
+    <!-- Install photo tooltip -->
+    <div id="installTooltip">
+      <img id="tipImg" src="" alt="" />
+      <div class="tip-label" id="tipLabel"></div>
+    </div>
+    <div class="resize-handle" id="resizeHandle" title="Drag to resize"></div>
+
+    <div class="toolbar">
+      <span class="toolbar-label">Zoom to</span>
+      <div class="btn-group" id="zoomBtns">
+        <button class="btn" data-days="1">1 day</button>
+        <button class="btn" data-days="3">3 days</button>
+        <button class="btn" data-days="7">7 days</button>
+        <button class="btn active" data-days="0">All</button>
+      </div>
+      <div class="toolbar-right" id="rangeLabel">—</div>
+    </div>
+
+    <div id="emptyState" class="empty-state">
+      <div class="empty-icon">🌡️</div>
+      <h2>No dataset selected</h2>
+      <p>Choose a dataset from the sidebar.</p>
+    </div>
+    <div id="chart" style="display:none;"></div>
+  </main>
+</div>
+
+<script>
+// ── Logger positions as % of the PNG image's own dimensions ──
+const LOGGER_POSITIONS = {
+  "HW003 T6": { x: 34.97, y:  7.26 },
+  "HW003 T4": { x: 14.59, y: 55.04 },
+  "HW003 T7": { x: 16.62, y: 53.43 },
+  "HW003 T5": { x: 13.37, y: 59.67 },
+  "HW003 T1": { x: 44.16, y: 55.25 },
+  "HW003 T2": { x: 44.91, y: 61.98 },
+  "HW003 T3": { x: 44.91, y: 76.64 },
+  "HW004 T4": { x: 85.25, y:  9.13 },
+  "HW004 T2": { x: 64.09, y: 56.47 },
+  "HW004 T1": { x: 64.92, y: 56.47 },
+  "HW004 T3": { x: 62.44, y: 60.55 },
+};
+
+// Install photo per logger
+const LOGGER_PHOTOS = {
+  "HW003 T1": "install_photos/hw003t1t2t3.jpg",
+  "HW003 T2": "install_photos/hw003t1t2t3.jpg",
+  "HW003 T3": "install_photos/hw003t1t2t3.jpg",
+  "HW003 T4": "install_photos/hw003t4t5.jpg",
+  "HW003 T5": "install_photos/hw003t4t5.jpg",
+  "HW003 T6": "install_photos/hw003t6.jpg",
+  "HW003 T7": "install_photos/hw003t7.jpg",
+  "HW004 T1": "install_photos/hw004t1t2t3.jpg",
+  "HW004 T2": "install_photos/hw004t1t2t3.jpg",
+  "HW004 T3": "install_photos/hw004t1t2t3.jpg",
+  "HW004 T4": "install_photos/hw004t4.jpg",
+};
+
+// Image natural dimensions (5313x1815, ratio 2.9273)
+const IMG_RATIO = 5313 / 1815;
+
+const PALETTE = ['#7c52d4','#38b28a','#e0804a','#e05278','#4ab8e0','#c8d44a','#d44ab2','#4ad4a4','#e0c84a','#a44ae0'];
+const WEATHER_COLOR = '#38b2ac';
+const CLOUD_COLOR   = 'rgba(160,180,220,0.25)';
+
+let manifest        = [];
+let currentData     = null;  // { label, serials: { name: {rows, color} } }
+let seriesVis       = {};
+let selectedLoggers = new Set(); // individual logger IDs checked
+let loggerCache     = {};        // id → loaded JSON data
+let weatherData = null, cloudData = null;
+let weatherOn = false, cloudOn = false;
+let currentZoomDays = 0, dataExtent = [null, null];
+
+function setLoading(p) {
+  document.getElementById('loadingBar').style.width = p + '%';
+  if (p >= 100) setTimeout(() => setLoading(0), 400);
+}
+
+// ── Canvas dot rendering ────────────────────────────────────
+function getImageRect() {
+  // object-fit: contain — scale to fit, letterboxed, centered both axes
+  const panel = document.getElementById('diagramPanel');
+  const cW = panel.clientWidth, cH = panel.clientHeight;
+  const scaleW = cW / 5313, scaleH = cH / 1815;
+  const scale  = Math.min(scaleW, scaleH);  // contain uses min
+  const rendW  = 5313 * scale, rendH = 1815 * scale;
+  const offX   = (cW - rendW) / 2;
+  const offY   = (cH - rendH) / 2;
+  return { offX, offY, rendW, rendH };
+}
+
+function drawDots() {
+  const canvas = document.getElementById('dotCanvas');
+  const panel  = document.getElementById('diagramPanel');
+  canvas.width  = panel.clientWidth;
+  canvas.height = panel.clientHeight;
+  const ctx = canvas.getContext('2d');
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  const { offX, offY, rendW, rendH } = getImageRect();
+
+  for (const [name, pos] of Object.entries(LOGGER_POSITIONS)) {
+    const cx = offX + (pos.x / 100) * rendW;
+    const cy = offY + (pos.y / 100) * rendH;
+    const inDataset = currentData && (name in currentData.serials);
+    const isVisible = inDataset && seriesVis[name];
+    if (!inDataset) {
+      ctx.beginPath(); ctx.arc(cx, cy, 4, 0, Math.PI * 2);
+      ctx.strokeStyle = 'rgba(255,255,255,0.15)'; ctx.lineWidth = 1.5; ctx.stroke();
+    } else if (!isVisible) {
+      const color = currentData.serials[name].color;
+      ctx.beginPath(); ctx.arc(cx, cy, 6, 0, Math.PI * 2);
+      ctx.strokeStyle = color + '70'; ctx.lineWidth = 2; ctx.stroke();
+    }
+  }
+
+  const overlay = document.getElementById('dotOverlay');
+  overlay.innerHTML = '';
+  if (!currentData) return;
+
+  for (const [name, pos] of Object.entries(LOGGER_POSITIONS)) {
+    const inDataset = name in currentData.serials;
+    const isVisible = inDataset && seriesVis[name];
+    if (!isVisible) continue;
+    const color = currentData.serials[name].color;
+    const cx = offX + (pos.x / 100) * rendW;
+    const cy = offY + (pos.y / 100) * rendH;
+    const marker = document.createElement('div');
+    marker.className = 'logger-marker';
+    marker.style.left = cx + 'px'; marker.style.top = cy + 'px';
+    const ring = document.createElement('div');
+    ring.className = 'dot-ring';
+    ring.style.background = color;
+    ring.style.boxShadow = `0 0 0 3px rgba(255,255,255,0.12), 0 0 10px 3px ${color}99`;
+    marker.appendChild(ring);
+    const lbl = document.createElement('div');
+    lbl.className = 'dot-label'; lbl.textContent = name;
+    marker.appendChild(lbl);
+    const photo = LOGGER_PHOTOS[name];
+    if (photo) {
+      marker.addEventListener('mouseenter', e => showTip(name, photo, e));
+      marker.addEventListener('mousemove',  e => moveTip(e));
+      marker.addEventListener('mouseleave', hideTip);
+    }
+    overlay.appendChild(marker);
+  }
+}
+
+// ── Tooltip ─────────────────────────────────────────────────
+const tip    = document.getElementById('installTooltip');
+const tipImg = document.getElementById('tipImg');
+const tipLbl = document.getElementById('tipLabel');
+
+function preloadPhotos() {
+  for (const src of new Set(Object.values(LOGGER_PHOTOS))) {
+    const img = new Image(); img.src = src;
+  }
+}
+function showTip(name, src, e) {
+  tipImg.src = src; tipLbl.textContent = name + ' — installation';
+  tip.classList.add('visible'); moveTip(e);
+}
+function moveTip(e) {
+  const TW = 320, TH = 260, vw = window.innerWidth, vh = window.innerHeight;
+  let x = e.clientX + 16, y = e.clientY + 16;
+  if (x + TW > vw - 8) x = e.clientX - TW - 12;
+  if (y + TH > vh - 8) y = e.clientY - TH - 12;
+  tip.style.left = x + 'px'; tip.style.top = y + 'px';
+}
+function hideTip() { tip.classList.remove('visible'); }
+
+const ro = new ResizeObserver(() => drawDots());
+ro.observe(document.getElementById('diagramPanel'));
+
+// ── Collapsible sections ────────────────────────────────────
+function toggleSection(id) {
+  const body    = document.getElementById('body-' + id);
+  const chevron = document.getElementById('chevron-' + id);
+  const isOpen  = body.classList.contains('open');
+  body.classList.toggle('open', !isOpen);
+  chevron.classList.toggle('open', !isOpen);
+}
+
+// ── Boot ────────────────────────────────────────────────────
+async function boot() {
+  setDiagramNaturalHeight();
+  preloadPhotos();
+  drawDots();
+  try {
+    manifest = await (await fetch('data/manifest.json')).json();
+    renderDatasetList();
+    renderLoggerCheckList();
+  } catch(e) {
+    document.getElementById('datasetList').innerHTML = '<div style="font-size:12px;color:#e05278;">Could not load manifest.json</div>';
+  }
+}
+
+// ── Comparisons list ────────────────────────────────────────
+function renderDatasetList() {
+  const el = document.getElementById('datasetList');
+  // Support old manifest (no type field) by treating everything without type='individual' as comparison
+  const comparisons = manifest.filter(d => d.type !== 'individual').sort((a,b) => a.label.localeCompare(b.label));
+  if (!comparisons.length) {
+    el.innerHTML = '<div style="font-size:12px;color:var(--muted);">None found.</div>';
+    return;
+  }
+  el.innerHTML = comparisons.map(ds =>
+    `<button class="dataset-btn" data-id="${ds.id}" onclick="loadComparison('${ds.id}')">${ds.label}</button>`
+  ).join('');
+}
+
+// ── Individual logger checkboxes ────────────────────────────
+function renderLoggerCheckList() {
+  const el = document.getElementById('loggerCheckList');
+  const individuals = manifest.filter(d => d.type === 'individual');
+  if (!individuals.length) {
+    el.innerHTML = '<div style="font-size:12px;color:var(--muted);">No individual logger files found.<br>Upload the hw00x_tx.json files to data/.</div>';
+    return;
+  }
+  el.innerHTML = individuals.map(ds => `
+    <div class="logger-check-row ${selectedLoggers.has(ds.id) ? 'checked' : ''}"
+         onclick="toggleLoggerCheck('${ds.id}')">
+      <div class="check-box ${selectedLoggers.has(ds.id) ? 'checked' : ''}"></div>
+      <span class="check-label">${ds.label}</span>
+    </div>`).join('');
+}
+
+document.getElementById('selectAllBtn').addEventListener('click', () => {
+  const individuals = manifest.filter(d => d.type === 'individual');
+  const allSelected = individuals.every(d => selectedLoggers.has(d.id));
+  if (allSelected) {
+    individuals.forEach(d => selectedLoggers.delete(d.id));
+  } else {
+    individuals.forEach(d => selectedLoggers.add(d.id));
+  }
+  // Deactivate comparison selection
+  document.querySelectorAll('.dataset-btn').forEach(b => b.classList.remove('active'));
+  renderLoggerCheckList();
+  rebuildFromChecked();
+});
+
+async function toggleLoggerCheck(id) {
+  if (selectedLoggers.has(id)) {
+    selectedLoggers.delete(id);
+  } else {
+    selectedLoggers.add(id);
+  }
+  // Deactivate comparison
+  document.querySelectorAll('.dataset-btn').forEach(b => b.classList.remove('active'));
+  renderLoggerCheckList();
+  await rebuildFromChecked();
+}
+
+async function rebuildFromChecked() {
+  if (selectedLoggers.size === 0) {
+    currentData = null;
+    seriesVis = {};
+    drawDots(); renderSeriesList(); renderStats(); renderChart();
+    return;
+  }
+
+  setLoading(15);
+  // Load any uncached files
+  const toLoad = [...selectedLoggers].filter(id => !loggerCache[id]);
+  await Promise.all(toLoad.map(async id => {
+    const ds = manifest.find(d => d.id === id);
+    if (!ds) return;
+    try {
+      loggerCache[id] = await (await fetch(ds.file)).json();
+    } catch(e) { console.error('Failed to load', ds.file); }
+  }));
+  setLoading(70);
+
+  // Merge all selected loggers into one currentData
+  const serials = {};
+  let ci = 0;
+  for (const id of [...selectedLoggers].sort()) {
+    const data = loggerCache[id];
+    if (!data) continue;
+    for (const [name, rows] of Object.entries(data)) {
+      serials[name] = { rows, color: PALETTE[ci++ % PALETTE.length] };
+      if (!(name in seriesVis)) seriesVis[name] = true;
+    }
+  }
+  // Remove seriesVis entries no longer present
+  for (const name of Object.keys(seriesVis)) {
+    if (!(name in serials)) delete seriesVis[name];
+  }
+
+  currentData = { label: `${selectedLoggers.size} logger${selectedLoggers.size > 1 ? 's' : ''}`, serials };
+  computeExtent();
+
+  weatherData = null; cloudData = null;
+  if (weatherOn || cloudOn) await fetchWeatherAndCloud();
+
+  currentZoomDays = 0;
+  document.querySelectorAll('#zoomBtns .btn').forEach(b => b.classList.toggle('active', b.dataset.days === '0'));
+  drawDots(); renderSeriesList(); renderStats(); renderChart();
+  setLoading(100);
+}
+
+// ── Load comparison dataset ─────────────────────────────────
+async function loadComparison(id) {
+  const ds = manifest.find(d => d.id === id);
+  if (!ds) return;
+  // Clear individual selections
+  selectedLoggers.clear();
+  renderLoggerCheckList();
+  document.querySelectorAll('.dataset-btn').forEach(b => b.classList.remove('active'));
+  document.querySelector(`[data-id="${id}"]`).classList.add('active');
+  setLoading(20);
+  try {
+    const json = await (await fetch(ds.file)).json();
+    setLoading(70);
+    seriesVis = {};
+    let ci = 0;
+    const serials = {};
+    for (const [name, rows] of Object.entries(json)) {
+      serials[name] = { rows, color: PALETTE[ci++ % PALETTE.length] };
+      seriesVis[name] = true;
+    }
+    currentData = { label: ds.label, serials };
+    computeExtent();
+    weatherData = null; cloudData = null;
+    if (weatherOn || cloudOn) await fetchWeatherAndCloud();
+    currentZoomDays = 0;
+    document.querySelectorAll('#zoomBtns .btn').forEach(b => b.classList.toggle('active', b.dataset.days === '0'));
+    drawDots(); renderSeriesList(); renderStats(); renderChart();
+    setLoading(100);
+  } catch(e) {
+    console.error(e); setLoading(0); alert(`Failed to load ${ds.file}`);
+  }
+}
+
+function computeExtent() {
+  let minT = Infinity, maxT = -Infinity;
+  for (const s of Object.values(currentData.serials)) {
+    if (!s.rows.length) continue;
+    const t0 = new Date(s.rows[0].t).getTime();
+    const tN = new Date(s.rows[s.rows.length - 1].t).getTime();
+    if (t0 < minT) minT = t0;
+    if (tN > maxT) maxT = tN;
+  }
+  dataExtent = [new Date(minT).toISOString(), new Date(maxT).toISOString()];
+}
+
+// ── Active series list ──────────────────────────────────────
+function renderSeriesList() {
+  const el = document.getElementById('seriesList');
+  if (!currentData || !Object.keys(currentData.serials).length) {
+    el.innerHTML = '<div style="font-size:12px;color:var(--muted);">Select a dataset or logger.</div>';
+    return;
+  }
+  el.innerHTML = Object.entries(currentData.serials).map(([name, s]) => `
+    <div class="series-row ${seriesVis[name] ? '' : 'hidden'}" onclick="toggleSeries('${name}')">
+      <div class="swatch" style="background:${s.color}"></div>
+      <span class="series-label">${name}</span>
+    </div>`).join('');
+}
+
+function toggleSeries(name) {
+  seriesVis[name] = !seriesVis[name];
+  renderSeriesList(); renderStats(); drawDots(); renderChart();
+}
+
+// ── Stats ───────────────────────────────────────────────────
+function renderStats() {
+  if (!currentData) return;
+  const vals = []; let pts = 0, series = 0;
+  for (const [name, s] of Object.entries(currentData.serials)) {
+    if (seriesVis[name]) { vals.push(...s.rows.map(r => r.v)); pts += s.rows.length; series++; }
+  }
+  document.getElementById('statMin').textContent = vals.length ? Math.min(...vals).toFixed(1) : '—';
+  document.getElementById('statMax').textContent = vals.length ? Math.max(...vals).toFixed(1) : '—';
+  document.getElementById('statSeries').textContent = series || '—';
+  document.getElementById('statPoints').textContent = pts ? pts.toLocaleString() : '—';
+}
+
+// ── Weather / cloud ────────────────────────────────────────
+async function fetchWeatherAndCloud() {
+  if (!currentData) return;
+  const minT = dataExtent[0].slice(0,10), maxT = dataExtent[1].slice(0,10);
+  if (weatherOn) document.getElementById('weatherStatus').textContent = 'Fetching…';
+  if (cloudOn)   document.getElementById('cloudStatus').textContent   = 'Fetching…';
+  try {
+    const url = `https://archive-api.open-meteo.com/v1/archive?latitude=28.8007&longitude=-81.2730&start_date=${minT}&end_date=${maxT}&hourly=temperature_2m,cloudcover&temperature_unit=celsius&timezone=America%2FNew_York`;
+    const json = await (await fetch(url)).json();
+    weatherData = json.hourly.time.map((t,i) => ({t, v: json.hourly.temperature_2m[i]})).filter(r => r.v !== null);
+    cloudData   = json.hourly.time.map((t,i) => ({t, v: json.hourly.cloudcover[i]})).filter(r => r.v !== null);
+    if (weatherOn) document.getElementById('weatherStatus').textContent = `${weatherData.length} pts`;
+    if (cloudOn)   document.getElementById('cloudStatus').textContent   = `${cloudData.length} pts`;
+  } catch(e) {
+    if (weatherOn) document.getElementById('weatherStatus').textContent = 'Fetch failed';
+    if (cloudOn)   document.getElementById('cloudStatus').textContent   = 'Fetch failed';
+    weatherData = null; cloudData = null;
+  }
+}
+
+async function handleOverlayToggle(which, checked) {
+  if (which === 'weather') weatherOn = checked;
+  if (which === 'cloud')   cloudOn   = checked;
+  if (!checked) {
+    document.getElementById(which === 'weather' ? 'weatherStatus' : 'cloudStatus').textContent = 'Off';
+    renderChart(); return;
+  }
+  if (!currentData) {
+    document.getElementById(which === 'weather' ? 'weatherToggle' : 'cloudToggle').checked = false;
+    if (which === 'weather') { weatherOn = false; document.getElementById('weatherStatus').textContent = 'Load data first'; }
+    else                     { cloudOn   = false; document.getElementById('cloudStatus').textContent   = 'Load data first'; }
+    return;
+  }
+  if (!weatherData || !cloudData) { setLoading(30); await fetchWeatherAndCloud(); setLoading(100); }
+  renderChart();
+}
+
+document.getElementById('weatherToggle').addEventListener('change', function() { handleOverlayToggle('weather', this.checked); });
+document.getElementById('cloudToggle').addEventListener('change',   function() { handleOverlayToggle('cloud',   this.checked); });
+
+// ── Zoom ───────────────────────────────────────────────────
+document.getElementById('zoomBtns').addEventListener('click', e => {
+  const btn = e.target.closest('[data-days]');
+  if (!btn) return;
+  currentZoomDays = parseInt(btn.dataset.days);
+  document.querySelectorAll('#zoomBtns .btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderChart();
+});
+
+function getZoomRange(days) {
+  if (!days || !currentData) return [dataExtent[0], dataExtent[1]];
+  const end   = new Date(dataExtent[1]);
+  const start = new Date(Math.max(end - days * 86400000, new Date(dataExtent[0]).getTime()));
+  return [start.toISOString(), dataExtent[1]];
+}
+
+// ── Chart ──────────────────────────────────────────────────
+function renderChart() {
+  const hasData = !!currentData;
+  document.getElementById('emptyState').style.display = hasData ? 'none' : 'flex';
+  document.getElementById('chart').style.display      = hasData ? 'block' : 'none';
+  if (!hasData) return;
+
+  const traces = [];
+  if (cloudOn && cloudData) {
+    traces.push({
+      type: 'bar', name: 'Cloud cover',
+      x: cloudData.map(r => r.t), y: cloudData.map(r => r.v), yaxis: 'y2',
+      marker: { color: CLOUD_COLOR, line: { width: 0 } },
+      hovertemplate: `<b>Cloud cover</b><br>%{x}<br>%{y:.0f}%<extra></extra>`,
+    });
+  }
+  for (const [name, s] of Object.entries(currentData.serials)) {
+    traces.push({
+      type: 'scatter', mode: 'lines', name,
+      x: s.rows.map(r => r.t), y: s.rows.map(r => r.v), yaxis: 'y',
+      visible: seriesVis[name] ? true : 'legendonly',
+      line: { color: s.color, width: 1.5, shape: 'spline', smoothing: 0.3 },
+      hovertemplate: `<b>${name}</b><br>%{x}<br>%{y:.1f} °C<extra></extra>`,
+    });
+  }
+  if (weatherOn && weatherData) {
+    traces.push({
+      type: 'scatter', mode: 'lines', name: 'Outdoor (Sanford)',
+      x: weatherData.map(r => r.t), y: weatherData.map(r => r.v), yaxis: 'y',
+      line: { color: WEATHER_COLOR, width: 1.5, dash: 'dot' },
+      hovertemplate: `<b>Outdoor</b><br>%{x}<br>%{y:.1f} °C<extra></extra>`,
+    });
+  }
+
+  const [r0, r1] = getZoomRange(currentZoomDays);
+  document.getElementById('rangeLabel').textContent = `${fmt(dataExtent[0])} – ${fmt(dataExtent[1])}`;
+
+  Plotly.react('chart', traces, {
+    paper_bgcolor: 'transparent', plot_bgcolor: '#13131a',
+    font: { family: 'Inter, system-ui, sans-serif', color: '#e4e4ec', size: 11 },
+    margin: { l: 50, r: cloudOn ? 50 : 16, t: 12, b: 52 },
+    xaxis: {
+      type: 'date', gridcolor: '#22222e', tickfont: { size: 11 },
+      range: [r0, r1], minallowed: dataExtent[0], maxallowed: dataExtent[1],
+      showline: false, zeroline: false,
+    },
+    yaxis: {
+      title: { text: '°C', font: { size: 11 }, standoff: 6 },
+      gridcolor: '#22222e', tickfont: { size: 11 }, showline: false, zeroline: false,
+    },
+    yaxis2: {
+      title: { text: 'Cloud (%)', font: { size: 10, color: 'rgba(160,180,220,0.5)' }, standoff: 6 },
+      tickfont: { size: 10, color: 'rgba(160,180,220,0.5)' },
+      overlaying: 'y', side: 'right', range: [0, 100],
+      showgrid: false, zeroline: false, showline: false,
+      visible: cloudOn, fixedrange: true,
+    },
+    legend: {
+      orientation: 'h', x: 0, y: -0.15,
+      font: { size: 11 }, bgcolor: 'transparent', borderwidth: 0,
+    },
+    hovermode: 'x unified',
+    hoverlabel: { bgcolor: '#1e1e28', bordercolor: '#3a3a4a', font: { family: 'Inter, system-ui', size: 12 } },
+    barmode: 'overlay',
+  }, {
+    responsive: true, displayModeBar: true,
+    modeBarButtonsToRemove: ['sendDataToCloud','autoScale2d','toggleSpikelines'],
+    displaylogo: false, scrollZoom: true,
+    toImageButtonOptions: { format: 'png', filename: 'hatchwing_temp', scale: 2 },
+  });
+}
+
+function fmt(iso) {
+  return new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+}
+
+window.addEventListener('resize', () => {
+  setDiagramNaturalHeight();
+  if (currentData) Plotly.Plots.resize('chart');
+});
+
+// ── Set diagram panel height ────────────────────────────────
+function setDiagramNaturalHeight() {
+  const panel = document.getElementById('diagramPanel');
+  // Fixed compact height — image is contained (letterboxed) within it
+  panel.style.height = '200px';
+  drawDots();
+  if (currentData) Plotly.Plots.resize('chart');
+}
+
+// ── Resizable diagram panel ────────────────────────────────
+(function() {
+  const handle = document.getElementById('resizeHandle');
+  const panel  = document.getElementById('diagramPanel');
+  const MIN_H  = 80;
+  const MAX_H  = 420;
+  let dragging = false, startY = 0, startH = 0;
+
+  handle.addEventListener('mousedown', e => {
+    dragging = true;
+    startY   = e.clientY;
+    startH   = panel.offsetHeight;
+    handle.classList.add('dragging');
+    document.body.style.cursor = 'ns-resize';
+    document.body.style.userSelect = 'none';
+    e.preventDefault();
+  });
+
+  window.addEventListener('mousemove', e => {
+    if (!dragging) return;
+    const newH = Math.min(MAX_H, Math.max(MIN_H, startH + (e.clientY - startY)));
+    panel.style.height = newH + 'px';
+    drawDots();
+    if (currentData) Plotly.Plots.resize('chart');
+  });
+
+  window.addEventListener('mouseup', () => {
+    if (!dragging) return;
+    dragging = false;
+    handle.classList.remove('dragging');
+    document.body.style.cursor = '';
+    document.body.style.userSelect = '';
+  });
+
+  // Touch support
+  handle.addEventListener('touchstart', e => {
+    dragging = true;
+    startY   = e.touches[0].clientY;
+    startH   = panel.offsetHeight;
+    e.preventDefault();
+  }, { passive: false });
+
+  window.addEventListener('touchmove', e => {
+    if (!dragging) return;
+    const newH = Math.min(MAX_H, Math.max(MIN_H, startH + (e.touches[0].clientY - startY)));
+    panel.style.height = newH + 'px';
+    drawDots();
+  }, { passive: false });
+
+  window.addEventListener('touchend', () => { dragging = false; });
+})();
+
+boot();
+</script>
+</body>
+</html>
