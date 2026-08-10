@@ -86,7 +86,7 @@ a{color:var(--accent);text-decoration:none;}
 #backlog-gutter.collapsed{width:36px;padding:14px 6px;overflow:hidden;}
 #backlog-gutter.collapsed #backlog-body,#backlog-gutter.collapsed #backlog-title-text{display:none;}
 #backlog-gutter h4{font-family:var(--mono);font-size:10.5px;text-transform:uppercase;letter-spacing:.08em;color:var(--text-faint);margin:0 0 10px 0;display:flex;align-items:center;gap:6px;}
-#gantt-col{flex:1;display:flex;flex-direction:column;min-width:0;}
+#gantt-col{flex:1;display:flex;flex-direction:column;min-width:0;--row-label-w:210px;}
 #gantt-toolbar{display:flex;align-items:center;gap:6px;padding:8px 14px;border-bottom:1px solid var(--border-soft);background:var(--surface);flex-shrink:0;}
 #gantt-toolbar .btn{padding:4px 10px;font-size:12px;}
 .gz-date{width:100px;background:var(--surface-2);border:1px solid var(--border);border-radius:4px;color:var(--text);padding:5px 7px;font-size:11.5px;}
@@ -96,7 +96,7 @@ a{color:var(--accent);text-decoration:none;}
 .backlog-empty{color:var(--text-faint);font-size:12px;padding:8px 2px;}
 #gantt-scroll{flex:1;overflow:auto;}
 #gantt-inner{width:100%;min-width:1000px;position:relative;padding:14px 0 30px 0;}
-.gantt-months{height:30px;position:relative;border-bottom:1px solid var(--border);margin-bottom:6px;margin-left:210px;}
+.gantt-months{height:30px;position:relative;border-bottom:1px solid var(--border);margin-bottom:6px;margin-left:var(--row-label-w);}
 .month-mark{position:absolute;top:0;bottom:0;border-left:1px solid var(--border-soft);}
 .month-mark span{font-family:var(--mono);font-size:10.5px;color:var(--text-faint);padding-left:6px;}
 .milestone-mark{position:absolute;top:0;width:0;border-left:2px dashed var(--accent);z-index:5;pointer-events:none;}
@@ -104,12 +104,16 @@ a{color:var(--accent);text-decoration:none;}
 .ws-block-label{display:flex;align-items:center;gap:6px;height:26px;padding-left:8px;font-family:var(--mono);font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--text-dim);background:var(--surface-2);border-top:1px solid var(--border-soft);border-bottom:1px solid var(--border-soft);}
 .gantt-row{position:relative;height:36px;border-bottom:1px solid var(--border-soft);}
 .gantt-row.child-row{height:28px;}
-.row-label{position:absolute;left:0;top:0;bottom:0;width:210px;display:flex;align-items:center;gap:5px;font-size:12px;padding-left:8px;background:var(--bg);z-index:3;border-right:1px solid var(--border-soft);overflow:hidden;white-space:nowrap;text-overflow:ellipsis;}
+.row-label{position:absolute;left:0;top:0;bottom:0;width:var(--row-label-w);display:flex;align-items:center;gap:5px;font-size:12px;padding-left:8px;background:var(--bg);z-index:3;border-right:1px solid var(--border-soft);overflow:hidden;white-space:nowrap;text-overflow:ellipsis;transition:width .15s;}
 .row-label.child{padding-left:24px;color:var(--text-dim);font-size:11.5px;}
 .expand-chevron{border:none;background:transparent;color:var(--text-faint);font-size:11px;width:14px;flex-shrink:0;padding:0;}
 .expand-chevron:hover{color:var(--accent);}
 .gantt-bar{position:absolute;top:6px;height:24px;border-radius:4px;cursor:pointer;display:flex;align-items:center;padding:0 9px 0 11px;font-size:11.5px;font-weight:500;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;color:var(--text);background:var(--surface-3);border:1px solid var(--border);border-left:4px solid var(--text-faint);}
+.gantt-bar.draggable{cursor:grab;user-select:none;}
+.gantt-bar.dragging{cursor:grabbing;z-index:20;box-shadow:0 6px 18px rgba(0,0,0,.5);opacity:.9;transition:none;}
 .gantt-bar.child{top:4px;height:18px;font-size:10.5px;opacity:.92;}
+.gantt-bar-empty{position:absolute;left:var(--row-label-w);top:5px;height:20px;width:150px;display:flex;align-items:center;padding:0 9px;font-size:10.5px;color:var(--text-faint);border:1px dashed var(--border);border-radius:4px;cursor:pointer;}
+.gantt-bar-empty:hover{border-color:var(--accent);color:var(--accent);}
 .gantt-bar:hover{filter:brightness(1.15);}
 .gantt-empty{padding:40px;color:var(--text-faint);font-size:13px;}
 .chip-dot{width:7px;height:7px;border-radius:50%;display:inline-block;}
@@ -178,9 +182,10 @@ a{color:var(--accent);text-decoration:none;}
 .detail-col-left h3{font-family:var(--display);font-weight:600;font-size:16px;margin:0 0 8px 0;}
 .detail-col-left textarea,.detail-col-left input[type=text]{width:100%;background:var(--surface-2);border:1px solid var(--border);border-radius:5px;color:var(--text);padding:9px 10px;outline:none;}
 .embed-card{background:var(--surface-2);border:1px solid var(--border);border-radius:5px;padding:8px;margin-bottom:10px;}
-.embed-card .embed-label{font-size:12px;font-weight:600;margin-bottom:6px;display:flex;justify-content:space-between;gap:8px;}
-.embed-card .embed-label span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-.embed-card iframe{width:100%;height:130px;border:1px solid var(--border-soft);border-radius:3px;background:#fff;}
+.embed-card .embed-label{font-size:12px;font-weight:600;margin-bottom:6px;display:flex;align-items:center;gap:8px;}
+.embed-card .embed-label a{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.embed-card .link-btn{background:none;border:none;color:var(--text-faint);font-size:11px;flex-shrink:0;padding:0;}
+.embed-card .link-btn:hover{color:var(--accent);}
 .embed-card img{width:100%;max-height:340px;object-fit:contain;border:1px solid var(--border-soft);border-radius:3px;background:#fff;display:block;}
 .add-embed-btn,.upload-btn{border:1px dashed var(--border);border-radius:5px;padding:10px;text-align:center;color:var(--text-faint);font-size:12px;background:transparent;width:100%;}
 .add-embed-btn:hover,.upload-btn:hover{border-color:var(--accent);color:var(--accent);}
@@ -195,6 +200,9 @@ a{color:var(--accent);text-decoration:none;}
 .meta-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px 10px;}
 .meta-field label{display:block;font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--text-faint);margin-bottom:4px;}
 .meta-field select,.meta-field input{width:100%;background:var(--surface-2);border:1px solid var(--border);border-radius:4px;color:var(--text);padding:6px 7px;font-size:12px;}
+.meta-field span.ro{display:block;font-size:12.5px;padding:6px 0;}
+.view-prose{font-size:13.5px;color:var(--text-dim);line-height:1.6;white-space:pre-wrap;}
+.view-empty{font-size:12.5px;color:var(--text-faint);font-style:italic;}
 .pill-select{display:flex;gap:5px;}
 .pill{border:1px solid var(--border);background:var(--surface-2);color:var(--text-dim);border-radius:20px;padding:4px 10px;font-size:11px;}
 .pill.active{color:var(--bg);font-weight:600;border-color:transparent;}
@@ -221,6 +229,16 @@ select.mini-add{background:var(--surface-2);border:1px solid var(--border);color
 .attach-row .rm{background:none;border:none;color:var(--text-faint);}
 
 /* ---- modals ---- */
+.view-popover{position:fixed;width:320px;max-height:420px;overflow-y:auto;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:14px;box-shadow:0 12px 32px rgba(0,0,0,.5);z-index:55;}
+.vp-head{display:flex;align-items:center;gap:8px;margin-bottom:8px;font-size:11px;color:var(--text-faint);}
+.vp-close{margin-left:auto;background:none;border:none;color:var(--text-faint);font-size:16px;cursor:pointer;padding:0;line-height:1;}
+.vp-close:hover{color:var(--text);}
+.vp-title{font-family:var(--display);font-weight:600;font-size:17px;margin-bottom:6px;}
+.vp-desc{font-size:12.5px;color:var(--text-dim);margin-bottom:10px;}
+.vp-meta{display:grid;grid-template-columns:1fr 1fr;gap:8px 10px;margin-bottom:12px;}
+.vp-meta div label{display:block;font-size:9.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--text-faint);margin-bottom:2px;}
+.vp-meta div span{font-size:12px;}
+
 #modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:50;display:flex;align-items:center;justify-content:center;}
 .modal{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:24px;width:460px;max-width:92vw;max-height:85vh;overflow-y:auto;}
 .modal h3{margin:0 0 4px 0;font-family:var(--display);font-weight:600;font-size:20px;}
@@ -317,6 +335,7 @@ select.mini-add{background:var(--surface-2);border:1px solid var(--border);color
                 <button class="btn btn-sm" id="gz-prev" title="Earlier">◂</button>
                 <button class="btn btn-sm" id="gz-next" title="Later">▸</button>
                 <button class="btn btn-sm" id="gz-fit">Fit to data</button>
+                <button class="btn btn-sm" id="row-label-collapse-btn">Hide names</button>
                 <span class="spacer"></span>
                 <input type="text" id="gz-from" class="gz-date" placeholder="YYYY-MM-DD">
                 <span class="help-txt">to</span>
@@ -781,9 +800,8 @@ async function executePush(plan){
       lines.push("**Whimsical Materials**");
       if(item.embeds && item.embeds.length){
         item.embeds.forEach(em=>{
-          const href = em.kind==="image" ? em.imageUrl : em.url;
-          const extra = em.kind==="image" && em.link ? ` — source: ${em.link}` : "";
-          lines.push(`- [${em.label||"embed"}](${href})${extra}`);
+          lines.push(`- [${em.label||"Link"}](${em.url})`);
+          if(em.thumbnailUrl) lines.push(`  \n  ![${em.label||"thumbnail"}](${em.thumbnailUrl})`);
         });
       } else {
         lines.push("_none_");
@@ -874,18 +892,60 @@ function discardAbandonedDrafts(keepId){
   if(removedAny){ renderRoadmap(); renderTree(); renderDelivery(); updatePushButtonState(); }
 }
 
-function deleteItem(id){
+async function tryDeleteGithubIssue(target){
+  if(!target.github || !target.github.nodeId) return {attempted:false};
+  try{
+    const res = await fetch("https://api.github.com/graphql", {
+      method:"POST",
+      headers:{"Authorization":"Bearer "+CFG.token, "Content-Type":"application/json"},
+      body: JSON.stringify({query:"mutation($id:ID!){ deleteIssue(input:{issueId:$id}){ clientMutationId } }", variables:{id:target.github.nodeId}})
+    });
+    const json = await res.json();
+    if(json.errors && json.errors.length) throw new Error(json.errors[0].message);
+    return {attempted:true, deleted:true};
+  }catch(e){
+    // Most tokens can't actually delete issues — GitHub restricts that to org owners via GraphQL only.
+    // Fall back to closing it with an explanatory comment rather than silently leaving it untouched.
+    try{
+      await gh(`/repos/${CFG.owner}/${CFG.repo}/issues/${target.github.issueNumber}/comments`, {method:"POST", body:{body:"_Removed from the roadmap app. This token isn't permitted to delete GitHub issues, so it was closed instead of deleted._"}});
+      await gh(`/repos/${CFG.owner}/${CFG.repo}/issues/${target.github.issueNumber}`, {method:"PATCH", body:{state:"closed"}});
+      return {attempted:true, deleted:false, closed:true, reason:e.message};
+    }catch(e2){
+      return {attempted:true, deleted:false, closed:false, reason:e2.message};
+    }
+  }
+}
+
+async function deleteItem(id){
   const kids = descendants(id);
   const item = itemById(id);
+  const linked = [item, ...kids].filter(i=>i.github && i.github.issueNumber);
   const msg = kids.length
-    ? `Delete "${item.title}" and its ${kids.length} nested item(s) from the roadmap? Linked GitHub issues won't be touched.`
-    : `Delete "${item.title}" from the roadmap? Its linked GitHub issue (if any) won't be touched.`;
+    ? `Delete "${item.title}" and its ${kids.length} nested item(s)?${linked.length?` This will try to delete ${linked.length} linked GitHub issue(s) too (or close them, if this token can't delete issues).`:""}`
+    : `Delete "${item.title}"?${item.github&&item.github.issueNumber?" This will try to delete its linked GitHub issue (or close it, if this token can't delete issues).":""}`;
   if(!confirm(msg)) return;
   const ids = new Set([id, ...kids.map(k=>k.id)]);
+  ids.forEach(x=>draftItemIds.delete(x));
+
+  if(linked.length) toast(`Removing ${linked.length} linked GitHub issue(s)…`);
+  let deletedCount=0, closedCount=0, failedCount=0;
+  for(const target of linked){
+    const r = await tryDeleteGithubIssue(target);
+    if(r.deleted) deletedCount++;
+    else if(r.closed) closedCount++;
+    else if(r.attempted) failedCount++;
+  }
+  if(linked.length){
+    let summary = [];
+    if(deletedCount) summary.push(`${deletedCount} deleted`);
+    if(closedCount) summary.push(`${closedCount} closed instead (token can't delete)`);
+    if(failedCount) summary.push(`${failedCount} failed`);
+    toast(summary.join(", ") + ".", failedCount>0);
+  }
+
   DATA.items = DATA.items.filter(i=>!ids.has(i.id));
   DATA.items.forEach(i=>{ i.dependsOn = (i.dependsOn||[]).filter(d=>!ids.has(d)); });
-  ids.forEach(x=>draftItemIds.delete(x));
-  markDirty(); saveData(true);
+  markDirty(); await saveData(true);
   updatePushButtonState();
   closeDetailToList();
 }
@@ -1003,6 +1063,7 @@ document.getElementById("gz-out").addEventListener("click", ()=> zoomGantt(1.4))
 document.getElementById("gz-prev").addEventListener("click", ()=> panGantt(-0.3));
 document.getElementById("gz-next").addEventListener("click", ()=> panGantt(0.3));
 document.getElementById("gz-fit").addEventListener("click", fitGantt);
+document.getElementById("row-label-collapse-btn").addEventListener("click", toggleRowLabelCollapse);
 document.getElementById("gz-apply").addEventListener("click", ()=>{
   const from = document.getElementById("gz-from").value.trim();
   const to = document.getElementById("gz-to").value.trim();
@@ -1045,7 +1106,7 @@ function renderBacklogGutter(){
     const card = document.createElement("div");
     card.className = "backlog-card";
     card.innerHTML = `${escapeHtml(item.title)}<div class="ws-tag" style="color:${ws.color}">● ${escapeHtml(ws.name)}</div>`;
-    card.addEventListener("click", ()=> openDetail(item.id));
+    card.addEventListener("click", (e)=> openViewPopover(item.id, card));
     list.appendChild(card);
   });
 }
@@ -1064,9 +1125,17 @@ function renderGanttMonths(){
     cur = new Date(cur.getFullYear(), cur.getMonth()+1, 1);
   }
 }
+let rowLabelCollapsed = false;
+function rowLabelW(){ return rowLabelCollapsed ? 44 : 210; }
+function toggleRowLabelCollapse(){
+  rowLabelCollapsed = !rowLabelCollapsed;
+  document.getElementById("gantt-col").style.setProperty("--row-label-w", rowLabelW()+"px");
+  document.getElementById("row-label-collapse-btn").textContent = rowLabelCollapsed ? "Show names" : "Hide names";
+  renderRoadmap();
+}
 function renderMilestoneMarkers(totalHeight){
   const layer = document.getElementById("milestone-layer");
-  Object.assign(layer.style, {position:"absolute", top:"36px", left:"210px", right:"0", height:totalHeight+"px"});
+  Object.assign(layer.style, {position:"absolute", top:"36px", left:rowLabelW()+"px", right:"0", height:totalHeight+"px"});
   layer.innerHTML = "";
   DATA.milestones.filter(m=>m.due).forEach(m=>{
     const off = dayOffset(m.due);
@@ -1079,7 +1148,7 @@ function barStyle(item){
   const left = dayOffset(item.start), width = Math.max(dayOffset(item.end)-left, 0.5);
   const ws = wsMeta(item.workstreamId);
   const st = statusMeta(item.status);
-  return `left:calc(210px + ${pct(left)}); width:${pct(width)}; background:${ws.tint||"var(--surface-3)"}; border-left-color:${st.color};`;
+  return `left:calc(${rowLabelW()}px + ${pct(left)}); width:${pct(width)}; background:${ws.tint||"var(--surface-3)"}; border-left-color:${st.color};`;
 }
 function renderGanttBody(){
   const body = document.getElementById("gantt-body"); body.innerHTML=""; let rows=0;
@@ -1096,13 +1165,14 @@ function renderGanttBody(){
     features.forEach(f=>{
       const row = document.createElement("div"); row.className="gantt-row";
       const kids = childrenOf(f.id); const expanded = expandedFeatures.has(f.id);
-      row.innerHTML = `<div class="row-label">${kids.length?`<button class="expand-chevron" data-toggle="${f.id}">${expanded?"▾":"▸"}</button>`:`<span style="width:14px;display:inline-block;"></span>`}<span>${escapeHtml(f.title)}</span></div>
-        <div class="gantt-bar" style="${barStyle(f)}" data-item="${f.id}">${escapeHtml(f.title)}</div>`;
+      row.innerHTML = `<div class="row-label" title="${escapeAttr(f.title)}">${kids.length?`<button class="expand-chevron" data-toggle="${f.id}">${expanded?"▾":"▸"}</button>`:`<span style="width:14px;display:inline-block;"></span>`}<span>${escapeHtml(f.title)}</span></div>
+        <div class="gantt-bar" style="${barStyle(f)}" data-item="${f.id}" title="${escapeAttr(f.title)}">${escapeHtml(f.title)}</div>`;
       body.appendChild(row); rows++;
+      attachDragHandlers(row.querySelector(".gantt-bar"), f);
       if(expanded){
         kids.forEach(k=>{
-          if(k.start && k.end){ renderChildRow(body,k,1); rows++; }
-          childrenOf(k.id).forEach(gk=>{ if(gk.start && gk.end){ renderChildRow(body,gk,2); rows++; } });
+          renderChildRow(body,k,1); rows++;
+          childrenOf(k.id).forEach(gk=>{ renderChildRow(body,gk,2); rows++; });
         });
       }
     });
@@ -1111,14 +1181,167 @@ function renderGanttBody(){
 }
 function renderChildRow(body,item,depth){
   const row = document.createElement("div"); row.className="gantt-row child-row";
-  row.innerHTML = `<div class="row-label child" style="padding-left:${8+depth*16}px;">${item.type==="task"?"⚬ ":"↳ "}${escapeHtml(item.title)}</div>
-    <div class="gantt-bar child" style="${barStyle(item)}" data-item="${item.id}">${escapeHtml(item.title)}</div>`;
+  const hasDates = item.start && item.end;
+  row.innerHTML = `<div class="row-label child" style="padding-left:${8+depth*16}px;" title="${escapeAttr(item.title)}">${item.type==="task"?"⚬ ":"↳ "}${escapeHtml(item.title)}</div>
+    ${hasDates
+      ? `<div class="gantt-bar child" style="${barStyle(item)}" data-item="${item.id}" title="${escapeAttr(item.title)}">${escapeHtml(item.title)}</div>`
+      : `<div class="gantt-bar-empty" data-item="${item.id}" title="Click to set dates for &quot;${escapeAttr(item.title)}&quot;">no dates set</div>`}`;
   body.appendChild(row);
 }
+function openViewPopover(id, anchorEl){
+  const item = itemById(id);
+  if(!item) return;
+  closeViewPopover();
+  const ws = wsMeta(item.workstreamId), st = statusMeta(item.status), ms = msMeta(item.milestoneId);
+  const pushed = !!(item.github && item.github.issueNumber);
+  const pop = document.createElement("div");
+  pop.className = "view-popover"; pop.id = "view-popover";
+  pop.innerHTML = `
+    <div class="vp-head">
+      <span class="type-tag t-${item.type}">${item.type}</span>
+      <span class="status-dot" style="background:${st.color}"></span>${st.label}
+      ${pushed?'<span>· synced</span>':'<span>· not pushed</span>'}
+      <button class="vp-close" id="vp-close">&times;</button>
+    </div>
+    <div class="vp-title">${escapeHtml(item.title)}</div>
+    ${item.description?`<div class="vp-desc">${escapeHtml(item.description)}</div>`:""}
+    <div class="vp-meta">
+      <div><label>Workstream</label><span>${escapeHtml(ws.name)}</span></div>
+      <div><label>Size</label><span>${item.size||"—"}</span></div>
+      <div><label>Milestone</label><span>${ms?escapeHtml(ms.name):"Backlog"}</span></div>
+      ${item.type==="feature"?`<div><label>Value</label><span>${item.value||"—"}</span></div>`:"<div></div>"}
+      <div><label>Start</label><span>${item.start||"—"}</span></div>
+      <div><label>End</label><span>${item.end||"—"}</span></div>
+    </div>
+    <button class="btn btn-sm btn-primary btn-block" id="vp-edit">Open full view →</button>
+  `;
+  document.body.appendChild(pop);
+  const rect = anchorEl.getBoundingClientRect();
+  let top = rect.bottom + 8, left = rect.left;
+  const maxLeft = window.innerWidth - 336, maxTop = window.innerHeight - 30;
+  if(left > maxLeft) left = Math.max(8, maxLeft);
+  if(top > maxTop - 200) top = Math.max(8, rect.top - 8 - 300);
+  pop.style.left = left+"px"; pop.style.top = top+"px";
+  document.getElementById("vp-close").addEventListener("click", closeViewPopover);
+  document.getElementById("vp-edit").addEventListener("click", ()=>{ closeViewPopover(); openDetail(item.id); });
+  setTimeout(()=> document.addEventListener("click", vpOutsideClick), 0);
+  document.addEventListener("keydown", vpEscClose);
+}
+function openQuickDatePopover(id, anchorEl){
+  const item = itemById(id);
+  if(!item) return;
+  closeViewPopover();
+  const pop = document.createElement("div");
+  pop.className = "view-popover"; pop.id = "view-popover";
+  pop.innerHTML = `
+    <div class="vp-head">
+      <span class="type-tag t-${item.type}">${item.type}</span>
+      <button class="vp-close" id="vp-close">&times;</button>
+    </div>
+    <div class="vp-title">${escapeHtml(item.title)}</div>
+    <div class="field"><label>Start</label><input type="text" id="vp-start" value="${escapeAttr(item.start||"")}" placeholder="YYYY-MM-DD"></div>
+    <div class="field"><label>End</label><input type="text" id="vp-end" value="${escapeAttr(item.end||"")}" placeholder="YYYY-MM-DD"></div>
+    <button class="btn btn-sm btn-primary btn-block" id="vp-set-dates">Set dates</button>
+    <button class="btn btn-sm btn-block" id="vp-edit" style="margin-top:8px;">Open full view →</button>
+  `;
+  document.body.appendChild(pop);
+  const rect = anchorEl.getBoundingClientRect();
+  let top = rect.bottom + 8, left = rect.left;
+  const maxLeft = window.innerWidth - 336, maxTop = window.innerHeight - 30;
+  if(left > maxLeft) left = Math.max(8, maxLeft);
+  if(top > maxTop - 230) top = Math.max(8, rect.top - 8 - 260);
+  pop.style.left = left+"px"; pop.style.top = top+"px";
+  document.getElementById("vp-close").addEventListener("click", closeViewPopover);
+  document.getElementById("vp-edit").addEventListener("click", ()=>{ closeViewPopover(); openDetail(item.id); });
+  document.getElementById("vp-set-dates").addEventListener("click", ()=>{
+    const s = document.getElementById("vp-start").value.trim();
+    const e = document.getElementById("vp-end").value.trim();
+    if((s && !e) || (!s && e)){ toast("Enter both dates, or leave both blank to clear.", true); return; }
+    if(s && e && new Date(e) <= new Date(s)){ toast("End date must be after start date.", true); return; }
+    item.start = s || null; item.end = e || null;
+    touch(item); saveData(true);
+    closeViewPopover();
+    renderRoadmap();
+    toast("Dates updated.");
+  });
+  setTimeout(()=> document.addEventListener("click", vpOutsideClick), 0);
+  document.addEventListener("keydown", vpEscClose);
+}
+function vpOutsideClick(e){
+  const pop = document.getElementById("view-popover");
+  if(pop && !pop.contains(e.target)) closeViewPopover();
+}
+function vpEscClose(e){ if(e.key==="Escape") closeViewPopover(); }
+function closeViewPopover(){
+  const pop = document.getElementById("view-popover");
+  if(pop) pop.remove();
+  document.removeEventListener("click", vpOutsideClick);
+  document.removeEventListener("keydown", vpEscClose);
+}
+
+let dragState = null;
+let justDragged = false;
+
+function attachDragHandlers(barEl, item){
+  barEl.classList.add("draggable");
+  barEl.addEventListener("mousedown", (e)=>{
+    if(e.button !== 0) return;
+    e.preventDefault();
+    const scrollEl = document.getElementById("gantt-scroll");
+    dragState = { item, barEl, startX: e.clientX, dx: 0, moved:false, scrollEl };
+    barEl.classList.add("dragging");
+    document.addEventListener("mousemove", onBarDragMove);
+    document.addEventListener("mouseup", onBarDragEnd);
+  });
+}
+function onBarDragMove(e){
+  if(!dragState) return;
+  const dx = e.clientX - dragState.startX;
+  if(Math.abs(dx) > 3) dragState.moved = true;
+  dragState.dx = dx;
+  dragState.barEl.style.transform = `translateX(${dx}px)`;
+}
+function onBarDragEnd(e){
+  if(!dragState) return;
+  document.removeEventListener("mousemove", onBarDragMove);
+  document.removeEventListener("mouseup", onBarDragEnd);
+  const {item, barEl, dx, moved} = dragState;
+  barEl.classList.remove("dragging");
+  barEl.style.transform = "";
+  dragState = null;
+  if(!moved) return;
+  justDragged = true;
+  setTimeout(()=> justDragged=false, 0);
+
+  const innerWidth = document.getElementById("gantt-inner").getBoundingClientRect().width - rowLabelW();
+  const daysDelta = Math.round((dx / innerWidth) * TOTAL_DAYS);
+  if(daysDelta === 0) return;
+  const shift = ms => new Date(new Date(ms).getTime() + daysDelta*86400000).toISOString().slice(0,10);
+  item.start = shift(item.start); item.end = shift(item.end);
+  touch(item);
+
+  const kids = descendants(item.id);
+  const datedKids = kids.filter(k=>k.start||k.end);
+  if(datedKids.length){
+    datedKids.forEach(k=>{ k.start=null; k.end=null; touch(k); });
+    toast(`Moved "${item.title}" to ${item.start} – ${item.end}. Its ${datedKids.length} nested item(s) had their dates cleared — you'll need to set them again.`, true);
+  }else{
+    toast(`Moved "${item.title}" to ${item.start} – ${item.end}.`);
+  }
+  saveData(true);
+  renderRoadmap();
+}
+
 document.getElementById("gantt-body").addEventListener("click",(e)=>{
+  if(justDragged) return;
   const toggle = e.target.closest("[data-toggle]");
   if(toggle){ const id=toggle.dataset.toggle; expandedFeatures.has(id)?expandedFeatures.delete(id):expandedFeatures.add(id); renderRoadmap(); return; }
-  const bar = e.target.closest("[data-item]"); if(bar) openDetail(bar.dataset.item);
+  const bar = e.target.closest("[data-item]");
+  if(!bar) return;
+  const item = itemById(bar.dataset.item);
+  if(!item) return;
+  if(item.type === "feature") openViewPopover(item.id, bar);
+  else openQuickDatePopover(item.id, bar);
 });
 document.getElementById("btn-add-backlog").addEventListener("click", ()=>{
   if(!DATA.workstreams.length){ toast("Add a workstream first (Settings).", true); return; }
@@ -1252,12 +1475,166 @@ document.getElementById("btn-add-milestone").addEventListener("click", ()=> open
    DETAIL PAGE
    ============================================================ */
 function closeDetailToList(){ goToPage(lastPage); }
+let editCameFromView = false;
+function exitEditMode(id){ if(editCameFromView) openDetail(id, "view"); else closeDetailToList(); }
 
-function openDetail(id){
+function openDetail(id, mode){
   discardAbandonedDrafts(id);
+  const effectiveMode = mode || (draftItemIds.has(id) ? "edit" : "view");
+  if(effectiveMode === "edit") renderEditMode(id, mode==="edit" ? true : false);
+  else renderViewMode(id);
+}
+
+function renderViewMode(id){
   SELECTED_ID = id;
   const item = itemById(id);
   if(!item) return;
+  const isFeature = item.type==="feature";
+  const kids = childrenOf(item.id);
+  const all = [item, ...descendants(item.id)];
+  const linked = all.filter(i=>i.github&&i.github.issueNumber);
+  const done = linked.filter(i=>i.status==="done");
+  const deliveryPct = linked.length ? Math.round(done.length/linked.length*100) : 0;
+  const ms = msMeta(item.milestoneId);
+  const ws = wsMeta(item.workstreamId);
+  const st = statusMeta(item.status);
+  const parentItem = item.parentId ? itemById(item.parentId) : null;
+  const pushed = !!(item.github && item.github.issueNumber);
+  const deps = (item.dependsOn||[]).map(itemById).filter(Boolean);
+
+  document.getElementById("detail-wrap").innerHTML = `
+    <button class="detail-back" id="d-back">← Back</button>
+    <div style="float:right;display:flex;gap:8px;">
+      <button class="btn btn-sm btn-danger" id="p-delete-view">Delete</button>
+      <button class="btn btn-sm btn-primary" id="p-edit-btn">Edit</button>
+    </div>
+    <div class="detail-crumbs">
+      <span class="crumb-pill">${item.type}</span>
+      ${parentItem ? `<span class="crumb-pill" id="p-parent-crumb" style="cursor:pointer;">in ${escapeHtml(parentItem.title)}</span>` : ""}
+      ${ms ? `<span class="crumb-pill">${escapeHtml(ms.name)}</span>` : ""}
+      <span class="push-badge ${pushed?"synced":"pending"}">${pushed?`Synced — issue #${item.github.issueNumber}`:"Not yet pushed"}</span>
+      ${pushed ? `<a href="${escapeAttr(item.github.htmlUrl||'#')}" target="_blank" rel="noopener" class="help-txt">View on GitHub ↗</a>` : ""}
+    </div>
+    <div class="detail-title-input" style="cursor:default;">${escapeHtml(item.title)}</div>
+
+    <div class="detail-grid">
+      <div class="detail-col-left">
+        <section>
+          <h3>Description</h3>
+          ${item.description ? `<div class="view-prose">${escapeHtml(item.description)}</div>` : `<div class="view-empty">No description yet.</div>`}
+        </section>
+        ${isFeature ? `
+        <section>
+          <h3>Strategy</h3>
+          ${item.strategy ? `<div class="view-prose">${escapeHtml(item.strategy)}</div>` : `<div class="view-empty">No strategy noted.</div>`}
+        </section>` : ""}
+        <section>
+          <h3>Questions / notes</h3>
+          ${item.notes ? `<div class="view-prose">${escapeHtml(item.notes)}</div>` : `<div class="view-empty">None.</div>`}
+        </section>
+        <section>
+          <h3>Whimsical Materials</h3>
+          ${(item.embeds&&item.embeds.length) ? item.embeds.map(em=>`
+            <div class="embed-card">
+              <div class="embed-label"><a href="${escapeAttr(em.url)}" target="_blank" rel="noopener">${escapeHtml(em.label||"Link")}</a></div>
+              ${em.thumbnailUrl?`<img src="${escapeAttr(em.thumbnailUrl)}" alt="${escapeAttr(em.label||"thumbnail")}">`:""}
+            </div>`).join("") : `<div class="view-empty">No links added.</div>`}
+        </section>
+        <section>
+          <h3>Comments</h3>
+          <div id="p-comments"></div>
+          ${pushed ? `
+            <div class="comment-input-row">
+              <input type="text" class="name" id="p-comment-name" placeholder="Your name">
+              <input type="text" class="text" id="p-comment-text" placeholder="Add a comment…">
+              <button class="btn btn-sm btn-primary" id="p-comment-post">Post</button>
+            </div>
+            <div class="help-txt">Posts immediately to the linked GitHub issue. No need to edit to comment.</div>
+          ` : `<div class="help-txt">Comments unlock once this item has been pushed to GitHub.</div>`}
+        </section>
+      </div>
+
+      <div class="detail-col-right">
+        <div class="meta-card">
+          <div class="meta-grid">
+            <div class="meta-field"><label>Status</label><span class="ro"><span class="status-dot" style="background:${st.color}"></span> ${st.label}</span></div>
+            <div class="meta-field"><label>Size</label><span class="ro">${item.size||"—"}</span></div>
+            <div class="meta-field"><label>Workstream</label><span class="ro"><span class="chip-dot" style="background:${ws.color}"></span> ${escapeHtml(ws.name)}</span></div>
+            <div class="meta-field"><label>Milestone</label><span class="ro">${ms?escapeHtml(ms.name):"Backlog"}</span></div>
+            ${isFeature ? `<div class="meta-field"><label>Value</label><span class="ro">${item.value?item.value[0].toUpperCase()+item.value.slice(1):"—"}</span></div>` : `<div></div>`}
+            <div class="meta-field"><label>Start</label><span class="ro">${item.start||"—"}</span></div>
+            <div class="meta-field"><label>End</label><span class="ro">${item.end||"—"}</span></div>
+          </div>
+          <div class="dates-local-note">⌁ Start/End dates stay local — never written to GitHub.</div>
+        </div>
+
+        ${kids.length||pushed ? `
+        <div class="gh-card">
+          <div class="gh-card-head"><h4>GitHub delivery</h4><span class="gh-pct">${deliveryPct}%</span></div>
+          ${linked.length===0?`<div class="help-txt">No linked issues yet.</div>`:linked.map(i=>{
+            const icon = i.status==="done"?`<span class="ic ic-done">✓</span>`:i.status==="in-progress"?`<span class="ic ic-progress">◐</span>`:`<span class="ic ic-review">◯</span>`;
+            return `<div class="gh-issue-row">${icon}<div><div class="repo">${escapeHtml(CFG.owner)}/${escapeHtml(CFG.repo)} #${i.github.issueNumber}</div><a href="${escapeAttr(i.github.htmlUrl||'#')}" target="_blank" rel="noopener">${escapeHtml(i.title)}</a><div class="st">${statusMeta(i.status).label}</div></div></div>`;
+          }).join("")}
+        </div>` : ""}
+
+        ${item.type !== "task" ? `
+        <div class="meta-card">
+          <div class="section-label-sm"><span>${item.type==="feature" ? "Stories" : "Tasks"}</span></div>
+          ${kids.length===0 ? `<div class="view-empty">No ${item.type==="feature"?"stories":"tasks"} yet.</div>` : kids.map(k=>{
+            const kst = statusMeta(k.status);
+            return `<div class="dep-row" style="cursor:pointer;" data-nav="${k.id}"><span class="status-dot" style="background:${kst.color}"></span><span style="flex:1">${escapeHtml(k.title)}</span><span class="help-txt">${k.size||""}</span></div>`;
+          }).join("")}
+        </div>` : ""}
+
+        <div class="meta-card">
+          <div class="section-label-sm"><span>Dependencies</span></div>
+          <div class="help-txt" style="margin:-4px 0 8px 0;">Blocked by — this item can't be Done until these are.</div>
+          ${deps.length===0 ? `<div class="view-empty">No dependencies.</div>` : deps.map(d=>{
+            const dst = statusMeta(d.status);
+            return `<div class="dep-row" style="cursor:pointer;" data-nav="${d.id}"><span class="status-dot" style="background:${dst.color}"></span><span>${escapeHtml(d.title)}</span></div>`;
+          }).join("")}
+        </div>
+
+        <div class="meta-card">
+          <div class="section-label-sm"><span>Attachments</span></div>
+          ${(item.attachments&&item.attachments.length) ? item.attachments.map(a=>`<div class="attach-row"><a href="${escapeAttr(a.downloadUrl||'#')}" target="_blank" rel="noopener">${escapeHtml(a.name)}</a></div>`).join("") : `<div class="view-empty">No attachments.</div>`}
+        </div>
+      </div>
+    </div>
+  `;
+
+  document.getElementById("d-back").addEventListener("click", closeDetailToList);
+  document.getElementById("p-edit-btn").addEventListener("click", ()=> openDetail(item.id, "edit"));
+  document.getElementById("p-delete-view").addEventListener("click", ()=> deleteItem(item.id));
+  const parentCrumb = document.getElementById("p-parent-crumb");
+  if(parentCrumb) parentCrumb.addEventListener("click", ()=> openDetail(parentItem.id));
+  document.querySelectorAll("[data-nav]").forEach(el=> el.addEventListener("click", ()=> openDetail(el.dataset.nav)));
+
+  function renderComments(){
+    const el = document.getElementById("p-comments");
+    if(!item.comments || !item.comments.length){ el.innerHTML = `<div class="view-empty">No comments yet.</div>`; return; }
+    el.innerHTML = item.comments.map(c=>`<div class="comment"><div class="comment-meta">Commented by ${escapeHtml(c.name)}</div>${escapeHtml(c.text)}</div>`).join("");
+  }
+  renderComments();
+  if(pushed){
+    document.getElementById("p-comment-post").addEventListener("click", async ()=>{
+      const name = document.getElementById("p-comment-name").value.trim();
+      const text = document.getElementById("p-comment-text").value.trim();
+      if(!name||!text){ toast("Name and comment are both required.", true); return; }
+      await postComment(item, name, text);
+      document.getElementById("p-comment-text").value="";
+      renderComments();
+    });
+  }
+
+  goToPage("detail");
+}
+
+function renderEditMode(id, fromView){
+  SELECTED_ID = id;
+  const item = itemById(id);
+  if(!item) return;
+  editCameFromView = !!fromView;
   const isFeature = item.type==="feature";
   const kids = childrenOf(item.id);
   const all = [item, ...descendants(item.id)];
@@ -1269,7 +1646,7 @@ function openDetail(id){
   const pushed = !!(item.github && item.github.issueNumber);
 
   document.getElementById("detail-wrap").innerHTML = `
-    <button class="detail-back" id="d-back">← Back</button>
+    <button class="detail-back" id="d-back">${fromView ? "← Cancel" : "← Back"}</button>
     <button class="btn btn-sm btn-primary" id="p-save-btn" style="float:right;">Save</button>
     <div class="detail-crumbs">
       <span class="crumb-pill">${item.type}</span>
@@ -1291,12 +1668,6 @@ function openDetail(id){
           <h3>Strategy</h3>
           <textarea rows="3" id="p-strategy" placeholder="Why this, why now">${escapeHtml(item.strategy)}</textarea>
         </section>` : ""}
-        ${item.type !== "task" ? `
-        <section>
-          <h3>${item.type==="feature" ? "Stories" : "Tasks"}</h3>
-          <div id="p-children"></div>
-          <button class="add-embed-btn" id="p-add-child">+ add ${item.type==="feature" ? "story" : "task"}</button>
-        </section>` : ""}
         <section>
           <h3>Questions / notes</h3>
           <textarea rows="3" id="p-notes">${escapeHtml(item.notes)}</textarea>
@@ -1305,7 +1676,8 @@ function openDetail(id){
         <section>
           <h3>Whimsical Materials</h3>
           <div id="p-embeds"></div>
-          <button class="add-embed-btn" id="p-add-embed">+ paste an iframe embed or URL — or paste (⌘/Ctrl+V) a screenshot</button>
+          <button class="add-embed-btn" id="p-add-embed">+ add link</button>
+          <input type="file" id="p-embed-thumb-input" accept="image/*" style="display:none;">
         </section>
         <section>
           <h3>Comments</h3>
@@ -1348,6 +1720,13 @@ function openDetail(id){
           }).join("")}
         </div>` : ""}
 
+        ${item.type !== "task" ? `
+        <div class="meta-card">
+          <div class="section-label-sm"><span>${item.type==="feature" ? "Stories" : "Tasks"}</span></div>
+          <div id="p-children"></div>
+          <button class="add-embed-btn" id="p-add-child">+ add ${item.type==="feature" ? "story" : "task"}</button>
+        </div>` : ""}
+
         <div class="meta-card">
           <div class="section-label-sm"><span>Dependencies</span></div>
           <div class="help-txt" style="margin:-4px 0 8px 0;">Blocked by — this item can't be Done until these are.</div>
@@ -1369,8 +1748,8 @@ function openDetail(id){
     </div>
   `;
 
-  document.getElementById("d-back").addEventListener("click", closeDetailToList);
-  document.getElementById("p-save-btn").addEventListener("click", async ()=>{ draftItemIds.delete(item.id); markDirty(); await saveData(true); updatePushButtonState(); toast("Saved — this item will stick around now."); });
+  document.getElementById("d-back").addEventListener("click", ()=> exitEditMode(item.id));
+  document.getElementById("p-save-btn").addEventListener("click", async ()=>{ draftItemIds.delete(item.id); markDirty(); await saveData(true); updatePushButtonState(); toast("Saved."); exitEditMode(item.id); });
   const parentCrumb = document.getElementById("p-parent-crumb");
   if(parentCrumb) parentCrumb.addEventListener("click", ()=> openDetail(parentItem.id));
   document.getElementById("p-delete").addEventListener("click", ()=> deleteItem(item.id));
@@ -1430,37 +1809,67 @@ function openDetail(id){
       if(draftItemIds.has(item.id)){ draftItemIds.delete(item.id); markDirty(); await saveData(true); }
       const childType = item.type==="feature" ? "story" : "task";
       const child = createItem(childType, item.workstreamId, item.milestoneId, item.id);
-      openDetail(child.id);
+      renderChildren();
+      toast(`${childType==="story"?"Story":"Task"} added below — click it to edit and keep it.`);
     });
   }
 
-  // embeds (iframe links and pasted images/screenshots)
+  // Whimsical Materials: links only, with an optional thumbnail screenshot. Fully editable.
+  let pendingThumbTarget = null; // index of the embed waiting for a thumbnail upload
   function renderEmbeds(){
     const el = document.getElementById("p-embeds"); el.innerHTML="";
     (item.embeds||[]).forEach((em,idx)=>{
       const card = document.createElement("div"); card.className="embed-card";
-      if(em.kind === "image"){
-        card.innerHTML = `<div class="embed-label"><span>${escapeHtml(em.label||"Screenshot")}</span>${em.link?`<a href="${escapeAttr(em.link)}" target="_blank" rel="noopener" class="help-txt">Source ↗</a>`:""}<button data-rm="${idx}" style="background:none;border:none;color:var(--text-faint);">&times;</button></div>
-          <img src="${escapeAttr(em.imageUrl)}" alt="${escapeAttr(em.label||"Screenshot")}">`;
-      }else{
-        card.innerHTML = `<div class="embed-label"><span>${escapeHtml(em.label)}</span><a href="${escapeAttr(em.url)}" target="_blank" rel="noopener" class="help-txt">Open ↗</a><button data-rm="${idx}" style="background:none;border:none;color:var(--text-faint);">&times;</button></div>
-          <iframe src="${escapeAttr(em.url)}" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>`;
-      }
+      card.innerHTML = `<div class="embed-label">
+          <a href="${escapeAttr(em.url)}" target="_blank" rel="noopener">${escapeHtml(em.label||"Link")}</a>
+          <button data-edit="${idx}" class="link-btn">Edit</button>
+          ${em.thumbnailUrl?`<button data-rmthumb="${idx}" class="link-btn">Remove thumbnail</button>`:`<button data-addthumb="${idx}" class="link-btn">+ thumbnail</button>`}
+          <button data-rm="${idx}" style="background:none;border:none;color:var(--text-faint);">&times;</button>
+        </div>
+        ${em.thumbnailUrl ? `<img src="${escapeAttr(em.thumbnailUrl)}" alt="${escapeAttr(em.label||"thumbnail")}">` : `<div class="help-txt">No thumbnail.</div>`}`;
       card.querySelector("[data-rm]").addEventListener("click", ()=>{ item.embeds.splice(idx,1); touch(item); saveData(true); renderEmbeds(); });
+      card.querySelector("[data-edit]").addEventListener("click", ()=>{
+        const newLabel = prompt("Label:", em.label||""); if(newLabel===null) return;
+        const newUrl = prompt("Link URL:", em.url||""); if(newUrl===null) return;
+        if(!/^https?:\/\//i.test(newUrl.trim())){ toast("That doesn't look like a URL.", true); return; }
+        em.label = newLabel.trim() || "Link"; em.url = newUrl.trim();
+        touch(item); saveData(true); renderEmbeds();
+      });
+      const addThumbBtn = card.querySelector("[data-addthumb]");
+      if(addThumbBtn) addThumbBtn.addEventListener("click", ()=>{ pendingThumbTarget = idx; document.getElementById("p-embed-thumb-input").click(); });
+      const rmThumbBtn = card.querySelector("[data-rmthumb]");
+      if(rmThumbBtn) rmThumbBtn.addEventListener("click", ()=>{ em.thumbnailUrl=null; touch(item); saveData(true); renderEmbeds(); });
       el.appendChild(card);
     });
   }
   renderEmbeds();
   document.getElementById("p-add-embed").addEventListener("click", ()=>{
-    const pasted = prompt("Paste an iframe embed snippet or a plain URL. Or just paste (Ctrl/Cmd+V) an image anywhere on this page to attach a screenshot instead.\n\nFor Whimsical: Share → Embed (not the regular board link) — and enable public access if others need to see it without logging in.");
-    if(!pasted) return;
-    const m = pasted.match(/<iframe[^>]+src=["']([^"']+)["']/i);
-    let url = m ? m[1] : pasted.trim();
-    if(!/^https?:\/\//i.test(url)){ toast("That doesn't look like a URL.", true); return; }
-    const label = prompt("Label for this embed:", "Embed") || "Embed";
+    const url = prompt("Link URL (e.g. your Whimsical board, Figma file, Google Doc):");
+    if(!url) return;
+    if(!/^https?:\/\//i.test(url.trim())){ toast("That doesn't look like a URL.", true); return; }
+    const label = prompt("Label:", "Link") || "Link";
     item.embeds = item.embeds || [];
-    item.embeds.push({kind:"iframe", label, url});
+    item.embeds.push({label: label.trim()||"Link", url: url.trim(), thumbnailUrl:null});
     touch(item); saveData(true); renderEmbeds();
+    if(confirm("Attach a thumbnail screenshot for this link now?")){
+      pendingThumbTarget = item.embeds.length-1;
+      document.getElementById("p-embed-thumb-input").click();
+    }
+  });
+  document.getElementById("p-embed-thumb-input").addEventListener("change", async (e)=>{
+    const file = e.target.files[0];
+    e.target.value = "";
+    if(!file || pendingThumbTarget==null) return;
+    const idx = pendingThumbTarget; pendingThumbTarget = null;
+    const target = (item.embeds||[])[idx];
+    if(!target) return;
+    toast("Uploading thumbnail…");
+    try{
+      const meta = await uploadAttachment(item.id, file);
+      target.thumbnailUrl = meta.downloadUrl;
+      touch(item); await saveData(true); renderEmbeds();
+      toast("Thumbnail added.");
+    }catch(err){ toast("Thumbnail upload failed: "+err.message, true); }
   });
 
   // comments
@@ -1535,30 +1944,6 @@ function openDetail(id){
 
   goToPage("detail");
 }
-
-document.addEventListener("paste", async (e)=>{
-  if(!CFG || !document.getElementById("page-detail").classList.contains("active")) return;
-  const item = itemById(SELECTED_ID);
-  if(!item) return;
-  const dt = e.clipboardData;
-  if(!dt || !dt.items) return;
-  let file = null;
-  for(const it of dt.items){ if(it.type && it.type.indexOf("image/")===0){ file = it.getAsFile(); break; } }
-  if(!file) return; // not an image paste — let normal text paste behave normally
-  e.preventDefault();
-  const link = prompt("Optional link for this screenshot (e.g. the full Whimsical board). Leave blank to skip:") || "";
-  if(link && !/^https?:\/\//i.test(link)){ toast("That link didn't look like a URL — saved without one.", true); }
-  toast("Uploading screenshot…");
-  try{
-    const meta = await uploadAttachment(item.id, file);
-    item.embeds = item.embeds || [];
-    item.embeds.push({kind:"image", label:"Screenshot", imageUrl: meta.downloadUrl, link: /^https?:\/\//i.test(link) ? link : ""});
-    touch(item);
-    await saveData(true);
-    toast("Screenshot added.");
-    if(SELECTED_ID === item.id) openDetail(item.id);
-  }catch(err){ toast("Screenshot upload failed: "+err.message, true); }
-});
 
 /* ============================================================
    GENERIC MODAL
