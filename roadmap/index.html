@@ -253,6 +253,7 @@ select.mini-add{background:var(--surface-2);border:1px solid var(--border);color
 .tag{font-family:var(--mono);font-size:10px;padding:1px 5px;border-radius:3px;flex-shrink:0;}
 .tag-new{background:var(--accent-soft);color:var(--accent);}
 .tag-update{background:#20303A;color:var(--info);}
+.tag-close{background:#3A2020;color:var(--danger);}
 .modal-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:4px;}
 .push-log{max-height:200px;overflow-y:auto;font-family:var(--mono);font-size:11px;background:var(--surface-2);border-radius:4px;padding:10px;margin-bottom:14px;white-space:pre-wrap;}
 .ws-row{display:flex;align-items:center;gap:8px;background:var(--surface-2);border:1px solid var(--border);border-radius:4px;padding:6px 9px;margin-bottom:6px;font-size:12.5px;}
@@ -652,13 +653,14 @@ function buildPushPlan(){
     const willHaveIssue = (i.github&&i.github.issueNumber) || newIssues.includes(i);
     return willHaveIssue;
   });
-  return {newMilestones, newIssues, updates, subLinks, depLinks, commentsNeeded};
+  const deletions = DATA.pendingDeletions || [];
+  return {newMilestones, newIssues, updates, subLinks, depLinks, commentsNeeded, deletions};
 }
 
 function updatePushButtonState(){
   if(!DATA) return;
   const plan = buildPushPlan();
-  const total = plan.newMilestones.length + plan.newIssues.length + plan.updates.length + plan.subLinks.length + plan.depLinks.length;
+  const total = plan.newMilestones.length + plan.newIssues.length + plan.updates.length + plan.subLinks.length + plan.depLinks.length + plan.deletions.length;
   const btn = document.getElementById("btn-push-open");
   if(total > 0){
     btn.classList.remove("quiet"); btn.classList.add("attn");
@@ -671,6 +673,7 @@ function updatePushButtonState(){
 
 function renderPushPreview(){
   const plan = buildPushPlan();
+  const total = plan.newIssues.length+plan.updates.length+plan.newMilestones.length+plan.subLinks.length+plan.depLinks.length+plan.deletions.length;
   const html = `
     <h3>Push to GitHub</h3>
     <div class="sub">${escapeHtml(CFG.owner)}/${escapeHtml(CFG.repo)} · ${escapeHtml(CFG.branch)}</div>
@@ -679,16 +682,18 @@ function renderPushPreview(){
       <div class="stat"><div class="n">${plan.updates.length}</div><div class="l">Updates</div></div>
       <div class="stat"><div class="n">${plan.newMilestones.length}</div><div class="l">Milestones</div></div>
       <div class="stat"><div class="n">${plan.subLinks.length+plan.depLinks.length}</div><div class="l">Links</div></div>
+      <div class="stat"><div class="n">${plan.deletions.length}</div><div class="l">To close</div></div>
     </div>
     <div class="push-list">
       ${plan.newMilestones.map(m=>`<div class="push-item"><span>${escapeHtml(m.name)} (milestone, due ${escapeHtml(m.due||"—")})</span><span class="tag tag-new">new</span></div>`).join("")}
       ${plan.newIssues.map(i=>`<div class="push-item"><span>${"↳ ".repeat(itemDepth(i))}${escapeHtml(i.title)}</span><span class="tag tag-new">new</span></div>`).join("")}
       ${plan.updates.map(i=>`<div class="push-item"><span>${escapeHtml(i.title)}</span><span class="tag tag-update">update</span></div>`).join("")}
-      ${plan.newIssues.length+plan.updates.length+plan.newMilestones.length===0 ? `<div class="push-item"><span>Nothing to push — everything's in sync.</span></div>` : ""}
+      ${plan.deletions.map(d=>`<div class="push-item"><span>${escapeHtml(d.title)} — #${d.issueNumber}</span><span class="tag tag-close">close: not planned</span></div>`).join("")}
+      ${total===0 ? `<div class="push-item"><span>Nothing to push — everything's in sync.</span></div>` : ""}
     </div>
     <div class="modal-actions">
       <button class="btn" id="pp-cancel">Cancel</button>
-      <button class="btn btn-primary" id="pp-confirm" ${plan.newIssues.length+plan.updates.length+plan.newMilestones.length+plan.subLinks.length+plan.depLinks.length===0?"disabled":""}>Confirm push</button>
+      <button class="btn btn-primary" id="pp-confirm" ${total===0?"disabled":""}>Confirm push</button>
     </div>
   `;
   openModal(html, ()=>{
@@ -817,10 +822,23 @@ async function executePush(plan){
       }catch(e){ say(`  (notes/materials comment failed: ${e.message})`); }
     }
 
+    // 9. close issues queued for deletion, as "not planned"
+    const remainingDeletions = [];
+    for(const d of plan.deletions){
+      say(`Closing issue #${d.issueNumber} ("${d.title}") as not planned…`);
+      try{
+        await gh(`/repos/${CFG.owner}/${CFG.repo}/issues/${d.issueNumber}`, {method:"PATCH", body:{state:"closed", state_reason:"not_planned"}});
+      }catch(e){
+        say(`  (close failed: ${e.message} — will retry on next push)`);
+        remainingDeletions.push(d);
+      }
+    }
+    DATA.pendingDeletions = remainingDeletions;
+
     say("Saving roadmap data…");
     await saveData(true);
     say("Done.");
-    toast(`Pushed: ${plan.newIssues.length} new, ${plan.updates.length} updated, ${plan.newMilestones.length} milestone(s).`);
+    toast(`Pushed: ${plan.newIssues.length} new, ${plan.updates.length} updated, ${plan.newMilestones.length} milestone(s), ${plan.deletions.length-remainingDeletions.length} closed.`);
   }catch(e){
     say("Push stopped: " + e.message);
     try{ await saveData(true); }catch(e2){}
@@ -869,7 +887,7 @@ function createItem(type, workstreamId, milestoneId, parentId){
   const now = nowIso();
   const item = {
     id: uid("item"), type, parentId: parentId||null, title:"New "+type, description:"",
-    strategy:"", value:"", size:"M", notes:"",
+    strategy:"", value:"", size:"", notes:"",
     workstreamId, milestoneId: milestoneId||null, status:"backlog",
     start:null, end:null, dependsOn:[], embeds:[], attachments:[], comments:[],
     github:null, createdAt:now, updatedAt:now
@@ -892,62 +910,26 @@ function discardAbandonedDrafts(keepId){
   if(removedAny){ renderRoadmap(); renderTree(); renderDelivery(); updatePushButtonState(); }
 }
 
-async function tryDeleteGithubIssue(target){
-  if(!target.github || !target.github.nodeId) return {attempted:false};
-  try{
-    const res = await fetch("https://api.github.com/graphql", {
-      method:"POST",
-      headers:{"Authorization":"Bearer "+CFG.token, "Content-Type":"application/json"},
-      body: JSON.stringify({query:"mutation($id:ID!){ deleteIssue(input:{issueId:$id}){ clientMutationId } }", variables:{id:target.github.nodeId}})
-    });
-    const json = await res.json();
-    if(json.errors && json.errors.length) throw new Error(json.errors[0].message);
-    return {attempted:true, deleted:true};
-  }catch(e){
-    // Most tokens can't actually delete issues — GitHub restricts that to org owners via GraphQL only.
-    // Fall back to closing it with an explanatory comment rather than silently leaving it untouched.
-    try{
-      await gh(`/repos/${CFG.owner}/${CFG.repo}/issues/${target.github.issueNumber}/comments`, {method:"POST", body:{body:"_Removed from the roadmap app. This token isn't permitted to delete GitHub issues, so it was closed instead of deleted._"}});
-      await gh(`/repos/${CFG.owner}/${CFG.repo}/issues/${target.github.issueNumber}`, {method:"PATCH", body:{state:"closed"}});
-      return {attempted:true, deleted:false, closed:true, reason:e.message};
-    }catch(e2){
-      return {attempted:true, deleted:false, closed:false, reason:e2.message};
-    }
-  }
-}
-
-async function deleteItem(id){
+function deleteItem(id){
   const kids = descendants(id);
   const item = itemById(id);
   const linked = [item, ...kids].filter(i=>i.github && i.github.issueNumber);
   const msg = kids.length
-    ? `Delete "${item.title}" and its ${kids.length} nested item(s)?${linked.length?` This will try to delete ${linked.length} linked GitHub issue(s) too (or close them, if this token can't delete issues).`:""}`
-    : `Delete "${item.title}"?${item.github&&item.github.issueNumber?" This will try to delete its linked GitHub issue (or close it, if this token can't delete issues).":""}`;
+    ? `Delete "${item.title}" and its ${kids.length} nested item(s)?${linked.length?` ${linked.length} linked GitHub issue(s) will be closed as "not planned" on your next push.`:""}`
+    : `Delete "${item.title}"?${item.github&&item.github.issueNumber?` Its linked GitHub issue will be closed as "not planned" on your next push.`:""}`;
   if(!confirm(msg)) return;
   const ids = new Set([id, ...kids.map(k=>k.id)]);
   ids.forEach(x=>draftItemIds.delete(x));
 
-  if(linked.length) toast(`Removing ${linked.length} linked GitHub issue(s)…`);
-  let deletedCount=0, closedCount=0, failedCount=0;
-  for(const target of linked){
-    const r = await tryDeleteGithubIssue(target);
-    if(r.deleted) deletedCount++;
-    else if(r.closed) closedCount++;
-    else if(r.attempted) failedCount++;
-  }
-  if(linked.length){
-    let summary = [];
-    if(deletedCount) summary.push(`${deletedCount} deleted`);
-    if(closedCount) summary.push(`${closedCount} closed instead (token can't delete)`);
-    if(failedCount) summary.push(`${failedCount} failed`);
-    toast(summary.join(", ") + ".", failedCount>0);
-  }
+  DATA.pendingDeletions = DATA.pendingDeletions || [];
+  linked.forEach(i=> DATA.pendingDeletions.push({issueNumber: i.github.issueNumber, title: i.title}));
 
   DATA.items = DATA.items.filter(i=>!ids.has(i.id));
   DATA.items.forEach(i=>{ i.dependsOn = (i.dependsOn||[]).filter(d=>!ids.has(d)); });
-  markDirty(); await saveData(true);
+  markDirty(); saveData(true);
   updatePushButtonState();
   closeDetailToList();
+  if(linked.length) toast(`Removed. ${linked.length} GitHub issue(s) queued to close as "not planned" on your next push.`);
 }
 
 /* ============================================================
@@ -1561,7 +1543,7 @@ function renderViewMode(id){
             <div class="meta-field"><label>Size</label><span class="ro">${item.size||"—"}</span></div>
             <div class="meta-field"><label>Workstream</label><span class="ro"><span class="chip-dot" style="background:${ws.color}"></span> ${escapeHtml(ws.name)}</span></div>
             <div class="meta-field"><label>Milestone</label><span class="ro">${ms?escapeHtml(ms.name):"Backlog"}</span></div>
-            ${isFeature ? `<div class="meta-field"><label>Value</label><span class="ro">${item.value?item.value[0].toUpperCase()+item.value.slice(1):"—"}</span></div>` : `<div></div>`}
+            ${isFeature ? `<div class="meta-field"><label>Value</label><span class="ro">${item.value?item.value[0].toUpperCase()+item.value.slice(1):"—"}</span></div><div></div>` : ``}
             <div class="meta-field"><label>Start</label><span class="ro">${item.start||"—"}</span></div>
             <div class="meta-field"><label>End</label><span class="ro">${item.end||"—"}</span></div>
           </div>
@@ -1644,6 +1626,11 @@ function renderEditMode(id, fromView){
   const ms = msMeta(item.milestoneId);
   const parentItem = item.parentId ? itemById(item.parentId) : null;
   const pushed = !!(item.github && item.github.issueNumber);
+  const draft = {
+    title:item.title, description:item.description, strategy:item.strategy, notes:item.notes,
+    status:item.status, size:item.size, workstreamId:item.workstreamId, milestoneId:item.milestoneId,
+    value:item.value, start:item.start, end:item.end
+  };
 
   document.getElementById("detail-wrap").innerHTML = `
     <button class="detail-back" id="d-back">${fromView ? "← Cancel" : "← Back"}</button>
@@ -1704,7 +1691,7 @@ function renderEditMode(id, fromView){
               <button class="pill val-low ${item.value==='low'?'active':''}" data-v="low">Low</button>
               <button class="pill val-medium ${item.value==='medium'?'active':''}" data-v="medium">Med</button>
               <button class="pill val-high ${item.value==='high'?'active':''}" data-v="high">High</button>
-            </div></div>` : `<div></div>`}
+            </div></div><div></div>` : ``}
             <div class="meta-field"><label>Start</label><input type="text" id="p-start" value="${escapeAttr(item.start||"")}" placeholder="YYYY-MM-DD"></div>
             <div class="meta-field"><label>End</label><input type="text" id="p-end" value="${escapeAttr(item.end||"")}" placeholder="YYYY-MM-DD"></div>
           </div>
@@ -1743,46 +1730,57 @@ function renderEditMode(id, fromView){
           <div class="help-txt" id="p-upload-status"></div>
         </div>
 
-        <button class="btn btn-danger btn-sm" id="p-delete">Delete item</button>
+        ${draftItemIds.has(item.id) ? "" : `<button class="btn btn-danger btn-sm" id="p-delete">Delete item</button>`}
       </div>
     </div>
   `;
 
   document.getElementById("d-back").addEventListener("click", ()=> exitEditMode(item.id));
-  document.getElementById("p-save-btn").addEventListener("click", async ()=>{ draftItemIds.delete(item.id); markDirty(); await saveData(true); updatePushButtonState(); toast("Saved."); exitEditMode(item.id); });
+  document.getElementById("p-save-btn").addEventListener("click", async ()=>{
+    Object.assign(item, draft);
+    item.updatedAt = nowIso();
+    draftItemIds.delete(item.id);
+    markDirty();
+    await saveData(true);
+    updatePushButtonState();
+    toast("Saved.");
+    exitEditMode(item.id);
+  });
   const parentCrumb = document.getElementById("p-parent-crumb");
   if(parentCrumb) parentCrumb.addEventListener("click", ()=> openDetail(parentItem.id));
-  document.getElementById("p-delete").addEventListener("click", ()=> deleteItem(item.id));
+  const delBtn = document.getElementById("p-delete");
+  if(delBtn) delBtn.addEventListener("click", ()=> deleteItem(item.id));
 
-  document.getElementById("p-title").addEventListener("input", e=>{ item.title=e.target.value; touch(item); });
-  document.getElementById("p-title").addEventListener("change", ()=> saveData(true));
-  document.getElementById("p-desc").addEventListener("input", e=>{ item.description=e.target.value; touch(item); });
-  document.getElementById("p-desc").addEventListener("change", ()=> saveData(true));
+  document.getElementById("p-title").addEventListener("input", e=>{ draft.title=e.target.value; });
+  document.getElementById("p-desc").addEventListener("input", e=>{ draft.description=e.target.value; });
   if(isFeature){
-    document.getElementById("p-strategy").addEventListener("input", e=>{ item.strategy=e.target.value; touch(item); });
-    document.getElementById("p-strategy").addEventListener("change", ()=> saveData(true));
+    document.getElementById("p-strategy").addEventListener("input", e=>{ draft.strategy=e.target.value; });
   }
-  document.getElementById("p-notes").addEventListener("input", e=>{ item.notes=e.target.value; touch(item); });
-  document.getElementById("p-notes").addEventListener("change", ()=> saveData(true));
+  document.getElementById("p-notes").addEventListener("input", e=>{ draft.notes=e.target.value; });
 
   const bindSelect = (elId, prop, transform)=>{
     document.getElementById(elId).addEventListener("change", e=>{
-      item[prop] = transform ? transform(e.target.value) : (e.target.value||null);
-      touch(item); saveData(true);
+      draft[prop] = transform ? transform(e.target.value) : (e.target.value||null);
     });
   };
   bindSelect("p-status","status");
   bindSelect("p-size","size");
   bindSelect("p-ws","workstreamId");
-  bindSelect("p-ms","milestoneId", v=>v||null);
-  document.getElementById("p-start").addEventListener("change", e=>{ item.start=e.target.value||null; touch(item); saveData(true); renderRoadmap(); });
-  document.getElementById("p-end").addEventListener("change", e=>{ item.end=e.target.value||null; touch(item); saveData(true); renderRoadmap(); });
+  document.getElementById("p-ms").addEventListener("change", e=>{
+    draft.milestoneId = e.target.value || null;
+    if(draft.milestoneId && draft.status==="backlog"){
+      draft.status = "planned";
+      document.getElementById("p-status").value = "planned";
+    }
+  });
+  document.getElementById("p-start").addEventListener("change", e=>{ draft.start=e.target.value||null; });
+  document.getElementById("p-end").addEventListener("change", e=>{ draft.end=e.target.value||null; });
 
   if(isFeature){
     document.querySelectorAll("#p-value .pill").forEach(p=>{
       p.addEventListener("click", ()=>{
         document.querySelectorAll("#p-value .pill").forEach(x=>x.classList.remove("active"));
-        p.classList.add("active"); item.value=p.dataset.v; touch(item); saveData(true);
+        p.classList.add("active"); draft.value=p.dataset.v;
       });
     });
   }
