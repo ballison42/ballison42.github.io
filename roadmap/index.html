@@ -70,6 +70,11 @@ a{color:var(--accent);text-decoration:none;}
 .sync-status{font-family:var(--mono);font-size:11px;color:var(--accent);white-space:nowrap;}
 .sync-status.clean{color:var(--text-faint);}
 .sync-status.err{color:var(--danger);}
+#btn-push-open{transition:box-shadow .2s, background .2s;}
+#btn-push-open.quiet{background:var(--surface-2);border-color:var(--border);color:var(--text-dim);font-weight:500;}
+#btn-push-open.attn{background:#EDEDEC;border-color:#EDEDEC;color:#141414;font-weight:700;box-shadow:0 0 0 3px var(--accent-soft), 0 0 16px rgba(76,141,246,.6);animation:push-pulse 1.8s ease-in-out infinite;}
+#btn-push-open .push-count{display:inline-block;background:var(--accent);color:#fff;border-radius:20px;padding:0 6px;font-size:10.5px;margin-left:6px;}
+@keyframes push-pulse{0%,100%{box-shadow:0 0 0 3px var(--accent-soft), 0 0 10px rgba(76,141,246,.4);} 50%{box-shadow:0 0 0 6px var(--accent-soft), 0 0 22px rgba(76,141,246,.75);}}
 
 .page-content{flex:1;overflow:auto;}
 .page{display:none;height:100%;}
@@ -285,7 +290,7 @@ select.mini-add{background:var(--surface-2);border:1px solid var(--border);color
         <div class="search-box">Search roadmap, GitHub…</div>
         <div class="spacer"></div>
         <span class="sync-status clean" id="sync-status">synced</span>
-        <button class="btn btn-sm btn-primary" id="btn-push-open">Push to GitHub</button>
+        <button class="btn btn-sm quiet" id="btn-push-open">Push to GitHub</button>
       </div>
 
       <div class="page-content">
@@ -607,6 +612,20 @@ function buildPushPlan(){
   return {newMilestones, newIssues, updates, subLinks, depLinks, commentsNeeded};
 }
 
+function updatePushButtonState(){
+  if(!DATA) return;
+  const plan = buildPushPlan();
+  const total = plan.newMilestones.length + plan.newIssues.length + plan.updates.length + plan.subLinks.length + plan.depLinks.length;
+  const btn = document.getElementById("btn-push-open");
+  if(total > 0){
+    btn.classList.remove("quiet"); btn.classList.add("attn");
+    btn.innerHTML = `Push to GitHub<span class="push-count">${total}</span>`;
+  }else{
+    btn.classList.remove("attn"); btn.classList.add("quiet");
+    btn.textContent = "Push to GitHub";
+  }
+}
+
 function renderPushPreview(){
   const plan = buildPushPlan();
   const html = `
@@ -761,6 +780,7 @@ async function executePush(plan){
     try{ await saveData(true); }catch(e2){}
     toast("Push hit an error, partial progress was saved. See log.", true);
   }finally{
+    updatePushButtonState();
     document.getElementById("pp-done") && (document.getElementById("pp-done").disabled=false, document.getElementById("pp-done").textContent="Close", document.getElementById("pp-done").addEventListener("click", ()=>{ closeModal(); renderAll(); }));
   }
 }
@@ -810,9 +830,10 @@ function createItem(type, workstreamId, milestoneId, parentId){
   DATA.items.push(item);
   markDirty();
   saveData(true);
+  updatePushButtonState();
   return item;
 }
-function touch(item){ item.updatedAt = nowIso(); markDirty(); }
+function touch(item){ item.updatedAt = nowIso(); markDirty(); updatePushButtonState(); }
 
 function deleteItem(id){
   const kids = descendants(id);
@@ -825,6 +846,7 @@ function deleteItem(id){
   DATA.items = DATA.items.filter(i=>!ids.has(i.id));
   DATA.items.forEach(i=>{ i.dependsOn = (i.dependsOn||[]).filter(d=>!ids.has(d)); });
   markDirty(); saveData(true);
+  updatePushButtonState();
   closeDetailToList();
 }
 
@@ -847,6 +869,7 @@ async function tryConnect(cfg){
     document.getElementById("brand-name").textContent = CFG.repo;
     fetchOrgIssueFields(); // warm cache, non-blocking
     renderAll();
+    updatePushButtonState();
   }catch(e){
     errEl.textContent = e.message + "\n\nCheck the owner/repo/branch, and that the token has Contents + Issues access to this repo.";
     errEl.classList.remove("hidden");
@@ -1118,6 +1141,7 @@ function openMilestoneModal(id){
       }
       markDirty(); saveData(true);
       closeModal(); renderMilestonesPage(); renderRoadmap();
+      updatePushButtonState();
     });
     const delBtn = document.getElementById("mm-delete");
     if(delBtn) delBtn.addEventListener("click", ()=>{
@@ -1127,6 +1151,7 @@ function openMilestoneModal(id){
       DATA.milestones = DATA.milestones.filter(x=>x.id!==editingMilestoneId);
       markDirty(); saveData(true);
       closeModal(); renderMilestonesPage(); renderRoadmap();
+      updatePushButtonState();
     });
   });
 }
@@ -1148,12 +1173,15 @@ function openDetail(id){
   const done = linked.filter(i=>i.status==="done");
   const deliveryPct = linked.length ? Math.round(done.length/linked.length*100) : 0;
   const ms = msMeta(item.milestoneId);
+  const parentItem = item.parentId ? itemById(item.parentId) : null;
   const pushed = !!(item.github && item.github.issueNumber);
 
   document.getElementById("detail-wrap").innerHTML = `
     <button class="detail-back" id="d-back">← Back</button>
+    <button class="btn btn-sm btn-primary" id="p-save-btn" style="float:right;">Save</button>
     <div class="detail-crumbs">
       <span class="crumb-pill">${item.type}</span>
+      ${parentItem ? `<span class="crumb-pill" id="p-parent-crumb" style="cursor:pointer;">in ${escapeHtml(parentItem.title)}</span>` : ""}
       ${ms?`<span class="crumb-pill">${escapeHtml(ms.name)}</span>`:""}
       <span class="push-badge ${pushed?"synced":"pending"}">${pushed?`Synced — issue #${item.github.issueNumber}`:"Not yet pushed"}</span>
       ${pushed?`<a href="${escapeAttr(item.github.htmlUrl||'#')}" target="_blank" rel="noopener" class="help-txt">View on GitHub ↗</a>`:""}
@@ -1170,6 +1198,12 @@ function openDetail(id){
         <section>
           <h3>Strategy</h3>
           <textarea rows="3" id="p-strategy" placeholder="Why this, why now">${escapeHtml(item.strategy)}</textarea>
+        </section>` : ""}
+        ${item.type !== "task" ? `
+        <section>
+          <h3>${item.type==="feature" ? "Stories" : "Tasks"}</h3>
+          <div id="p-children"></div>
+          <button class="add-embed-btn" id="p-add-child">+ add ${item.type==="feature" ? "story" : "task"}</button>
         </section>` : ""}
         <section>
           <h3>Questions / notes</h3>
@@ -1223,7 +1257,8 @@ function openDetail(id){
         </div>` : ""}
 
         <div class="meta-card">
-          <div class="section-label-sm"><span>Blocked by</span></div>
+          <div class="section-label-sm"><span>Dependencies</span></div>
+          <div class="help-txt" style="margin:-4px 0 8px 0;">Blocked by — this item can't be Done until these are.</div>
           <div id="p-deps"></div>
           <select class="mini-add" id="p-add-dep"><option value="">+ add dependency…</option></select>
         </div>
@@ -1243,6 +1278,9 @@ function openDetail(id){
   `;
 
   document.getElementById("d-back").addEventListener("click", closeDetailToList);
+  document.getElementById("p-save-btn").addEventListener("click", ()=>{ saveData(false); updatePushButtonState(); });
+  const parentCrumb = document.getElementById("p-parent-crumb");
+  if(parentCrumb) parentCrumb.addEventListener("click", ()=> openDetail(parentItem.id));
   document.getElementById("p-delete").addEventListener("click", ()=> deleteItem(item.id));
 
   document.getElementById("p-title").addEventListener("input", e=>{ item.title=e.target.value; touch(item); });
@@ -1278,12 +1316,37 @@ function openDetail(id){
     });
   }
 
+  // children (stories under a feature, tasks under a story)
+  function renderChildren(){
+    if(item.type==="task") return;
+    const el = document.getElementById("p-children");
+    const kids = childrenOf(item.id);
+    const noun = item.type==="feature" ? "stories" : "tasks";
+    if(!kids.length){ el.innerHTML = `<div class="help-txt">No ${noun} yet.</div>`; return; }
+    el.innerHTML = "";
+    kids.forEach(k=>{
+      const st = statusMeta(k.status);
+      const row = document.createElement("div"); row.className="dep-row"; row.style.cursor="pointer";
+      row.innerHTML = `<span class="status-dot" style="background:${st.color}"></span><span style="flex:1">${escapeHtml(k.title)}</span><span class="help-txt">${k.size||""}</span>${!k.github||!k.github.issueNumber?'<span class="help-txt">not pushed</span>':''}`;
+      row.addEventListener("click", ()=> openDetail(k.id));
+      el.appendChild(row);
+    });
+  }
+  if(item.type!=="task"){
+    renderChildren();
+    document.getElementById("p-add-child").addEventListener("click", ()=>{
+      const childType = item.type==="feature" ? "story" : "task";
+      const child = createItem(childType, item.workstreamId, item.milestoneId, item.id);
+      openDetail(child.id);
+    });
+  }
+
   // embeds
   function renderEmbeds(){
     const el = document.getElementById("p-embeds"); el.innerHTML="";
     (item.embeds||[]).forEach((em,idx)=>{
       const card = document.createElement("div"); card.className="embed-card";
-      card.innerHTML = `<div class="embed-label"><span>${escapeHtml(em.label)}</span><button data-rm="${idx}" style="background:none;border:none;color:var(--text-faint);">&times;</button></div>
+      card.innerHTML = `<div class="embed-label"><span>${escapeHtml(em.label)}</span><a href="${escapeAttr(em.url)}" target="_blank" rel="noopener" class="help-txt">Open ↗</a><button data-rm="${idx}" style="background:none;border:none;color:var(--text-faint);">&times;</button></div>
         <iframe src="${escapeAttr(em.url)}" sandbox="allow-scripts allow-same-origin" loading="lazy"></iframe>`;
       card.querySelector("[data-rm]").addEventListener("click", ()=>{ item.embeds.splice(idx,1); touch(item); saveData(true); renderEmbeds(); });
       el.appendChild(card);
@@ -1291,7 +1354,7 @@ function openDetail(id){
   }
   renderEmbeds();
   document.getElementById("p-add-embed").addEventListener("click", ()=>{
-    const pasted = prompt("Paste an iframe embed snippet or a plain URL:");
+    const pasted = prompt("Paste an iframe embed snippet or a plain URL.\n\nFor Whimsical: Share → Embed (not the regular board link) — and enable public access if others need to see it without logging in.");
     if(!pasted) return;
     const m = pasted.match(/<iframe[^>]+src=["']([^"']+)["']/i);
     let url = m ? m[1] : pasted.trim();
