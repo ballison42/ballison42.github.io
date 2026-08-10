@@ -8,466 +8,340 @@
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 :root{
-  --bg:#15171B;
-  --surface:#1C1F24;
-  --surface-2:#242830;
-  --surface-3:#2C313A;
-  --border:#343A45;
-  --border-soft:#282D36;
-  --text:#ECE9E3;
-  --text-dim:#9AA0AC;
-  --text-faint:#666C78;
-  --accent:#C77B3C;
-  --accent-soft:#4A3626;
-  --danger:#C4544A;
-  --danger-soft:#3A2624;
-  --ok:#5FA87C;
-  --sans:'Inter',system-ui,-apple-system,sans-serif;
-  --display:'Barlow Condensed',sans-serif;
-  --mono:'JetBrains Mono',ui-monospace,'SF Mono',Menlo,monospace;
-  --radius:4px;
+  --bg:#121212; --surface:#1E1E1E; --surface-2:#262626; --surface-3:#303030;
+  --border:#383838; --border-soft:#2A2A2A;
+  --text:#F2F2F0; --text-dim:#9C9C9C; --text-faint:#6B6B6B;
+  --accent:#4C8DF6; --accent-ink:#0B1E3D; --accent-soft:#1B2C4D; --accent-fill:#8FB4F0;
+  --danger:#D9534F; --ok:#4FAE68; --info:#8598B8;
+  --sans:'Inter',system-ui,sans-serif; --display:'Barlow Condensed',sans-serif; --mono:'JetBrains Mono',ui-monospace,monospace;
+  --ws1:#45A395; --ws2:#8878D6; --ws3:#C79A5B; --amber:#D4A94A;
+  --ws1-tint:#1E3733; --ws2-tint:#2A2846; --ws3-tint:#3A2F1E;
 }
 *{box-sizing:border-box;}
-html,body{margin:0;padding:0;}
-body{
-  background:var(--bg);
-  color:var(--text);
-  font-family:var(--sans);
-  font-size:14px;
-  line-height:1.5;
-  -webkit-font-smoothing:antialiased;
-}
+html,body{margin:0;padding:0;height:100%;}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:13.5px;line-height:1.5;-webkit-font-smoothing:antialiased;}
 button{font-family:inherit;font-size:inherit;cursor:pointer;}
-input,textarea,select{font-family:inherit;font-size:inherit;}
-a{color:var(--accent);}
+input,select,textarea{font-family:inherit;font-size:inherit;}
+a{color:var(--accent);text-decoration:none;}
 ::-webkit-scrollbar{height:10px;width:10px;}
-::-webkit-scrollbar-track{background:transparent;}
 ::-webkit-scrollbar-thumb{background:var(--surface-3);border-radius:5px;}
-
 .hidden{display:none !important;}
 
-/* ---------- Gate screen ---------- */
-#gate{
-  min-height:100vh;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  padding:24px;
-}
-.gate-card{
-  width:100%;
-  max-width:420px;
-  background:var(--surface);
-  border:1px solid var(--border);
-  border-radius:6px;
-  padding:32px;
-}
-.gate-eyebrow{
-  font-family:var(--mono);
-  font-size:11px;
-  letter-spacing:.12em;
-  text-transform:uppercase;
-  color:var(--accent);
-  margin-bottom:6px;
-}
-.gate-title{
-  font-family:var(--display);
-  font-weight:600;
-  font-size:28px;
-  letter-spacing:.01em;
-  margin:0 0 20px 0;
-}
+/* ---- gate ---- */
+#gate{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;}
+.gate-card{width:100%;max-width:440px;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:32px;}
+.gate-eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);margin-bottom:6px;}
+.gate-title{font-family:var(--display);font-weight:600;font-size:26px;margin:0 0 20px 0;}
 .field{margin-bottom:14px;}
-.field label{
-  display:block;
-  font-size:11px;
-  text-transform:uppercase;
-  letter-spacing:.08em;
-  color:var(--text-dim);
-  margin-bottom:6px;
-}
-.field input{
-  width:100%;
-  background:var(--surface-2);
-  border:1px solid var(--border);
-  border-radius:var(--radius);
-  color:var(--text);
-  padding:9px 10px;
-  outline:none;
-}
+.field label{display:block;font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--text-faint);margin-bottom:6px;}
+.field input{width:100%;background:var(--surface-2);border:1px solid var(--border);border-radius:5px;color:var(--text);padding:9px 10px;outline:none;}
 .field input:focus{border-color:var(--accent);}
 .field-hint{font-size:11.5px;color:var(--text-faint);margin-top:5px;}
-.btn{
-  border:1px solid var(--border);
-  background:var(--surface-2);
-  color:var(--text);
-  border-radius:var(--radius);
-  padding:9px 14px;
-  font-weight:500;
-  transition:border-color .12s;
-}
+.btn{border:1px solid var(--border);background:var(--surface-2);color:var(--text);border-radius:5px;padding:8px 14px;font-weight:500;}
 .btn:hover{border-color:var(--text-faint);}
-.btn-primary{
-  background:var(--accent);
-  border-color:var(--accent);
-  color:#1A1300;
-  font-weight:600;
-}
-.btn-primary:hover{filter:brightness(1.08);}
+.btn-primary{background:#EDEDEC;border-color:#EDEDEC;color:#141414;font-weight:600;}
+.btn-primary:hover{background:#FFFFFF;border-color:#FFFFFF;}
 .btn-primary:disabled{opacity:.5;cursor:default;}
 .btn-block{width:100%;}
+.btn-sm{padding:5px 10px;font-size:12.5px;}
 .btn-danger{border-color:var(--danger);color:var(--danger);background:transparent;}
-.btn-sm{padding:5px 9px;font-size:12.5px;}
-.gate-error{
-  background:var(--danger-soft);
-  border:1px solid var(--danger);
-  color:#F0B4AE;
-  border-radius:var(--radius);
-  padding:9px 10px;
-  font-size:12.5px;
-  margin-top:14px;
-}
-.gate-note{
-  margin-top:18px;
-  padding-top:16px;
-  border-top:1px dashed var(--border);
-  font-size:12px;
-  color:var(--text-faint);
-  line-height:1.6;
-}
+.gate-error{background:#3A1F1D;border:1px solid var(--danger);color:#F0B4AE;border-radius:5px;padding:9px 10px;font-size:12.5px;margin-top:14px;white-space:pre-wrap;}
+.gate-note{margin-top:18px;padding-top:16px;border-top:1px dashed var(--border);font-size:12px;color:var(--text-faint);line-height:1.6;}
 
-/* ---------- App shell ---------- */
-#app{display:flex;flex-direction:column;height:100vh;}
-header{
-  display:flex;
-  align-items:center;
-  gap:14px;
-  padding:12px 18px;
-  border-bottom:1px solid var(--border);
-  background:var(--surface);
-  flex-shrink:0;
-  flex-wrap:wrap;
-}
-.app-title{
-  font-family:var(--display);
-  font-weight:600;
-  font-size:19px;
-  letter-spacing:.01em;
-  margin-right:4px;
-  white-space:nowrap;
-}
-.app-title span{color:var(--accent);}
-.filter-chip-row{display:flex;gap:6px;flex-wrap:wrap;align-items:center;}
-.chip{
-  border:1px solid var(--border);
-  background:var(--surface-2);
-  color:var(--text-dim);
-  border-radius:20px;
-  padding:5px 12px;
-  font-size:12px;
-  font-weight:500;
-  white-space:nowrap;
-}
-.chip.active{
-  color:var(--bg);
-  border-color:transparent;
-}
-.chip-dot{display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:6px;vertical-align:middle;}
+/* ---- shell ---- */
+#app{display:none;}
+#app.on{display:block;}
+#shell{display:flex;height:100vh;}
+#sidebar{width:200px;flex-shrink:0;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;padding:16px 10px;}
+.brand{font-family:var(--display);font-weight:600;font-size:17px;padding:2px 8px 18px 8px;display:flex;align-items:center;gap:7px;}
+.brand .mark{color:var(--accent);}
+.nav-group{margin-bottom:18px;}
+.nav-group-label{font-family:var(--mono);font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--text-faint);padding:0 8px 6px 8px;}
+.nav-item{display:flex;align-items:center;gap:9px;width:100%;text-align:left;background:transparent;border:none;color:var(--text-dim);border-radius:5px;padding:8px 8px;font-size:13px;font-weight:500;margin-bottom:2px;}
+.nav-item:hover{background:var(--surface-2);color:var(--text);}
+.nav-item.active{background:var(--accent-fill);color:var(--accent-ink);font-weight:600;}
+.nav-item .ic{width:16px;text-align:center;flex-shrink:0;opacity:.85;}
+.sidebar-spacer{flex:1;}
+
+#main{flex:1;display:flex;flex-direction:column;overflow:hidden;}
+#topbar{display:flex;align-items:center;gap:12px;padding:10px 20px;border-bottom:1px solid var(--border);background:var(--surface);flex-shrink:0;}
+.search-box{flex:1;max-width:420px;background:var(--surface-2);border:1px solid var(--border);border-radius:20px;padding:7px 14px;color:var(--text-faint);font-size:12.5px;}
 .spacer{flex:1;}
-.sync-status{font-family:var(--mono);font-size:11px;color:var(--text-faint);white-space:nowrap;}
-.sync-status.dirty{color:var(--accent);}
-.sync-status.error{color:var(--danger);}
+.sync-status{font-family:var(--mono);font-size:11px;color:var(--accent);white-space:nowrap;}
+.sync-status.clean{color:var(--text-faint);}
+.sync-status.err{color:var(--danger);}
 
-/* ---------- Board ---------- */
-#board-wrap{flex:1;overflow:auto;padding:18px;}
-#board{
-  display:grid;
-  grid-auto-flow:column;
-  grid-auto-columns:280px;
-  gap:14px;
-  align-items:start;
-}
-.ws-row-label{
-  font-family:var(--mono);
-  font-size:11px;
-  color:var(--text-faint);
-}
-.column{
-  background:var(--surface);
-  border:1px solid var(--border);
-  border-radius:6px;
-  overflow:hidden;
-}
-.column-head{
-  padding:10px 12px;
-  border-bottom:1px solid var(--border);
-  background:var(--surface-2);
-}
-.column-head .inc-name{
-  font-family:var(--display);
-  font-weight:600;
-  font-size:15px;
-}
-.column-head .inc-dates{
-  font-family:var(--mono);
-  font-size:10.5px;
-  color:var(--text-faint);
-  margin-top:2px;
-}
-.column-body{padding:10px;display:flex;flex-direction:column;gap:8px;min-height:40px;}
-.ws-group{margin-bottom:4px;}
-.ws-group-label{
-  display:flex;align-items:center;gap:6px;
-  font-family:var(--mono);
-  font-size:10px;
-  text-transform:uppercase;
-  letter-spacing:.06em;
-  color:var(--text-faint);
-  margin:6px 0 6px 2px;
-}
-.add-item-btn{
-  width:100%;
-  text-align:left;
-  background:transparent;
-  border:1px dashed var(--border);
-  color:var(--text-faint);
-  border-radius:var(--radius);
-  padding:6px 8px;
-  font-size:12px;
-}
-.add-item-btn:hover{border-color:var(--accent);color:var(--accent);}
+.page-content{flex:1;overflow:auto;}
+.page{display:none;height:100%;}
+.page.active{display:block;}
 
-/* item card, manifest-tag styling */
-.card{
-  background:var(--surface-2);
-  border:1px solid var(--border);
-  border-left:3px solid var(--text-faint);
-  border-radius:var(--radius);
-  padding:9px 10px 8px 9px;
-  cursor:pointer;
-  transition:border-color .1s, transform .06s;
-}
-.card:hover{border-left-color:var(--accent);}
-.card:active{transform:scale(.99);}
-.card-top{display:flex;justify-content:space-between;align-items:flex-start;gap:6px;}
-.card-title{
-  font-weight:600;
-  font-size:13px;
-  line-height:1.35;
-}
-.card-size{
-  font-family:var(--mono);
-  font-size:10px;
-  color:var(--text-dim);
-  background:var(--surface-3);
-  border-radius:3px;
-  padding:1px 5px;
-  flex-shrink:0;
-}
-.card-meta{
-  display:flex;
-  gap:8px;
-  align-items:center;
-  margin-top:6px;
-  font-size:11px;
-  color:var(--text-faint);
-  font-family:var(--mono);
-}
-.card-blocked{color:var(--danger);}
-.card-id{color:var(--text-faint);opacity:.6;}
+/* ---- roadmap / gantt ---- */
+#roadmap-wrap{display:flex;height:100%;}
+#backlog-gutter{width:220px;flex-shrink:0;border-right:1px solid var(--border);background:var(--surface);padding:14px 12px;overflow-y:auto;}
+#backlog-gutter h4{font-family:var(--mono);font-size:10.5px;text-transform:uppercase;letter-spacing:.08em;color:var(--text-faint);margin:0 0 10px 0;display:flex;justify-content:space-between;}
+.backlog-card{background:var(--surface-2);border:1px solid var(--border);border-left:3px solid var(--text-faint);border-radius:4px;padding:8px 9px;margin-bottom:8px;cursor:pointer;font-size:12.5px;}
+.backlog-card:hover{border-left-color:var(--accent);}
+.backlog-card .ws-tag{font-family:var(--mono);font-size:10px;color:var(--text-faint);margin-top:4px;}
+.backlog-empty{color:var(--text-faint);font-size:12px;padding:8px 2px;}
+#gantt-scroll{flex:1;overflow:auto;}
+#gantt-inner{width:100%;min-width:1000px;position:relative;padding:14px 0 30px 0;}
+.gantt-months{height:30px;position:relative;border-bottom:1px solid var(--border);margin-bottom:6px;margin-left:210px;}
+.month-mark{position:absolute;top:0;bottom:0;border-left:1px solid var(--border-soft);}
+.month-mark span{font-family:var(--mono);font-size:10.5px;color:var(--text-faint);padding-left:6px;}
+.milestone-mark{position:absolute;top:0;width:0;border-left:2px dashed var(--accent);z-index:5;pointer-events:none;}
+.milestone-flag{position:absolute;top:-2px;transform:translateX(-50%);background:var(--accent);color:var(--accent-ink);font-family:var(--mono);font-size:10px;font-weight:600;padding:2px 8px;border-radius:20px;white-space:nowrap;pointer-events:auto;cursor:default;}
+.ws-block-label{display:flex;align-items:center;gap:6px;height:26px;padding-left:8px;font-family:var(--mono);font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--text-dim);background:var(--surface-2);border-top:1px solid var(--border-soft);border-bottom:1px solid var(--border-soft);}
+.gantt-row{position:relative;height:36px;border-bottom:1px solid var(--border-soft);}
+.gantt-row.child-row{height:28px;}
+.row-label{position:absolute;left:0;top:0;bottom:0;width:210px;display:flex;align-items:center;gap:5px;font-size:12px;padding-left:8px;background:var(--bg);z-index:3;border-right:1px solid var(--border-soft);overflow:hidden;white-space:nowrap;text-overflow:ellipsis;}
+.row-label.child{padding-left:24px;color:var(--text-dim);font-size:11.5px;}
+.expand-chevron{border:none;background:transparent;color:var(--text-faint);font-size:11px;width:14px;flex-shrink:0;padding:0;}
+.expand-chevron:hover{color:var(--accent);}
+.gantt-bar{position:absolute;top:6px;height:24px;border-radius:4px;cursor:pointer;display:flex;align-items:center;padding:0 9px 0 11px;font-size:11.5px;font-weight:500;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;color:var(--text);background:var(--surface-3);border:1px solid var(--border);border-left:4px solid var(--text-faint);}
+.gantt-bar.child{top:4px;height:18px;font-size:10.5px;opacity:.92;}
+.gantt-bar:hover{filter:brightness(1.15);}
+.gantt-empty{padding:40px;color:var(--text-faint);font-size:13px;}
+.chip-dot{width:7px;height:7px;border-radius:50%;display:inline-block;}
+.add-item-inline{background:transparent;border:1px dashed var(--border);color:var(--text-faint);border-radius:4px;padding:6px 8px;font-size:11.5px;margin:6px 8px;}
+.add-item-inline:hover{border-color:var(--accent);color:var(--accent);}
 
-/* ---------- Detail panel ---------- */
-#overlay{
-  position:fixed;inset:0;
-  background:rgba(0,0,0,.5);
-  z-index:40;
-}
-#panel{
-  position:fixed;
-  top:0;right:0;bottom:0;
-  width:min(480px,100vw);
-  background:var(--surface);
-  border-left:1px solid var(--border);
-  z-index:41;
-  display:flex;
-  flex-direction:column;
-  box-shadow:-8px 0 24px rgba(0,0,0,.35);
-}
-.panel-head{
-  display:flex;
-  align-items:center;
-  gap:10px;
-  padding:14px 16px;
-  border-bottom:1px solid var(--border);
-}
-.panel-head .type-badge{
-  font-family:var(--mono);
-  font-size:10px;
-  text-transform:uppercase;
-  letter-spacing:.06em;
-  color:var(--accent);
-  border:1px solid var(--accent);
-  border-radius:3px;
-  padding:2px 6px;
-}
-.panel-close{
-  margin-left:auto;
-  background:transparent;border:none;color:var(--text-dim);
-  font-size:18px;line-height:1;padding:4px 8px;
-}
-.panel-close:hover{color:var(--text);}
-.panel-body{flex:1;overflow-y:auto;padding:16px;}
-.panel-body textarea{
-  width:100%;
-  background:var(--surface-2);
-  border:1px solid var(--border);
-  border-radius:var(--radius);
-  color:var(--text);
-  padding:9px 10px;
-  resize:vertical;
-  outline:none;
-}
-.panel-body textarea:focus, .panel-body input:focus, .panel-body select:focus{border-color:var(--accent);}
-.panel-body input[type=text], .panel-body select{
-  width:100%;
-  background:var(--surface-2);
-  border:1px solid var(--border);
-  border-radius:var(--radius);
-  color:var(--text);
-  padding:8px 10px;
-  outline:none;
-}
-.field-row{display:flex;gap:10px;}
-.field-row .field{flex:1;}
-.title-input{
-  font-family:var(--display);
-  font-weight:600;
-  font-size:19px;
-  border:none !important;
-  background:transparent !important;
-  padding:0 !important;
-  margin-bottom:14px;
-}
-.section-label{
-  font-size:11px;text-transform:uppercase;letter-spacing:.08em;
-  color:var(--text-dim);
-  margin:18px 0 8px 0;
-  display:flex;align-items:center;justify-content:space-between;
-}
-.dep-list, .attach-list, .story-list{display:flex;flex-direction:column;gap:6px;}
-.dep-row, .attach-row, .story-row{
-  display:flex;align-items:center;gap:8px;
-  background:var(--surface-2);
-  border:1px solid var(--border);
-  border-radius:var(--radius);
-  padding:7px 9px;
-  font-size:12.5px;
-}
-.dep-row .status-dot, .story-row .status-dot{flex-shrink:0;}
-.dep-row .rm, .attach-row .rm, .story-row .rm{
-  margin-left:auto;background:transparent;border:none;color:var(--text-faint);font-size:14px;
-}
-.dep-row .rm:hover, .story-row .rm:hover{color:var(--danger);}
-.attach-row a{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-.status-dot{display:inline-block;width:8px;height:8px;border-radius:50%;}
-select.mini-add{
-  background:var(--surface-2);border:1px solid var(--border);color:var(--text-dim);
-  border-radius:var(--radius);padding:5px 7px;font-size:12px;
-}
-.upload-btn{
-  border:1px dashed var(--border);
-  border-radius:var(--radius);
-  padding:10px;
-  text-align:center;
-  color:var(--text-faint);
-  font-size:12px;
-}
-.upload-btn:hover{border-color:var(--accent);color:var(--accent);}
-.panel-footer{
-  padding:12px 16px;
-  border-top:1px solid var(--border);
-  display:flex;gap:8px;
-}
+/* ---- hierarchy tree ---- */
+#hierarchy-wrap{padding:24px;height:100%;overflow:auto;}
+.page-title{font-family:var(--display);font-weight:600;font-size:22px;margin:0 0 4px 0;}
+.page-sub{color:var(--text-faint);font-size:12.5px;margin-bottom:20px;}
+.tree{list-style:none;margin:0;padding-left:0;}
+.tree ul{list-style:none;margin:0;padding-left:28px;position:relative;}
+.tree li{position:relative;padding:6px 0;}
+.tree ul li::before{content:'';position:absolute;top:0;left:-14px;width:1px;height:100%;background:var(--border);}
+.tree ul li:last-child::before{height:22px;}
+.tree ul li::after{content:'';position:absolute;top:22px;left:-14px;width:14px;height:1px;background:var(--border);}
+.tree-node{display:inline-flex;align-items:center;gap:8px;background:var(--surface-2);border:1px solid var(--border);border-radius:5px;padding:8px 14px;cursor:pointer;font-size:12.5px;min-width:280px;}
+.tree-node:hover{border-color:var(--accent);}
+.tree-title{font-weight:600;margin-right:4px;}
+.tree-meta{color:var(--text-faint);font-size:11.5px;}
+.type-tag{font-family:var(--mono);font-size:9.5px;text-transform:uppercase;letter-spacing:.06em;padding:1px 5px;border-radius:3px;color:var(--bg);font-weight:700;}
+.t-feature{background:var(--accent);} .t-story{background:var(--info);} .t-task{background:var(--text-faint);}
+.status-dot{width:8px;height:8px;border-radius:50%;display:inline-block;}
+.add-feature-btn{border:1px dashed var(--border);border-radius:6px;padding:12px;text-align:center;color:var(--text-faint);font-size:12.5px;background:transparent;width:280px;margin-top:8px;}
+.add-feature-btn:hover{border-color:var(--accent);color:var(--accent);}
+
+/* ---- delivery page ---- */
+#delivery-wrap{padding:24px 32px;max-width:1300px;}
+.delivery-row{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:14px 16px;margin-bottom:10px;cursor:pointer;}
+.delivery-row:hover{border-color:var(--accent);}
+.delivery-row-top{display:flex;align-items:center;gap:10px;margin-bottom:8px;}
+.delivery-row-top .title{font-weight:600;font-size:13.5px;flex:1;}
+.delivery-pct{font-family:var(--mono);font-size:12px;color:var(--accent);font-weight:600;}
+.bar-track{height:6px;background:var(--surface-3);border-radius:3px;overflow:hidden;margin-bottom:6px;}
+.bar-fill{height:100%;background:var(--accent);}
+.delivery-meta{display:flex;gap:14px;font-size:11px;color:var(--text-faint);font-family:var(--mono);}
+.delivery-meta .risk{color:var(--danger);}
+
+/* ---- milestones page ---- */
+#milestones-wrap{padding:24px 32px;max-width:1300px;}
+#milestones-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:14px;margin-bottom:14px;}
+.milestone-card{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:16px 18px;}
+.milestone-top{display:flex;align-items:baseline;gap:10px;margin-bottom:4px;}
+.milestone-top .name{font-family:var(--display);font-weight:600;font-size:17px;}
+.milestone-top .due{font-family:var(--mono);font-size:11.5px;color:var(--text-faint);margin-left:auto;}
+.milestone-countdown{font-size:11.5px;color:var(--accent);margin-bottom:10px;}
+.milestone-edit-btn{background:transparent;border:1px solid var(--border);color:var(--text-faint);border-radius:4px;padding:4px 9px;font-size:11px;}
+.milestone-edit-btn:hover{border-color:var(--accent);color:var(--accent);}
+.add-milestone-btn{border:1px dashed var(--border);border-radius:6px;padding:12px;text-align:center;color:var(--text-faint);font-size:12.5px;background:transparent;width:100%;}
+.add-milestone-btn:hover{border-color:var(--accent);color:var(--accent);}
+
+/* ---- detail page ---- */
+#detail-wrap{padding:22px 32px 60px 32px;max-width:1440px;}
+.detail-back{font-family:var(--mono);font-size:11.5px;color:var(--text-faint);background:none;border:none;padding:0;margin-bottom:14px;}
+.detail-back:hover{color:var(--accent);}
+.detail-crumbs{display:flex;align-items:center;gap:8px;margin-bottom:10px;flex-wrap:wrap;}
+.crumb-pill{font-family:var(--sans);font-size:11.5px;font-weight:600;padding:3px 10px;border-radius:20px;background:var(--accent-soft);border:none;color:var(--accent);}
+.push-badge{font-family:var(--mono);font-size:10px;padding:2px 8px;border-radius:3px;}
+.push-badge.synced{color:var(--ok);border:1px solid var(--ok);}
+.push-badge.pending{color:var(--accent);border:1px solid var(--accent);}
+.detail-title-input{font-family:var(--display);font-weight:600;font-size:28px;background:transparent;border:none;color:var(--text);width:100%;padding:0;margin-bottom:6px;}
+.detail-desc-input{background:transparent;border:none;color:var(--text-dim);width:100%;font-size:13.5px;resize:none;padding:0;}
+.detail-grid{display:grid;grid-template-columns:minmax(0,1fr) 380px;gap:40px;align-items:start;}
+.detail-col-left{max-width:760px;}
+.detail-col-left section{margin-bottom:26px;}
+.detail-col-left h3{font-family:var(--display);font-weight:600;font-size:16px;margin:0 0 8px 0;}
+.detail-col-left textarea,.detail-col-left input[type=text]{width:100%;background:var(--surface-2);border:1px solid var(--border);border-radius:5px;color:var(--text);padding:9px 10px;outline:none;}
+.embed-card{background:var(--surface-2);border:1px solid var(--border);border-radius:5px;padding:8px;margin-bottom:10px;}
+.embed-card .embed-label{font-size:12px;font-weight:600;margin-bottom:6px;display:flex;justify-content:space-between;gap:8px;}
+.embed-card .embed-label span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.embed-card iframe{width:100%;height:130px;border:1px solid var(--border-soft);border-radius:3px;background:#fff;}
+.add-embed-btn,.upload-btn{border:1px dashed var(--border);border-radius:5px;padding:10px;text-align:center;color:var(--text-faint);font-size:12px;background:transparent;width:100%;}
+.add-embed-btn:hover,.upload-btn:hover{border-color:var(--accent);color:var(--accent);}
+.comment{background:var(--surface-2);border:1px solid var(--border);border-radius:5px;padding:9px 10px;margin-bottom:8px;font-size:12.5px;}
+.comment .comment-meta{font-family:var(--mono);font-size:10.5px;color:var(--text-faint);margin-bottom:4px;}
+.comment-input-row{display:flex;gap:6px;margin-top:8px;}
+.comment-input-row input{background:var(--surface-2);border:1px solid var(--border);border-radius:5px;color:var(--text);padding:8px 10px;}
+.comment-input-row input.name{width:130px;flex-shrink:0;}
+.comment-input-row input.text{flex:1;}
 .help-txt{font-size:11px;color:var(--text-faint);margin-top:4px;}
+.meta-card{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:14px;margin-bottom:14px;}
+.meta-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px 10px;}
+.meta-field label{display:block;font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--text-faint);margin-bottom:4px;}
+.meta-field select,.meta-field input{width:100%;background:var(--surface-2);border:1px solid var(--border);border-radius:4px;color:var(--text);padding:6px 7px;font-size:12px;}
+.pill-select{display:flex;gap:5px;}
+.pill{border:1px solid var(--border);background:var(--surface-2);color:var(--text-dim);border-radius:20px;padding:4px 10px;font-size:11px;}
+.pill.active{color:var(--bg);font-weight:600;border-color:transparent;}
+.pill.val-high.active{background:var(--danger);} .pill.val-medium.active{background:var(--amber);} .pill.val-low.active{background:var(--ok);}
+.dates-local-note{display:flex;align-items:center;gap:5px;font-size:10.5px;color:var(--text-faint);margin-top:8px;padding-top:8px;border-top:1px dashed var(--border-soft);}
+.gh-card{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:14px;margin-bottom:14px;}
+.gh-card-head{display:flex;align-items:center;margin-bottom:10px;}
+.gh-card-head h4{font-family:var(--display);font-weight:600;font-size:15px;margin:0;}
+.gh-pct{margin-left:auto;font-family:var(--sans);font-size:12px;color:var(--accent);font-weight:600;background:var(--accent-soft);padding:2px 10px;border-radius:20px;}
+.gh-issue-row{display:flex;align-items:flex-start;gap:8px;padding:8px 0;border-top:1px solid var(--border-soft);font-size:12px;}
+.gh-issue-row:first-of-type{border-top:none;}
+.gh-issue-row .ic{width:14px;text-align:center;flex-shrink:0;margin-top:1px;}
+.gh-issue-row .repo{font-family:var(--mono);font-size:10.5px;color:var(--text-faint);}
+.gh-issue-row .st{font-size:11px;color:var(--text-faint);}
+.gh-issue-row a{color:var(--text);font-weight:600;}
+.ic-done{color:var(--ok);} .ic-progress{color:var(--amber);} .ic-review{color:var(--info);}
+.dep-row{display:flex;align-items:center;gap:8px;background:var(--surface-2);border:1px solid var(--border);border-radius:4px;padding:7px 9px;font-size:12px;margin-bottom:6px;}
+.dep-row .rm{margin-left:auto;background:none;border:none;color:var(--text-faint);font-size:14px;}
+.dep-row .rm:hover{color:var(--danger);}
+.section-label-sm{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--text-dim);margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;}
+select.mini-add{background:var(--surface-2);border:1px solid var(--border);color:var(--text-dim);border-radius:4px;padding:5px 6px;font-size:11.5px;width:100%;margin-top:4px;}
+.attach-row{display:flex;align-items:center;gap:8px;background:var(--surface-2);border:1px solid var(--border);border-radius:4px;padding:7px 9px;font-size:12px;margin-bottom:6px;}
+.attach-row a{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.attach-row .rm{background:none;border:none;color:var(--text-faint);}
 
-/* modal (workstream/increment add) */
-#modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:50;display:flex;align-items:center;justify-content:center;}
-.modal{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:22px;width:340px;}
-.modal h3{margin:0 0 14px 0;font-family:var(--display);font-weight:600;font-size:18px;}
-.modal-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:16px;}
+/* ---- modals ---- */
+#modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:50;display:flex;align-items:center;justify-content:center;}
+.modal{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:24px;width:460px;max-width:92vw;max-height:85vh;overflow-y:auto;}
+.modal h3{margin:0 0 4px 0;font-family:var(--display);font-weight:600;font-size:20px;}
+.modal .sub{font-size:12px;color:var(--text-faint);margin-bottom:16px;}
+.push-summary{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;}
+.push-summary .stat{background:var(--surface-2);border:1px solid var(--border);border-radius:4px;padding:8px 12px;text-align:center;flex:1;min-width:70px;}
+.push-summary .stat .n{font-family:var(--display);font-weight:600;font-size:20px;color:var(--accent);}
+.push-summary .stat .l{font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--text-faint);}
+.push-list{max-height:240px;overflow-y:auto;border:1px solid var(--border-soft);border-radius:4px;margin-bottom:16px;}
+.push-item{display:flex;justify-content:space-between;gap:8px;padding:7px 10px;font-size:12px;border-bottom:1px solid var(--border-soft);}
+.push-item:last-child{border-bottom:none;}
+.tag{font-family:var(--mono);font-size:10px;padding:1px 5px;border-radius:3px;flex-shrink:0;}
+.tag-new{background:var(--accent-soft);color:var(--accent);}
+.tag-update{background:#20303A;color:var(--info);}
+.modal-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:4px;}
+.push-log{max-height:200px;overflow-y:auto;font-family:var(--mono);font-size:11px;background:var(--surface-2);border-radius:4px;padding:10px;margin-bottom:14px;white-space:pre-wrap;}
+.ws-row{display:flex;align-items:center;gap:8px;background:var(--surface-2);border:1px solid var(--border);border-radius:4px;padding:6px 9px;margin-bottom:6px;font-size:12.5px;}
+.ws-row input[type=text]{flex:1;background:transparent;border:none;color:var(--text);padding:2px;}
+.ws-row .rm{background:none;border:none;color:var(--text-faint);}
 
-.toast{
-  position:fixed;bottom:18px;left:50%;transform:translateX(-50%);
-  background:var(--surface-3);border:1px solid var(--border);
-  padding:9px 16px;border-radius:20px;font-size:12.5px;z-index:60;
-  color:var(--text);
-}
+.toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:var(--surface-3);border:1px solid var(--border);padding:9px 16px;border-radius:20px;font-size:12.5px;z-index:60;color:var(--text);max-width:80vw;}
 .toast.err{border-color:var(--danger);color:#F0B4AE;}
 
-@media (max-width:640px){
-  #panel{width:100vw;}
-  .app-title{font-size:16px;}
+@media (max-width:900px){
+  #sidebar{width:60px;}
+  .nav-item span:not(.ic){display:none;}
+  .brand span:not(.mark){display:none;}
+  .nav-group-label{display:none;}
+  .detail-grid{grid-template-columns:1fr;}
 }
 </style>
 </head>
 <body>
 
-<!-- ============ GATE SCREEN ============ -->
+<!-- ============ GATE ============ -->
 <div id="gate">
   <div class="gate-card">
-    <div class="gate-eyebrow">Roadmap · Private data store</div>
-    <h1 class="gate-title">Connect to your data repo</h1>
-    <div class="field">
-      <label>GitHub owner (user or org)</label>
-      <input type="text" id="cfg-owner" placeholder="e.g. ballison42" autocomplete="off">
-    </div>
-    <div class="field">
-      <label>Data repo name</label>
-      <input type="text" id="cfg-repo" placeholder="roadmap-data" autocomplete="off">
-    </div>
-    <div class="field">
-      <label>Branch</label>
-      <input type="text" id="cfg-branch" placeholder="main" autocomplete="off">
-    </div>
+    <div class="gate-eyebrow">Roadmap · Backed directly by GitHub Issues</div>
+    <h1 class="gate-title">Connect to your repo</h1>
+    <div class="field"><label>GitHub owner / org</label><input type="text" id="cfg-owner" placeholder="e.g. hatchwing-eng" autocomplete="off"></div>
+    <div class="field"><label>Repo</label><input type="text" id="cfg-repo" placeholder="platform" autocomplete="off"></div>
+    <div class="field"><label>Branch</label><input type="text" id="cfg-branch" placeholder="main" autocomplete="off" value="main"></div>
     <div class="field">
       <label>Personal access token</label>
       <input type="password" id="cfg-token" placeholder="github_pat_..." autocomplete="off">
-      <div class="field-hint">Fine-grained token, scoped only to this repo, with Contents read/write. Stored in this browser only &mdash; never sent anywhere but api.github.com.</div>
+      <div class="field-hint">Fine-grained token scoped to this one repo, with Contents (read/write) and Issues (read/write). Stored in this browser only — never sent anywhere but api.github.com.</div>
     </div>
     <button class="btn btn-primary btn-block" id="btn-connect">Connect</button>
     <div id="gate-error" class="gate-error hidden"></div>
-    <div class="gate-note">
-      Nothing here is stored on this page. The site itself has no roadmap data in it; everything loads from your private repo through the GitHub API, using your token. No token, no data.
-    </div>
+    <div class="gate-note">Everything, drafts and real issues alike, lives in this one repo. The page itself has no roadmap data in it, without a valid token there's nothing to see.</div>
   </div>
 </div>
 
 <!-- ============ APP ============ -->
-<div id="app" class="hidden">
-  <header>
-    <div class="app-title">Roadmap<span>.</span></div>
-    <div class="filter-chip-row" id="ws-filters"></div>
-    <div class="filter-chip-row" id="status-filters"></div>
-    <div class="spacer"></div>
-    <span class="sync-status" id="sync-status">synced</span>
-    <button class="btn btn-sm" id="btn-add-ws">+ workstream</button>
-    <button class="btn btn-sm" id="btn-add-inc">+ increment</button>
-    <button class="btn btn-sm btn-primary" id="btn-save">Save</button>
-    <button class="btn btn-sm btn-danger" id="btn-disconnect">Disconnect</button>
-  </header>
-  <div id="board-wrap">
-    <div id="board"></div>
+<div id="app">
+  <div id="shell">
+    <div id="sidebar">
+      <div class="brand"><span class="mark">▸</span> <span id="brand-name">Roadmap</span></div>
+      <div class="nav-group">
+        <button class="nav-item active" data-page="roadmap"><span class="ic">▤</span> <span>Roadmap</span></button>
+        <button class="nav-item" data-page="hierarchy"><span class="ic">☰</span> <span>Hierarchy</span></button>
+        <button class="nav-item" data-page="delivery"><span class="ic">◈</span> <span>Delivery</span></button>
+      </div>
+      <div class="nav-group">
+        <div class="nav-group-label">Workspace</div>
+        <button class="nav-item" data-page="milestones"><span class="ic">◆</span> <span>Milestones</span></button>
+      </div>
+      <div class="sidebar-spacer"></div>
+      <button class="nav-item" id="btn-settings"><span class="ic">⚙</span> <span>Settings</span></button>
+    </div>
+
+    <div id="main">
+      <div id="topbar">
+        <div class="search-box">Search roadmap, GitHub…</div>
+        <div class="spacer"></div>
+        <span class="sync-status clean" id="sync-status">synced</span>
+        <button class="btn btn-sm btn-primary" id="btn-push-open">Push to GitHub</button>
+      </div>
+
+      <div class="page-content">
+        <div class="page active" id="page-roadmap">
+          <div id="roadmap-wrap">
+            <div id="backlog-gutter">
+              <h4>Backlog <span id="backlog-count">0</span></h4>
+              <div id="backlog-list"></div>
+              <button class="add-item-inline" id="btn-add-backlog" style="margin-left:0;width:100%;">+ new feature</button>
+            </div>
+            <div id="gantt-scroll">
+              <div id="gantt-inner">
+                <div class="gantt-months" id="gantt-months"></div>
+                <div id="milestone-layer"></div>
+                <div id="gantt-body"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="page" id="page-hierarchy">
+          <div id="hierarchy-wrap">
+            <div class="page-title">Hierarchy</div>
+            <div class="page-sub">Feature → Story → Task, mirrors the sub-issue hierarchy on GitHub.</div>
+            <ul class="tree" id="tree-root"></ul>
+            <button class="add-feature-btn" id="btn-add-feature-tree">+ new feature</button>
+          </div>
+        </div>
+
+        <div class="page" id="page-delivery">
+          <div id="delivery-wrap">
+            <div class="page-title">Delivery</div>
+            <div class="page-sub">Live rollup computed from linked GitHub issues. Refreshes when you open this page.</div>
+            <div id="delivery-list"></div>
+          </div>
+        </div>
+
+        <div class="page" id="page-milestones">
+          <div id="milestones-wrap">
+            <div class="page-title">Milestones</div>
+            <div class="page-sub">Native GitHub milestones. Progress reflects linked issues closed vs. total.</div>
+            <div id="milestones-list"></div>
+            <button class="add-milestone-btn" id="btn-add-milestone">+ New milestone</button>
+          </div>
+        </div>
+
+        <div class="page" id="page-detail">
+          <div id="detail-wrap"></div>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
 
-<!-- ============ DETAIL PANEL ============ -->
-<div id="overlay" class="hidden"></div>
-<div id="panel" class="hidden"></div>
-
 <!-- ============ GENERIC MODAL ============ -->
-<div id="modal-overlay" class="hidden">
-  <div class="modal" id="modal-content"></div>
-</div>
+<div id="modal-overlay" class="hidden"><div class="modal" id="modal-content"></div></div>
 
 <script>
 (function(){
@@ -476,75 +350,62 @@ select.mini-add{
 /* ============================================================
    CONSTANTS
    ============================================================ */
-const DATA_PATH = "data/roadmap.json";
-const ATTACH_PREFIX = "attachments";
+const DATA_PATH = "roadmap/data.json";
+const ATTACH_PREFIX = "roadmap/attachments";
+const TYPES = ["feature","story","task"];
 const STATUSES = [
-  {id:"backlog", label:"Backlog", color:"#666C78"},
-  {id:"planned", label:"Planned", color:"#7B8FC9"},
-  {id:"in-progress", label:"In progress", color:"#C77B3C"},
-  {id:"blocked", label:"Blocked", color:"#C4544A"},
-  {id:"done", label:"Done", color:"#5FA87C"},
+  {id:"backlog", label:"Backlog", color:"#6B6B6B"},
+  {id:"planned", label:"Planned", color:"#8598B8"},
+  {id:"in-progress", label:"In progress", color:"#D4A94A"},
+  {id:"blocked", label:"Blocked", color:"#D9534F"},
+  {id:"done", label:"Done", color:"#4FAE68"},
 ];
 const SIZES = ["XS","S","M","L","XL"];
-const WS_COLORS = ["#4FA8A0","#8B7FD6","#D9A441","#6FA8DC","#C77B3C","#8FBF6F","#D67AA8"];
+const WS_COLORS = ["#45A395","#8878D6","#C79A5B","#6FA8DC","#D67AA8","#8FBF6F"];
+const WS_TINTS  = ["#1E3733","#2A2846","#3A2F1E","#1F2E3D","#3B2733","#2A3A24"];
+const LABEL_COLORS = { feature:"4C8DF6", story:"8598B8", task:"6B6B6B",
+  "status:backlog":"6B6B6B", "status:planned":"8598B8", "status:in-progress":"D4A94A", "status:blocked":"D9534F" };
+const ISSUE_FIELD_NAMES = { value:"Value", strategy:"Strategy", size:"Size" };
 
 /* ============================================================
    STATE
    ============================================================ */
-let CFG = null;          // {owner, repo, branch, token}
-let DATA = null;         // {version, workstreams, increments, items}
-let SHA = null;          // sha of data file for conditional update
+let CFG = null;
+let DATA = null;          // {version, workstreams:[], items:[], milestones:[]}
+let SHA = null;
 let DIRTY = false;
 let SELECTED_ID = null;
-let FILTER_WS = "all";
-let FILTER_STATUS = "all";
+let LABEL_CACHE = null;   // Set of existing label names
+let ORG_FIELDS = null;    // fetched org issue-field defs, or null if unavailable
+let lastPage = "roadmap";
 
 /* ============================================================
    HELPERS
    ============================================================ */
-function uid(prefix){
-  return prefix + "_" + Math.random().toString(36).slice(2,9) + Date.now().toString(36).slice(-4);
-}
-function escapeHtml(s){
-  return String(s==null?"":s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-}
-function nl2br(s){
-  return escapeHtml(s).replace(/\n/g,"<br>");
-}
+function uid(prefix){ return prefix + "_" + Math.random().toString(36).slice(2,9) + Date.now().toString(36).slice(-4); }
+function escapeHtml(s){ return String(s==null?"":s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
+function escapeAttr(s){ return escapeHtml(s); }
 function statusMeta(id){ return STATUSES.find(s=>s.id===id) || STATUSES[0]; }
-function wsMeta(id){ return DATA.workstreams.find(w=>w.id===id); }
-function incMeta(id){ return DATA.increments.find(i=>i.id===id); }
+function wsMeta(id){ return DATA.workstreams.find(w=>w.id===id) || DATA.workstreams[0]; }
+function msMeta(id){ return id ? DATA.milestones.find(m=>m.id===id) : null; }
 function itemById(id){ return DATA.items.find(i=>i.id===id); }
 function childrenOf(id){ return DATA.items.filter(i=>i.parentId===id); }
+function descendants(id){ let out=[]; childrenOf(id).forEach(c=>{ out.push(c); out=out.concat(descendants(c.id)); }); return out; }
 function topLevelItems(){ return DATA.items.filter(i=>!i.parentId); }
 function toast(msg, isErr){
-  const t = document.createElement("div");
-  t.className = "toast" + (isErr?" err":"");
-  t.textContent = msg;
-  document.body.appendChild(t);
-  setTimeout(()=>t.remove(), 3200);
+  const t=document.createElement("div"); t.className="toast"+(isErr?" err":""); t.textContent=msg;
+  document.body.appendChild(t); setTimeout(()=>t.remove(), 3800);
 }
-function markDirty(){
-  DIRTY = true;
-  const el = document.getElementById("sync-status");
-  el.textContent = "unsaved changes";
-  el.className = "sync-status dirty";
-}
-function markSynced(){
-  DIRTY = false;
-  const el = document.getElementById("sync-status");
-  el.textContent = "synced";
-  el.className = "sync-status";
-}
-function b64EncodeUnicode(str){
-  return btoa(unescape(encodeURIComponent(str)));
-}
-function b64DecodeUnicode(str){
-  return decodeURIComponent(escape(atob(str)));
-}
+function markDirty(){ DIRTY=true; const el=document.getElementById("sync-status"); el.textContent="unsaved changes"; el.className="sync-status"; }
+function markSynced(){ DIRTY=false; const el=document.getElementById("sync-status"); el.textContent="synced"; el.className="sync-status clean"; }
+function b64EncodeUnicode(str){ return btoa(unescape(encodeURIComponent(str))); }
+function b64DecodeUnicode(str){ return decodeURIComponent(escape(atob(str))); }
+function labelColorFor(name, fallback){ return LABEL_COLORS[name] || fallback || "999999"; }
+function wsLabelName(ws){ return "ws:" + ws.name.toLowerCase().replace(/\s+/g,"-"); }
+function nowIso(){ return new Date().toISOString(); }
 
 /* ============================================================
-   GITHUB API
+   GITHUB API WRAPPER
    ============================================================ */
 async function gh(path, opts){
   opts = opts || {};
@@ -565,26 +426,32 @@ async function gh(path, opts){
     throw err;
   }
   if(res.status === 204) return null;
-  return res.json();
+  const text = await res.text();
+  return text ? JSON.parse(text) : null;
 }
 
+/* ============================================================
+   DATA LOAD / SAVE
+   ============================================================ */
 async function loadData(){
   try{
     const file = await gh(`/repos/${CFG.owner}/${CFG.repo}/contents/${DATA_PATH}?ref=${encodeURIComponent(CFG.branch)}`);
     SHA = file.sha;
     DATA = JSON.parse(b64DecodeUnicode(file.content.replace(/\n/g,"")));
+    if(!DATA.milestones) DATA.milestones = [];
+    if(!DATA.workstreams) DATA.workstreams = [];
+    if(!DATA.items) DATA.items = [];
     return true;
   }catch(e){
     if(e.status === 404){
-      // No data file yet — initialize fresh.
       DATA = {
-        version: 1,
+        version: 2,
         workstreams: [
-          {id: uid("ws"), name:"Hardware", color: WS_COLORS[0]},
-          {id: uid("ws"), name:"Firmware", color: WS_COLORS[1]},
-          {id: uid("ws"), name:"Full-stack", color: WS_COLORS[2]},
+          {id: uid("ws"), name:"Hardware", color: WS_COLORS[0], tint: WS_TINTS[0]},
+          {id: uid("ws"), name:"Firmware", color: WS_COLORS[1], tint: WS_TINTS[1]},
+          {id: uid("ws"), name:"Full-stack", color: WS_COLORS[2], tint: WS_TINTS[2]},
         ],
-        increments: [],
+        milestones: [],
         items: []
       };
       SHA = null;
@@ -596,11 +463,7 @@ async function loadData(){
 }
 
 async function saveData(silent){
-  const body = {
-    message: "Update roadmap data — " + new Date().toISOString(),
-    content: b64EncodeUnicode(JSON.stringify(DATA, null, 2)),
-    branch: CFG.branch
-  };
+  const body = { message: "Update roadmap data — " + nowIso(), content: b64EncodeUnicode(JSON.stringify(DATA, null, 2)), branch: CFG.branch };
   if(SHA) body.sha = SHA;
   try{
     const res = await gh(`/repos/${CFG.owner}/${CFG.repo}/contents/${DATA_PATH}`, {method:"PUT", body});
@@ -608,585 +471,965 @@ async function saveData(silent){
     markSynced();
     if(!silent) toast("Saved.");
   }catch(e){
-    if(e.status === 409 || e.status === 422){
-      // Stale sha — refetch and retry once.
+    if(e.status===409 || e.status===422){
       try{
         const file = await gh(`/repos/${CFG.owner}/${CFG.repo}/contents/${DATA_PATH}?ref=${encodeURIComponent(CFG.branch)}`);
         SHA = file.sha;
-        const retryBody = Object.assign({}, body, {sha: SHA});
-        const res2 = await gh(`/repos/${CFG.owner}/${CFG.repo}/contents/${DATA_PATH}`, {method:"PUT", body: retryBody});
+        const res2 = await gh(`/repos/${CFG.owner}/${CFG.repo}/contents/${DATA_PATH}`, {method:"PUT", body:Object.assign({},body,{sha:SHA})});
         SHA = res2.content.sha;
         markSynced();
         toast("Saved (resolved a version conflict).");
         return;
-      }catch(e2){
-        toast("Save failed: " + e2.message, true);
-        throw e2;
-      }
+      }catch(e2){ toast("Save failed: "+e2.message, true); throw e2; }
     }
-    toast("Save failed: " + e.message, true);
-    throw e;
+    toast("Save failed: "+e.message, true); throw e;
   }
 }
 
+/* ============================================================
+   LABELS
+   ============================================================ */
+async function ensureLabelsExist(names){
+  if(!LABEL_CACHE){
+    LABEL_CACHE = new Set();
+    let page=1;
+    while(true){
+      const batch = await gh(`/repos/${CFG.owner}/${CFG.repo}/labels?per_page=100&page=${page}`);
+      batch.forEach(l=>LABEL_CACHE.add(l.name));
+      if(batch.length<100) break;
+      page++;
+    }
+  }
+  for(const name of names){
+    if(LABEL_CACHE.has(name)) continue;
+    try{
+      await gh(`/repos/${CFG.owner}/${CFG.repo}/labels`, {method:"POST", body:{name, color: labelColorFor(name)}});
+      LABEL_CACHE.add(name);
+    }catch(e){
+      if(e.status===422) LABEL_CACHE.add(name); // already exists (race), fine
+      else throw e;
+    }
+  }
+}
+
+function labelsForItem(item){
+  const ws = wsMeta(item.workstreamId);
+  const labels = [item.type, wsLabelName(ws)];
+  if(item.status !== "done") labels.push("status:"+item.status);
+  return labels;
+}
+
+/* ============================================================
+   ORG ISSUE FIELDS (public preview — value/strategy/size)
+   ============================================================ */
+async function fetchOrgIssueFields(){
+  if(ORG_FIELDS !== null) return ORG_FIELDS;
+  try{
+    const res = await gh(`/orgs/${CFG.owner}/issue-fields`);
+    ORG_FIELDS = Array.isArray(res) ? res : (res.issue_fields || []);
+  }catch(e){
+    ORG_FIELDS = false; // not an org, no permission, or feature unavailable
+  }
+  return ORG_FIELDS;
+}
+
+async function setIssueFieldValues(issueNumber, item, log){
+  const fields = await fetchOrgIssueFields();
+  if(!fields){ log.push(`  (skipped Issue Fields — org fields unavailable)`); return; }
+  const wanted = [];
+  if(item.type === "feature"){
+    wanted.push(["value", item.value]);
+    wanted.push(["strategy", item.strategy]);
+  }
+  wanted.push(["size", item.size]);
+  const values = [];
+  for(const [key, raw] of wanted){
+    if(!raw) continue;
+    const fieldName = ISSUE_FIELD_NAMES[key];
+    const def = fields.find(f => (f.name||"").toLowerCase() === fieldName.toLowerCase());
+    if(!def){ log.push(`  (no org Issue Field named "${fieldName}" — skipped)`); continue; }
+    let value = raw;
+    if(def.data_type === "single_select" && Array.isArray(def.options)){
+      const opt = def.options.find(o => (o.name||o.label||"").toLowerCase() === String(raw).toLowerCase());
+      if(opt) value = opt.id != null ? opt.id : raw;
+    }
+    values.push({field_id: def.id, value});
+  }
+  if(!values.length) return;
+  try{
+    await gh(`/repos/${CFG.owner}/${CFG.repo}/issues/${issueNumber}/issue-field-values`, {method:"POST", body:{issue_field_values: values}});
+  }catch(e){
+    log.push(`  (Issue Field sync failed: ${e.message})`);
+  }
+}
+
+/* ============================================================
+   PUSH: BUILD PLAN
+   ============================================================ */
+function itemDepth(item){
+  let d=0, cur=item;
+  while(cur.parentId){ cur = itemById(cur.parentId); if(!cur) break; d++; }
+  return d;
+}
+
+function buildPushPlan(){
+  const newMilestones = DATA.milestones.filter(m=>!m.githubNumber);
+  const itemsSorted = [...DATA.items].sort((a,b)=>itemDepth(a)-itemDepth(b));
+  const newIssues = itemsSorted.filter(i=>!i.github || !i.github.issueNumber);
+  const updates = itemsSorted.filter(i=>i.github && i.github.issueNumber && (i.updatedAt||0) > (i.github.lastPushedAt||0));
+  const subLinks = itemsSorted.filter(i=>{
+    if(!i.parentId) return false;
+    const parent = itemById(i.parentId);
+    if(!parent) return false;
+    const willHaveIssue = (i.github&&i.github.issueNumber) || newIssues.includes(i);
+    const parentWillHaveIssue = (parent.github&&parent.github.issueNumber) || newIssues.includes(parent);
+    const alreadyLinked = i.github && i.github.subIssueLinked;
+    return willHaveIssue && parentWillHaveIssue && !alreadyLinked;
+  });
+  const depLinks = [];
+  DATA.items.forEach(i=>{
+    (i.dependsOn||[]).forEach(depId=>{
+      const already = i.github && i.github.linkedDeps && i.github.linkedDeps.includes(depId);
+      if(already) return;
+      const target = itemById(depId);
+      if(!target) return;
+      const iWill = (i.github&&i.github.issueNumber) || newIssues.includes(i);
+      const tWill = (target.github&&target.github.issueNumber) || newIssues.includes(target);
+      if(iWill && tWill) depLinks.push([i, target]);
+    });
+  });
+  const commentsNeeded = DATA.items.filter(i=>{
+    const hasContent = (i.notes && i.notes.trim()) || (i.embeds && i.embeds.length);
+    if(!hasContent) return false;
+    const willHaveIssue = (i.github&&i.github.issueNumber) || newIssues.includes(i);
+    return willHaveIssue;
+  });
+  return {newMilestones, newIssues, updates, subLinks, depLinks, commentsNeeded};
+}
+
+function renderPushPreview(){
+  const plan = buildPushPlan();
+  const html = `
+    <h3>Push to GitHub</h3>
+    <div class="sub">${escapeHtml(CFG.owner)}/${escapeHtml(CFG.repo)} · ${escapeHtml(CFG.branch)}</div>
+    <div class="push-summary">
+      <div class="stat"><div class="n">${plan.newIssues.length}</div><div class="l">New issues</div></div>
+      <div class="stat"><div class="n">${plan.updates.length}</div><div class="l">Updates</div></div>
+      <div class="stat"><div class="n">${plan.newMilestones.length}</div><div class="l">Milestones</div></div>
+      <div class="stat"><div class="n">${plan.subLinks.length+plan.depLinks.length}</div><div class="l">Links</div></div>
+    </div>
+    <div class="push-list">
+      ${plan.newMilestones.map(m=>`<div class="push-item"><span>${escapeHtml(m.name)} (milestone, due ${escapeHtml(m.due||"—")})</span><span class="tag tag-new">new</span></div>`).join("")}
+      ${plan.newIssues.map(i=>`<div class="push-item"><span>${"↳ ".repeat(itemDepth(i))}${escapeHtml(i.title)}</span><span class="tag tag-new">new</span></div>`).join("")}
+      ${plan.updates.map(i=>`<div class="push-item"><span>${escapeHtml(i.title)}</span><span class="tag tag-update">update</span></div>`).join("")}
+      ${plan.newIssues.length+plan.updates.length+plan.newMilestones.length===0 ? `<div class="push-item"><span>Nothing to push — everything's in sync.</span></div>` : ""}
+    </div>
+    <div class="modal-actions">
+      <button class="btn" id="pp-cancel">Cancel</button>
+      <button class="btn btn-primary" id="pp-confirm" ${plan.newIssues.length+plan.updates.length+plan.newMilestones.length+plan.subLinks.length+plan.depLinks.length===0?"disabled":""}>Confirm push</button>
+    </div>
+  `;
+  openModal(html, ()=>{
+    document.getElementById("pp-cancel").addEventListener("click", closeModal);
+    document.getElementById("pp-confirm").addEventListener("click", ()=> executePush(plan));
+  });
+}
+
+/* ============================================================
+   PUSH: EXECUTE
+   ============================================================ */
+async function executePush(plan){
+  const log = [];
+  document.getElementById("modal-content").innerHTML = `
+    <h3>Pushing…</h3>
+    <div class="push-log" id="push-log">Starting…</div>
+    <div class="modal-actions"><button class="btn btn-primary" id="pp-done" disabled>Working…</button></div>
+  `;
+  const logEl = document.getElementById("push-log");
+  const say = (s)=>{ log.push(s); logEl.textContent = log.join("\n"); logEl.scrollTop = logEl.scrollHeight; };
+
+  try{
+    // 1. labels
+    say("Checking labels…");
+    const labelSet = new Set(["feature","story","task"]);
+    DATA.workstreams.forEach(w=>labelSet.add(wsLabelName(w)));
+    ["backlog","planned","in-progress","blocked"].forEach(s=>labelSet.add("status:"+s));
+    await ensureLabelsExist([...labelSet]);
+
+    // 2. milestones
+    for(const m of plan.newMilestones){
+      say(`Creating milestone "${m.name}"…`);
+      const body = {title: m.name};
+      if(m.due) body.due_on = m.due + "T00:00:00Z";
+      const res = await gh(`/repos/${CFG.owner}/${CFG.repo}/milestones`, {method:"POST", body});
+      m.githubNumber = res.number;
+    }
+
+    // 3. new issues, parent-first
+    for(const item of plan.newIssues){
+      say(`Creating issue for "${item.title}"…`);
+      const body = { title: item.title, body: item.description || "", labels: labelsForItem(item) };
+      const ms = msMeta(item.milestoneId);
+      if(ms && ms.githubNumber) body.milestone = ms.githubNumber;
+      const res = await gh(`/repos/${CFG.owner}/${CFG.repo}/issues`, {method:"POST", body});
+      item.github = item.github || {};
+      item.github.issueNumber = res.number;
+      item.github.internalId = res.id;
+      item.github.nodeId = res.node_id;
+      item.github.htmlUrl = res.html_url;
+      item.github.lastPushedAt = nowIso();
+      item.github.linkedDeps = item.github.linkedDeps || [];
+    }
+
+    // 4. sub-issue links
+    for(const item of plan.subLinks){
+      const parent = itemById(item.parentId);
+      if(!parent || !parent.github || !item.github) continue;
+      say(`Linking "${item.title}" under "${parent.title}"…`);
+      try{
+        await gh(`/repos/${CFG.owner}/${CFG.repo}/issues/${parent.github.issueNumber}/sub_issues`, {method:"POST", body:{sub_issue_id: item.github.internalId}});
+        item.github.subIssueLinked = true;
+      }catch(e){ say(`  (sub-issue link failed: ${e.message})`); }
+    }
+
+    // 5. dependency links
+    for(const [item, target] of plan.depLinks){
+      say(`Marking "${item.title}" blocked by "${target.title}"…`);
+      try{
+        await gh(`/repos/${CFG.owner}/${CFG.repo}/issues/${item.github.issueNumber}/dependencies/blocked_by`, {method:"POST", body:{issue_id: target.github.internalId}});
+        item.github.linkedDeps = item.github.linkedDeps || [];
+        item.github.linkedDeps.push(target.id);
+      }catch(e){ say(`  (dependency link failed: ${e.message})`); }
+    }
+
+    // 6. issue fields (value/strategy/size) for anything just created or updated
+    const fieldTargets = [...plan.newIssues, ...plan.updates];
+    for(const item of fieldTargets){
+      say(`Setting Value/Strategy/Size for "${item.title}"…`);
+      await setIssueFieldValues(item.github.issueNumber, item, log);
+      logEl.textContent = log.join("\n"); logEl.scrollTop = logEl.scrollHeight;
+    }
+
+    // 7. updates to already-linked items
+    for(const item of plan.updates){
+      say(`Updating "${item.title}"…`);
+      const body = { title: item.title, body: item.description || "", labels: labelsForItem(item), state: item.status==="done" ? "closed" : "open" };
+      const ms = msMeta(item.milestoneId);
+      body.milestone = (ms && ms.githubNumber) ? ms.githubNumber : null;
+      try{
+        await gh(`/repos/${CFG.owner}/${CFG.repo}/issues/${item.github.issueNumber}`, {method:"PATCH", body});
+        item.github.lastPushedAt = nowIso();
+      }catch(e){ say(`  (update failed: ${e.message})`); }
+    }
+    // also set closed/open + labels for newly created done items, and push initial state for new issues with status done
+    for(const item of plan.newIssues){
+      if(item.status === "done"){
+        try{ await gh(`/repos/${CFG.owner}/${CFG.repo}/issues/${item.github.issueNumber}`, {method:"PATCH", body:{state:"closed"}}); }catch(e){}
+      }
+    }
+
+    // 8. "Added via import" comment (notes + whimsical materials)
+    for(const item of plan.commentsNeeded){
+      say(`Posting notes/materials for "${item.title}"…`);
+      const lines = ["**Added via import**",""];
+      lines.push("**Questions / notes**");
+      lines.push(item.notes && item.notes.trim() ? item.notes.trim() : "_none_");
+      lines.push("");
+      lines.push("**Whimsical Materials**");
+      if(item.embeds && item.embeds.length){
+        item.embeds.forEach(em=> lines.push(`- [${em.label||"embed"}](${em.url})`));
+      } else {
+        lines.push("_none_");
+      }
+      const commentBody = lines.join("\n");
+      try{
+        if(item.github.importCommentId){
+          await gh(`/repos/${CFG.owner}/${CFG.repo}/issues/comments/${item.github.importCommentId}`, {method:"PATCH", body:{body:commentBody}});
+        }else{
+          const res = await gh(`/repos/${CFG.owner}/${CFG.repo}/issues/${item.github.issueNumber}/comments`, {method:"POST", body:{body:commentBody}});
+          item.github.importCommentId = res.id;
+        }
+      }catch(e){ say(`  (notes/materials comment failed: ${e.message})`); }
+    }
+
+    say("Saving roadmap data…");
+    await saveData(true);
+    say("Done.");
+    toast(`Pushed: ${plan.newIssues.length} new, ${plan.updates.length} updated, ${plan.newMilestones.length} milestone(s).`);
+  }catch(e){
+    say("Push stopped: " + e.message);
+    try{ await saveData(true); }catch(e2){}
+    toast("Push hit an error, partial progress was saved. See log.", true);
+  }finally{
+    document.getElementById("pp-done") && (document.getElementById("pp-done").disabled=false, document.getElementById("pp-done").textContent="Close", document.getElementById("pp-done").addEventListener("click", ()=>{ closeModal(); renderAll(); }));
+  }
+}
+
+/* ============================================================
+   COMMENTS (immediate)
+   ============================================================ */
+async function postComment(item, name, text){
+  if(!item.github || !item.github.issueNumber){ toast("This item isn't pushed yet.", true); return; }
+  const body = `**Commented by ${name}:** ${text}`;
+  try{
+    const res = await gh(`/repos/${CFG.owner}/${CFG.repo}/issues/${item.github.issueNumber}/comments`, {method:"POST", body:{body}});
+    item.comments = item.comments || [];
+    item.comments.push({name, text, postedAt: nowIso(), githubCommentId: res.id});
+    markDirty();
+    await saveData(true);
+    toast("Comment posted.");
+  }catch(e){ toast("Comment failed: "+e.message, true); }
+}
+
+/* ============================================================
+   ATTACHMENTS
+   ============================================================ */
 async function uploadAttachment(itemId, file){
   const arrayBuf = await file.arrayBuffer();
-  let binary = "";
-  const bytes = new Uint8Array(arrayBuf);
+  let binary = ""; const bytes = new Uint8Array(arrayBuf);
   for(let i=0;i<bytes.byteLength;i++) binary += String.fromCharCode(bytes[i]);
   const b64 = btoa(binary);
   const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g,"_");
   const path = `${ATTACH_PREFIX}/${itemId}/${Date.now()}_${safeName}`;
-  const res = await gh(`/repos/${CFG.owner}/${CFG.repo}/contents/${path}`, {
-    method:"PUT",
-    body:{
-      message: "Add attachment — " + safeName,
-      content: b64,
-      branch: CFG.branch
-    }
-  });
-  return {
-    name: file.name,
-    path: path,
-    type: file.type || "application/octet-stream",
-    size: file.size,
-    downloadUrl: res.content.download_url
-  };
-}
-
-/* ============================================================
-   CONFIG / CONNECT
-   ============================================================ */
-function loadCfg(){
-  try{
-    const raw = localStorage.getItem("roadmap_cfg");
-    if(!raw) return null;
-    return JSON.parse(raw);
-  }catch(e){ return null; }
-}
-function saveCfg(cfg){
-  localStorage.setItem("roadmap_cfg", JSON.stringify(cfg));
-}
-function clearCfg(){
-  localStorage.removeItem("roadmap_cfg");
-}
-
-async function tryConnect(cfg){
-  const errEl = document.getElementById("gate-error");
-  errEl.classList.add("hidden");
-  const btn = document.getElementById("btn-connect");
-  btn.disabled = true;
-  btn.textContent = "Connecting…";
-  try{
-    CFG = cfg;
-    await loadData();
-    saveCfg(cfg);
-    document.getElementById("gate").classList.add("hidden");
-    document.getElementById("app").classList.remove("hidden");
-    renderAll();
-  }catch(e){
-    errEl.textContent = e.message + ". Check the owner/repo/branch, and that the token has Contents access to this repo.";
-    errEl.classList.remove("hidden");
-    CFG = null;
-  }finally{
-    btn.disabled = false;
-    btn.textContent = "Connect";
-  }
-}
-
-document.getElementById("btn-connect").addEventListener("click", ()=>{
-  const cfg = {
-    owner: document.getElementById("cfg-owner").value.trim(),
-    repo: document.getElementById("cfg-repo").value.trim() || "roadmap-data",
-    branch: document.getElementById("cfg-branch").value.trim() || "main",
-    token: document.getElementById("cfg-token").value.trim()
-  };
-  if(!cfg.owner || !cfg.token){
-    const errEl = document.getElementById("gate-error");
-    errEl.textContent = "Owner and token are required.";
-    errEl.classList.remove("hidden");
-    return;
-  }
-  tryConnect(cfg);
-});
-
-document.getElementById("btn-disconnect").addEventListener("click", ()=>{
-  if(DIRTY && !confirm("You have unsaved changes. Disconnect anyway?")) return;
-  clearCfg();
-  location.reload();
-});
-
-document.getElementById("btn-save").addEventListener("click", ()=> saveData(false));
-
-// Autosave: every 45s if dirty.
-setInterval(()=>{ if(DIRTY && CFG) saveData(true); }, 45000);
-window.addEventListener("beforeunload", (e)=>{
-  if(DIRTY){ e.preventDefault(); e.returnValue = ""; }
-});
-
-/* ============================================================
-   RENDER — HEADER / FILTERS
-   ============================================================ */
-function renderFilters(){
-  const wsEl = document.getElementById("ws-filters");
-  wsEl.innerHTML = "";
-  const allChip = chipEl("All workstreams", FILTER_WS==="all", null, ()=>{ FILTER_WS="all"; renderAll(); });
-  wsEl.appendChild(allChip);
-  DATA.workstreams.forEach(ws=>{
-    wsEl.appendChild(chipEl(ws.name, FILTER_WS===ws.id, ws.color, ()=>{ FILTER_WS=ws.id; renderAll(); }));
-  });
-
-  const stEl = document.getElementById("status-filters");
-  stEl.innerHTML = "";
-  stEl.appendChild(chipEl("All statuses", FILTER_STATUS==="all", null, ()=>{ FILTER_STATUS="all"; renderAll(); }));
-  STATUSES.forEach(s=>{
-    stEl.appendChild(chipEl(s.label, FILTER_STATUS===s.id, s.color, ()=>{ FILTER_STATUS=s.id; renderAll(); }));
-  });
-}
-function chipEl(label, active, color, onClick){
-  const b = document.createElement("button");
-  b.className = "chip" + (active?" active":"");
-  if(active) b.style.background = color || "var(--accent)";
-  if(color){
-    const dot = document.createElement("span");
-    dot.className = "chip-dot";
-    dot.style.background = color;
-    b.appendChild(dot);
-  }
-  b.appendChild(document.createTextNode(label));
-  b.addEventListener("click", onClick);
-  return b;
-}
-
-/* ============================================================
-   RENDER — BOARD
-   ============================================================ */
-function renderBoard(){
-  const board = document.getElementById("board");
-  board.innerHTML = "";
-
-  const sortedIncrements = [...DATA.increments].sort((a,b)=> (a.start||"").localeCompare(b.start||""));
-  const columns = [{id:null, name:"Backlog", start:"", end:""}, ...sortedIncrements];
-
-  const visibleWs = FILTER_WS==="all" ? DATA.workstreams : DATA.workstreams.filter(w=>w.id===FILTER_WS);
-
-  columns.forEach(col=>{
-    const colEl = document.createElement("div");
-    colEl.className = "column";
-
-    const head = document.createElement("div");
-    head.className = "column-head";
-    head.innerHTML = `<div class="inc-name">${escapeHtml(col.name)}</div>` +
-      (col.start || col.end ? `<div class="inc-dates">${escapeHtml(col.start||"?")} → ${escapeHtml(col.end||"?")}</div>` : `<div class="inc-dates">unscheduled</div>`);
-    colEl.appendChild(head);
-
-    const body = document.createElement("div");
-    body.className = "column-body";
-
-    visibleWs.forEach(ws=>{
-      let items = topLevelItems().filter(it => it.workstreamId===ws.id && (it.incrementId||null)===(col.id||null));
-      if(FILTER_STATUS!=="all") items = items.filter(it=>it.status===FILTER_STATUS);
-      if(FILTER_STATUS!=="all" && items.length===0) return; // hide empty group under a status filter
-
-      const grp = document.createElement("div");
-      grp.className = "ws-group";
-      const lbl = document.createElement("div");
-      lbl.className = "ws-group-label";
-      lbl.innerHTML = `<span class="chip-dot" style="background:${ws.color}"></span>${escapeHtml(ws.name)}`;
-      grp.appendChild(lbl);
-
-      items.forEach(it=> grp.appendChild(cardEl(it)) );
-
-      const addBtn = document.createElement("button");
-      addBtn.className = "add-item-btn";
-      addBtn.textContent = "+ add item";
-      addBtn.addEventListener("click", ()=> createItem(ws.id, col.id));
-      grp.appendChild(addBtn);
-
-      body.appendChild(grp);
-    });
-
-    colEl.appendChild(body);
-    board.appendChild(colEl);
-  });
-}
-
-function cardEl(item){
-  const st = statusMeta(item.status);
-  const kids = childrenOf(item.id);
-  const doneKids = kids.filter(k=>k.status==="done").length;
-  const blockedBy = (item.dependsOn||[]).map(itemById).filter(Boolean).filter(d=>d.status!=="done");
-
-  const card = document.createElement("div");
-  card.className = "card";
-  card.style.borderLeftColor = st.color;
-  card.innerHTML = `
-    <div class="card-top">
-      <div class="card-title">${escapeHtml(item.title || "Untitled")}</div>
-      ${item.size ? `<div class="card-size">${escapeHtml(item.size)}</div>` : ""}
-    </div>
-    <div class="card-meta">
-      <span><span class="status-dot" style="background:${st.color}"></span> ${st.label}</span>
-      ${kids.length ? `<span>${doneKids}/${kids.length} stories</span>` : ""}
-      ${blockedBy.length ? `<span class="card-blocked">⛔ ${blockedBy.length} blocking</span>` : ""}
-    </div>
-  `;
-  card.addEventListener("click", ()=> openPanel(item.id));
-  return card;
-}
-
-function renderAll(){
-  renderFilters();
-  renderBoard();
+  const res = await gh(`/repos/${CFG.owner}/${CFG.repo}/contents/${path}`, {method:"PUT", body:{message:"Add attachment — "+safeName, content:b64, branch:CFG.branch}});
+  return {name:file.name, path, type:file.type||"application/octet-stream", size:file.size, downloadUrl:res.content.download_url};
 }
 
 /* ============================================================
    ITEM CRUD
    ============================================================ */
-function createItem(workstreamId, incrementId, parentId){
-  const now = new Date().toISOString();
+function createItem(type, workstreamId, milestoneId, parentId){
+  const now = nowIso();
   const item = {
-    id: uid("item"),
-    title: "New item",
-    description: "",
-    type: parentId ? "story" : "feature",
-    parentId: parentId || null,
-    workstreamId: workstreamId,
-    incrementId: incrementId || null,
-    size: "M",
-    status: "backlog",
-    dependsOn: [],
-    githubIssue: null,
-    attachments: [],
-    createdAt: now,
-    updatedAt: now
+    id: uid("item"), type, parentId: parentId||null, title:"New "+type, description:"",
+    strategy:"", value:"", size:"M", notes:"",
+    workstreamId, milestoneId: milestoneId||null, status:"backlog",
+    start:null, end:null, dependsOn:[], embeds:[], attachments:[], comments:[],
+    github:null, createdAt:now, updatedAt:now
   };
   DATA.items.push(item);
   markDirty();
-  renderAll();
-  openPanel(item.id);
+  saveData(true);
+  return item;
 }
+function touch(item){ item.updatedAt = nowIso(); markDirty(); }
 
 function deleteItem(id){
-  const kids = childrenOf(id);
-  if(kids.length && !confirm(`This item has ${kids.length} nested stories. Delete it and all of them?`)) return;
-  if(!kids.length && !confirm("Delete this item?")) return;
-  const idsToRemove = new Set([id, ...kids.map(k=>k.id)]);
-  DATA.items = DATA.items.filter(i=>!idsToRemove.has(i.id));
-  DATA.items.forEach(i=>{ i.dependsOn = (i.dependsOn||[]).filter(d=>!idsToRemove.has(d)); });
-  markDirty();
-  closePanel();
-  renderAll();
+  const kids = descendants(id);
+  const item = itemById(id);
+  const msg = kids.length
+    ? `Delete "${item.title}" and its ${kids.length} nested item(s) from the roadmap? Linked GitHub issues won't be touched.`
+    : `Delete "${item.title}" from the roadmap? Its linked GitHub issue (if any) won't be touched.`;
+  if(!confirm(msg)) return;
+  const ids = new Set([id, ...kids.map(k=>k.id)]);
+  DATA.items = DATA.items.filter(i=>!ids.has(i.id));
+  DATA.items.forEach(i=>{ i.dependsOn = (i.dependsOn||[]).filter(d=>!ids.has(d)); });
+  markDirty(); saveData(true);
+  closeDetailToList();
 }
 
 /* ============================================================
-   DETAIL PANEL
+   CONFIG / CONNECT
    ============================================================ */
-function openPanel(id){
+function loadCfg(){ try{ const raw=localStorage.getItem("roadmap_cfg_v2"); return raw?JSON.parse(raw):null; }catch(e){ return null; } }
+function saveCfg(cfg){ localStorage.setItem("roadmap_cfg_v2", JSON.stringify(cfg)); }
+function clearCfg(){ localStorage.removeItem("roadmap_cfg_v2"); }
+
+async function tryConnect(cfg){
+  const errEl = document.getElementById("gate-error"); errEl.classList.add("hidden");
+  const btn = document.getElementById("btn-connect"); btn.disabled=true; btn.textContent="Connecting…";
+  try{
+    CFG = cfg;
+    await loadData();
+    saveCfg(cfg);
+    document.getElementById("gate").classList.add("hidden");
+    document.getElementById("app").classList.add("on");
+    document.getElementById("brand-name").textContent = CFG.repo;
+    fetchOrgIssueFields(); // warm cache, non-blocking
+    renderAll();
+  }catch(e){
+    errEl.textContent = e.message + "\n\nCheck the owner/repo/branch, and that the token has Contents + Issues access to this repo.";
+    errEl.classList.remove("hidden");
+    CFG = null;
+  }finally{ btn.disabled=false; btn.textContent="Connect"; }
+}
+
+document.getElementById("btn-connect").addEventListener("click", ()=>{
+  const cfg = {
+    owner: document.getElementById("cfg-owner").value.trim(),
+    repo: document.getElementById("cfg-repo").value.trim(),
+    branch: document.getElementById("cfg-branch").value.trim() || "main",
+    token: document.getElementById("cfg-token").value.trim()
+  };
+  if(!cfg.owner || !cfg.repo || !cfg.token){
+    const errEl = document.getElementById("gate-error");
+    errEl.textContent = "Owner, repo, and token are required."; errEl.classList.remove("hidden");
+    return;
+  }
+  tryConnect(cfg);
+});
+
+document.getElementById("btn-push-open").addEventListener("click", renderPushPreview);
+setInterval(()=>{ if(DIRTY && CFG) saveData(true); }, 45000);
+window.addEventListener("beforeunload", (e)=>{ if(DIRTY){ e.preventDefault(); e.returnValue=""; } });
+
+/* ============================================================
+   NAV
+   ============================================================ */
+document.querySelectorAll(".nav-item[data-page]").forEach(btn=> btn.addEventListener("click", ()=> goToPage(btn.dataset.page)) );
+function goToPage(page){
+  if(page!=="detail") lastPage = page;
+  document.querySelectorAll(".nav-item[data-page]").forEach(b=>b.classList.toggle("active", b.dataset.page===page));
+  document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
+  const target = document.getElementById("page-"+page);
+  if(target) target.classList.add("active");
+  if(page==="roadmap") renderRoadmap();
+  if(page==="hierarchy") renderTree();
+  if(page==="delivery") renderDelivery();
+  if(page==="milestones") renderMilestonesPage();
+}
+function renderAll(){ renderRoadmap(); renderTree(); renderDelivery(); renderMilestonesPage(); }
+
+/* ============================================================
+   ROADMAP / GANTT
+   ============================================================ */
+let RANGE_START, RANGE_END, TOTAL_DAYS;
+function computeRange(){
+  const dated = DATA.items.filter(i=>i.start && i.end);
+  const msDates = DATA.milestones.filter(m=>m.due);
+  let min = null, max = null;
+  dated.forEach(i=>{ const s=new Date(i.start), e=new Date(i.end); if(!min||s<min)min=s; if(!max||e>max)max=e; });
+  msDates.forEach(m=>{ const d=new Date(m.due); if(!min||d<min)min=d; if(!max||d>max)max=d; });
+  const today = new Date();
+  if(!min) min = new Date(today.getFullYear(), today.getMonth(), 1);
+  if(!max) max = new Date(today.getFullYear(), today.getMonth()+4, 1);
+  min = new Date(min.getFullYear(), min.getMonth()-1, 1);
+  max = new Date(max.getFullYear(), max.getMonth()+2, 1);
+  RANGE_START = min; RANGE_END = max; TOTAL_DAYS = (RANGE_END-RANGE_START)/86400000;
+}
+function dayOffset(dateStr){ return (new Date(dateStr)-RANGE_START)/86400000; }
+function pct(days){ return (days/TOTAL_DAYS*100).toFixed(2)+"%"; }
+
+const expandedFeatures = new Set();
+
+function renderRoadmap(){
+  computeRange();
+  renderBacklogGutter();
+  renderGanttMonths();
+  const h = renderGanttBody();
+  renderMilestoneMarkers(h);
+}
+
+function renderBacklogGutter(){
+  const list = document.getElementById("backlog-list");
+  const backlog = topLevelItems().filter(i=>!i.start || !i.end);
+  document.getElementById("backlog-count").textContent = backlog.length;
+  if(backlog.length===0){ list.innerHTML = `<div class="backlog-empty">Nothing unscheduled.</div>`; return; }
+  list.innerHTML = "";
+  backlog.forEach(item=>{
+    const ws = wsMeta(item.workstreamId);
+    const card = document.createElement("div");
+    card.className = "backlog-card";
+    card.innerHTML = `${escapeHtml(item.title)}<div class="ws-tag" style="color:${ws.color}">● ${escapeHtml(ws.name)}</div>`;
+    card.addEventListener("click", ()=> openDetail(item.id));
+    list.appendChild(card);
+  });
+}
+
+function renderGanttMonths(){
+  const el = document.getElementById("gantt-months"); el.innerHTML="";
+  let cur = new Date(RANGE_START.getFullYear(), RANGE_START.getMonth(), 1);
+  const monthNames = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+  while(cur < RANGE_END){
+    const off = (cur-RANGE_START)/86400000;
+    if(off>=0){
+      const mark = document.createElement("div"); mark.className="month-mark"; mark.style.left=pct(off);
+      mark.innerHTML = `<span>${monthNames[cur.getMonth()]} '${String(cur.getFullYear()).slice(2)}</span>`;
+      el.appendChild(mark);
+    }
+    cur = new Date(cur.getFullYear(), cur.getMonth()+1, 1);
+  }
+}
+function renderMilestoneMarkers(totalHeight){
+  const layer = document.getElementById("milestone-layer");
+  Object.assign(layer.style, {position:"absolute", top:"36px", left:"210px", right:"0", height:totalHeight+"px"});
+  layer.innerHTML = "";
+  DATA.milestones.filter(m=>m.due).forEach(m=>{
+    const off = dayOffset(m.due);
+    const line = document.createElement("div"); line.className="milestone-mark"; line.style.left=pct(off); line.style.height=totalHeight+"px";
+    const flag = document.createElement("div"); flag.className="milestone-flag"; flag.style.left=pct(off); flag.textContent = m.name+" · "+m.due;
+    layer.appendChild(line); layer.appendChild(flag);
+  });
+}
+function barStyle(item){
+  const left = dayOffset(item.start), width = Math.max(dayOffset(item.end)-left, 0.5);
+  const ws = wsMeta(item.workstreamId);
+  const st = statusMeta(item.status);
+  return `left:calc(210px + ${pct(left)}); width:${pct(width)}; background:${ws.tint||"var(--surface-3)"}; border-left-color:${st.color};`;
+}
+function renderGanttBody(){
+  const body = document.getElementById("gantt-body"); body.innerHTML=""; let rows=0;
+  const wsWithDated = DATA.workstreams.filter(ws=> topLevelItems().some(i=>i.workstreamId===ws.id && i.start && i.end));
+  if(wsWithDated.length===0){
+    body.innerHTML = `<div class="gantt-empty">Nothing scheduled yet. Set start/end dates on a feature to see it here.</div>`;
+    return 200;
+  }
+  wsWithDated.forEach(ws=>{
+    const label = document.createElement("div"); label.className="ws-block-label";
+    label.innerHTML = `<span class="chip-dot" style="background:${ws.color}"></span>${escapeHtml(ws.name)}`;
+    body.appendChild(label); rows++;
+    const features = topLevelItems().filter(i=>i.workstreamId===ws.id && i.start && i.end);
+    features.forEach(f=>{
+      const row = document.createElement("div"); row.className="gantt-row";
+      const kids = childrenOf(f.id); const expanded = expandedFeatures.has(f.id);
+      row.innerHTML = `<div class="row-label">${kids.length?`<button class="expand-chevron" data-toggle="${f.id}">${expanded?"▾":"▸"}</button>`:`<span style="width:14px;display:inline-block;"></span>`}<span>${escapeHtml(f.title)}</span></div>
+        <div class="gantt-bar" style="${barStyle(f)}" data-item="${f.id}">${escapeHtml(f.title)}</div>`;
+      body.appendChild(row); rows++;
+      if(expanded){
+        kids.forEach(k=>{
+          if(k.start && k.end){ renderChildRow(body,k,1); rows++; }
+          childrenOf(k.id).forEach(gk=>{ if(gk.start && gk.end){ renderChildRow(body,gk,2); rows++; } });
+        });
+      }
+    });
+  });
+  return rows*34+40;
+}
+function renderChildRow(body,item,depth){
+  const row = document.createElement("div"); row.className="gantt-row child-row";
+  row.innerHTML = `<div class="row-label child" style="padding-left:${8+depth*16}px;">${item.type==="task"?"⚬ ":"↳ "}${escapeHtml(item.title)}</div>
+    <div class="gantt-bar child" style="${barStyle(item)}" data-item="${item.id}">${escapeHtml(item.title)}</div>`;
+  body.appendChild(row);
+}
+document.getElementById("gantt-body").addEventListener("click",(e)=>{
+  const toggle = e.target.closest("[data-toggle]");
+  if(toggle){ const id=toggle.dataset.toggle; expandedFeatures.has(id)?expandedFeatures.delete(id):expandedFeatures.add(id); renderRoadmap(); return; }
+  const bar = e.target.closest("[data-item]"); if(bar) openDetail(bar.dataset.item);
+});
+document.getElementById("btn-add-backlog").addEventListener("click", ()=>{
+  if(!DATA.workstreams.length){ toast("Add a workstream first (Settings).", true); return; }
+  const item = createItem("feature", DATA.workstreams[0].id, null, null);
+  renderRoadmap(); openDetail(item.id);
+});
+
+/* ============================================================
+   HIERARCHY TREE
+   ============================================================ */
+function renderTree(){
+  const root = document.getElementById("tree-root"); root.innerHTML="";
+  topLevelItems().forEach(f=> root.appendChild(treeNode(f)) );
+}
+function treeNode(item){
+  const li = document.createElement("li");
+  const node = document.createElement("div"); node.className="tree-node";
+  const st = statusMeta(item.status); const ws = wsMeta(item.workstreamId);
+  node.innerHTML = `<span class="type-tag t-${item.type}">${item.type}</span><span class="status-dot" style="background:${st.color}"></span><span class="tree-title">${escapeHtml(item.title)}</span><span class="chip-dot" style="background:${ws.color}"></span><span class="tree-meta">${escapeHtml(ws.name)}</span>${item.size?`<span class="tree-meta">· ${item.size}</span>`:""}${!item.github||!item.github.issueNumber?`<span class="tree-meta">· not pushed</span>`:""}`;
+  node.addEventListener("click", ()=> openDetail(item.id));
+  li.appendChild(node);
+  const kids = childrenOf(item.id);
+  if(kids.length){ const ul=document.createElement("ul"); kids.forEach(k=>ul.appendChild(treeNode(k))); li.appendChild(ul); }
+  return li;
+}
+document.getElementById("btn-add-feature-tree").addEventListener("click", ()=>{
+  if(!DATA.workstreams.length){ toast("Add a workstream first (Settings).", true); return; }
+  const item = createItem("feature", DATA.workstreams[0].id, null, null);
+  renderTree(); openDetail(item.id);
+});
+
+/* ============================================================
+   DELIVERY
+   ============================================================ */
+function deliveryStats(feature){
+  const all = [feature, ...descendants(feature.id)];
+  const linked = all.filter(i=>i.github && i.github.issueNumber);
+  const done = linked.filter(i=>i.status==="done");
+  const pct = linked.length ? Math.round(done.length/linked.length*100) : 0;
+  const blocked = all.some(i=>i.status==="blocked");
+  return {pct, linkedCount:linked.length, totalCount:all.length, blocked};
+}
+function renderDelivery(){
+  const wrap = document.getElementById("delivery-list"); wrap.innerHTML="";
+  const features = topLevelItems();
+  if(!features.length){ wrap.innerHTML = `<div class="backlog-empty">No features yet.</div>`; return; }
+  features.forEach(f=>{
+    const s = deliveryStats(f); const ws = wsMeta(f.workstreamId);
+    const row = document.createElement("div"); row.className="delivery-row";
+    row.innerHTML = `
+      <div class="delivery-row-top"><span class="chip-dot" style="background:${ws.color}"></span><span class="title">${escapeHtml(f.title)}</span><span class="delivery-pct">${s.pct}%</span></div>
+      <div class="bar-track"><div class="bar-fill" style="width:${s.pct}%"></div></div>
+      <div class="delivery-meta"><span>${s.linkedCount}/${s.totalCount} linked to GitHub</span>${s.blocked?`<span class="risk">⛔ blocked item in tree</span>`:""}</div>
+    `;
+    row.addEventListener("click", ()=> openDetail(f.id));
+    wrap.appendChild(row);
+  });
+}
+
+/* ============================================================
+   MILESTONES PAGE
+   ============================================================ */
+function renderMilestonesPage(){
+  const wrap = document.getElementById("milestones-list"); wrap.innerHTML="";
+  if(!DATA.milestones.length){ wrap.innerHTML = `<div class="backlog-empty">No milestones yet.</div>`; }
+  const today = new Date();
+  DATA.milestones.forEach(m=>{
+    const items = DATA.items.filter(i=>i.milestoneId===m.id);
+    const linked = items.filter(i=>i.github && i.github.issueNumber);
+    const done = linked.filter(i=>i.status==="done");
+    const p = linked.length ? Math.round(done.length/linked.length*100) : 0;
+    const days = m.due ? Math.round((new Date(m.due)-today)/86400000) : null;
+    const card = document.createElement("div"); card.className="milestone-card";
+    card.innerHTML = `
+      <div class="milestone-top"><span class="name">${escapeHtml(m.name)}</span><span class="due">${m.due?"Due "+m.due:"No date"}</span><button class="milestone-edit-btn" data-edit="${m.id}">Edit</button></div>
+      <div class="milestone-countdown">${days==null?"":(days>=0?days+" days away":Math.abs(days)+" days overdue")}</div>
+      <div class="bar-track"><div class="bar-fill" style="width:${p}%"></div></div>
+      <div class="delivery-meta" style="margin-top:6px;"><span>${items.length} items assigned</span><span>${p}% of linked issues done</span>${!m.githubNumber?`<span>· not pushed</span>`:""}</div>
+    `;
+    wrap.appendChild(card);
+  });
+  wrap.querySelectorAll("[data-edit]").forEach(btn=> btn.addEventListener("click", ()=>openMilestoneModal(btn.dataset.edit)) );
+}
+
+let editingMilestoneId = null;
+function openMilestoneModal(id){
+  editingMilestoneId = id;
+  const m = id ? DATA.milestones.find(x=>x.id===id) : null;
+  openModal(`
+    <h3>${m?"Edit milestone":"New milestone"}</h3>
+    <div class="sub">Native GitHub milestone — the due date is the only thing pushed.</div>
+    <div class="field"><label>Name</label><input type="text" id="mm-name" value="${m?escapeAttr(m.name):""}" placeholder="e.g. Beta Launch"></div>
+    <div class="field"><label>Due date</label><input type="text" id="mm-due" value="${m?escapeAttr(m.due||""):""}" placeholder="YYYY-MM-DD"></div>
+    <div class="modal-actions" style="justify-content:space-between;">
+      <button class="btn btn-danger btn-sm ${m?"":"hidden"}" id="mm-delete">Delete</button>
+      <div style="flex:1;"></div>
+      <button class="btn" id="mm-cancel">Cancel</button>
+      <button class="btn btn-primary" id="mm-save">Save</button>
+    </div>
+  `, ()=>{
+    document.getElementById("mm-cancel").addEventListener("click", closeModal);
+    document.getElementById("mm-save").addEventListener("click", ()=>{
+      const name = document.getElementById("mm-name").value.trim();
+      const due = document.getElementById("mm-due").value.trim();
+      if(!name) return;
+      if(editingMilestoneId){
+        const mm = DATA.milestones.find(x=>x.id===editingMilestoneId);
+        mm.name=name; mm.due=due;
+      }else{
+        DATA.milestones.push({id:uid("ms"), name, due, githubNumber:null});
+      }
+      markDirty(); saveData(true);
+      closeModal(); renderMilestonesPage(); renderRoadmap();
+    });
+    const delBtn = document.getElementById("mm-delete");
+    if(delBtn) delBtn.addEventListener("click", ()=>{
+      const inUse = DATA.items.some(i=>i.milestoneId===editingMilestoneId);
+      if(inUse && !confirm("Items are assigned to this milestone. Delete anyway? They'll move to Backlog.")) return;
+      DATA.items.forEach(i=>{ if(i.milestoneId===editingMilestoneId){ i.milestoneId=null; touch(i); } });
+      DATA.milestones = DATA.milestones.filter(x=>x.id!==editingMilestoneId);
+      markDirty(); saveData(true);
+      closeModal(); renderMilestonesPage(); renderRoadmap();
+    });
+  });
+}
+document.getElementById("btn-add-milestone").addEventListener("click", ()=> openMilestoneModal(null));
+
+/* ============================================================
+   DETAIL PAGE
+   ============================================================ */
+function closeDetailToList(){ goToPage(lastPage); }
+
+function openDetail(id){
   SELECTED_ID = id;
-  document.getElementById("overlay").classList.remove("hidden");
-  document.getElementById("panel").classList.remove("hidden");
-  renderPanel();
-}
-function closePanel(){
-  SELECTED_ID = null;
-  document.getElementById("overlay").classList.add("hidden");
-  document.getElementById("panel").classList.add("hidden");
-  renderBoard();
-}
-document.getElementById("overlay").addEventListener("click", closePanel);
+  const item = itemById(id);
+  if(!item) return;
+  const isFeature = item.type==="feature";
+  const kids = childrenOf(item.id);
+  const all = [item, ...descendants(item.id)];
+  const linked = all.filter(i=>i.github&&i.github.issueNumber);
+  const done = linked.filter(i=>i.status==="done");
+  const deliveryPct = linked.length ? Math.round(done.length/linked.length*100) : 0;
+  const ms = msMeta(item.milestoneId);
+  const pushed = !!(item.github && item.github.issueNumber);
 
-function field(v){ return v==null ? "" : v; }
-
-function renderPanel(){
-  const item = itemById(SELECTED_ID);
-  const panel = document.getElementById("panel");
-  if(!item){ closePanel(); return; }
-
-  const isStory = item.type === "story";
-  const parent = item.parentId ? itemById(item.parentId) : null;
-
-  panel.innerHTML = `
-    <div class="panel-head">
-      <span class="type-badge">${isStory ? "Story" : "Feature"}</span>
-      ${parent ? `<span class="help-txt">in ${escapeHtml(parent.title)}</span>` : ""}
-      <button class="panel-close" id="p-close">&times;</button>
+  document.getElementById("detail-wrap").innerHTML = `
+    <button class="detail-back" id="d-back">← Back</button>
+    <div class="detail-crumbs">
+      <span class="crumb-pill">${item.type}</span>
+      ${ms?`<span class="crumb-pill">${escapeHtml(ms.name)}</span>`:""}
+      <span class="push-badge ${pushed?"synced":"pending"}">${pushed?`Synced — issue #${item.github.issueNumber}`:"Not yet pushed"}</span>
+      ${pushed?`<a href="${escapeAttr(item.github.htmlUrl||'#')}" target="_blank" rel="noopener" class="help-txt">View on GitHub ↗</a>`:""}
     </div>
-    <div class="panel-body">
-      <input type="text" class="title-input" id="p-title" value="${escapeHtml(item.title)}" placeholder="Item title">
+    <input class="detail-title-input" type="text" id="p-title" value="${escapeAttr(item.title)}" placeholder="Title">
 
-      <div class="field">
-        <label>Description</label>
-        <textarea id="p-desc" rows="5" placeholder="What is this? Markdown-ish plain text is fine. Paste image URLs directly, or attach images below.">${escapeHtml(item.description)}</textarea>
+    <div class="detail-grid">
+      <div class="detail-col-left">
+        <section>
+          <h3>Description</h3>
+          <textarea rows="4" id="p-desc" placeholder="What is this, and what does it change?">${escapeHtml(item.description)}</textarea>
+        </section>
+        ${isFeature ? `
+        <section>
+          <h3>Strategy</h3>
+          <textarea rows="3" id="p-strategy" placeholder="Why this, why now">${escapeHtml(item.strategy)}</textarea>
+        </section>` : ""}
+        <section>
+          <h3>Questions / notes</h3>
+          <textarea rows="3" id="p-notes">${escapeHtml(item.notes)}</textarea>
+          <div class="help-txt">Pushed as part of one combined "Added via import" comment, along with Whimsical Materials links.</div>
+        </section>
+        <section>
+          <h3>Whimsical Materials</h3>
+          <div id="p-embeds"></div>
+          <button class="add-embed-btn" id="p-add-embed">+ paste an iframe embed or URL</button>
+        </section>
+        <section>
+          <h3>Comments</h3>
+          <div id="p-comments"></div>
+          ${pushed ? `
+            <div class="comment-input-row">
+              <input type="text" class="name" id="p-comment-name" placeholder="Your name">
+              <input type="text" class="text" id="p-comment-text" placeholder="Add a comment…">
+              <button class="btn btn-sm btn-primary" id="p-comment-post">Post</button>
+            </div>
+            <div class="help-txt">Posts immediately to the linked GitHub issue.</div>
+          ` : `<div class="help-txt">Comments unlock once this item has been pushed to GitHub.</div>`}
+        </section>
       </div>
 
-      <div class="field-row">
-        <div class="field">
-          <label>Workstream</label>
-          <select id="p-ws">${DATA.workstreams.map(w=>`<option value="${w.id}" ${w.id===item.workstreamId?"selected":""}>${escapeHtml(w.name)}</option>`).join("")}</select>
+      <div class="detail-col-right">
+        <div class="meta-card">
+          <div class="meta-grid">
+            <div class="meta-field"><label>Status</label><select id="p-status">${STATUSES.map(s=>`<option value="${s.id}" ${item.status===s.id?"selected":""}>${s.label}</option>`).join("")}</select></div>
+            <div class="meta-field"><label>Size</label><select id="p-size"><option value="">—</option>${SIZES.map(s=>`<option ${item.size===s?"selected":""}>${s}</option>`).join("")}</select></div>
+            <div class="meta-field"><label>Workstream</label><select id="p-ws">${DATA.workstreams.map(w=>`<option value="${w.id}" ${item.workstreamId===w.id?"selected":""}>${escapeHtml(w.name)}</option>`).join("")}</select></div>
+            <div class="meta-field"><label>Milestone</label><select id="p-ms"><option value="">Backlog</option>${DATA.milestones.map(m=>`<option value="${m.id}" ${item.milestoneId===m.id?"selected":""}>${escapeHtml(m.name)}</option>`).join("")}</select></div>
+            ${isFeature ? `<div class="meta-field"><label>Value</label><div class="pill-select" id="p-value">
+              <button class="pill val-low ${item.value==='low'?'active':''}" data-v="low">Low</button>
+              <button class="pill val-medium ${item.value==='medium'?'active':''}" data-v="medium">Med</button>
+              <button class="pill val-high ${item.value==='high'?'active':''}" data-v="high">High</button>
+            </div></div>` : `<div></div>`}
+            <div class="meta-field"><label>Start</label><input type="text" id="p-start" value="${escapeAttr(item.start||"")}" placeholder="YYYY-MM-DD"></div>
+            <div class="meta-field"><label>End</label><input type="text" id="p-end" value="${escapeAttr(item.end||"")}" placeholder="YYYY-MM-DD"></div>
+          </div>
+          <div class="dates-local-note">⌁ Start/End dates stay local — never written to GitHub.</div>
         </div>
-        <div class="field">
-          <label>Increment</label>
-          <select id="p-inc">
-            <option value="" ${!item.incrementId?"selected":""}>Backlog</option>
-            ${DATA.increments.map(i=>`<option value="${i.id}" ${i.id===item.incrementId?"selected":""}>${escapeHtml(i.name)}</option>`).join("")}
-          </select>
+
+        ${kids.length||pushed ? `
+        <div class="gh-card">
+          <div class="gh-card-head"><h4>GitHub delivery</h4><span class="gh-pct">${deliveryPct}%</span></div>
+          ${linked.length===0?`<div class="help-txt">No linked issues yet.</div>`:linked.map(i=>{
+            const icon = i.status==="done"?`<span class="ic ic-done">✓</span>`:i.status==="in-progress"?`<span class="ic ic-progress">◐</span>`:`<span class="ic ic-review">◯</span>`;
+            return `<div class="gh-issue-row">${icon}<div><div class="repo">${escapeHtml(CFG.owner)}/${escapeHtml(CFG.repo)} #${i.github.issueNumber}</div><a href="${escapeAttr(i.github.htmlUrl||'#')}" target="_blank" rel="noopener">${escapeHtml(i.title)}</a><div class="st">${statusMeta(i.status).label}</div></div></div>`;
+          }).join("")}
+        </div>` : ""}
+
+        <div class="meta-card">
+          <div class="section-label-sm"><span>Blocked by</span></div>
+          <div id="p-deps"></div>
+          <select class="mini-add" id="p-add-dep"><option value="">+ add dependency…</option></select>
         </div>
-      </div>
 
-      <div class="field-row">
-        <div class="field">
-          <label>Size</label>
-          <select id="p-size">
-            <option value="" ${!item.size?"selected":""}>—</option>
-            ${SIZES.map(s=>`<option value="${s}" ${s===item.size?"selected":""}>${s}</option>`).join("")}
-          </select>
+        <div class="meta-card">
+          <div class="section-label-sm"><span>Attachments</span></div>
+          <div id="p-attachments"></div>
+          <label class="upload-btn" style="display:block;">Click to attach an image or document
+            <input type="file" id="p-upload" style="display:none;">
+          </label>
+          <div class="help-txt" id="p-upload-status"></div>
         </div>
-        <div class="field">
-          <label>Status</label>
-          <select id="p-status">
-            ${STATUSES.map(s=>`<option value="${s.id}" ${s.id===item.status?"selected":""}>${s.label}</option>`).join("")}
-          </select>
-        </div>
-      </div>
 
-      <div class="field">
-        <label>GitHub issue link (optional)</label>
-        <input type="text" id="p-ghissue" placeholder="owner/repo#123" value="${item.githubIssue ? escapeHtml(item.githubIssue.repo + '#' + item.githubIssue.number) : ''}">
-        <div class="field-hint">Stores a reference only, for now — paste as <code>owner/repo#123</code>.</div>
+        <button class="btn btn-danger btn-sm" id="p-delete">Delete item</button>
       </div>
-
-      ${!isStory ? `
-      <div class="section-label">
-        <span>Stories</span>
-        <button class="btn btn-sm" id="p-add-story">+ add story</button>
-      </div>
-      <div class="story-list" id="p-stories"></div>
-      ` : ""}
-
-      <div class="section-label">
-        <span>Depends on</span>
-      </div>
-      <div class="dep-list" id="p-deps"></div>
-      <select class="mini-add" id="p-add-dep" style="margin-top:6px;width:100%;">
-        <option value="">+ add dependency…</option>
-      </select>
-
-      <div class="section-label"><span>Attachments</span></div>
-      <div class="attach-list" id="p-attachments"></div>
-      <label class="upload-btn" style="display:block;margin-top:6px;">
-        Click to attach an image or document
-        <input type="file" id="p-upload" style="display:none;">
-      </label>
-      <div class="help-txt" id="p-upload-status"></div>
-    </div>
-    <div class="panel-footer">
-      <button class="btn btn-danger" id="p-delete">Delete</button>
-      <div class="spacer"></div>
-      <button class="btn btn-primary" id="p-done">Done</button>
     </div>
   `;
 
-  // wire up simple fields
-  document.getElementById("p-close").addEventListener("click", closePanel);
-  document.getElementById("p-done").addEventListener("click", closePanel);
+  document.getElementById("d-back").addEventListener("click", closeDetailToList);
   document.getElementById("p-delete").addEventListener("click", ()=> deleteItem(item.id));
 
-  const bindSimple = (elId, prop, transform)=>{
-    document.getElementById(elId).addEventListener("change", (e)=>{
-      item[prop] = transform ? transform(e.target.value) : e.target.value;
-      item.updatedAt = new Date().toISOString();
-      markDirty();
-      renderBoard();
+  document.getElementById("p-title").addEventListener("input", e=>{ item.title=e.target.value; touch(item); });
+  document.getElementById("p-title").addEventListener("change", ()=> saveData(true));
+  document.getElementById("p-desc").addEventListener("input", e=>{ item.description=e.target.value; touch(item); });
+  document.getElementById("p-desc").addEventListener("change", ()=> saveData(true));
+  if(isFeature){
+    document.getElementById("p-strategy").addEventListener("input", e=>{ item.strategy=e.target.value; touch(item); });
+    document.getElementById("p-strategy").addEventListener("change", ()=> saveData(true));
+  }
+  document.getElementById("p-notes").addEventListener("input", e=>{ item.notes=e.target.value; touch(item); });
+  document.getElementById("p-notes").addEventListener("change", ()=> saveData(true));
+
+  const bindSelect = (elId, prop, transform)=>{
+    document.getElementById(elId).addEventListener("change", e=>{
+      item[prop] = transform ? transform(e.target.value) : (e.target.value||null);
+      touch(item); saveData(true);
     });
   };
-  document.getElementById("p-title").addEventListener("input", (e)=>{
-    item.title = e.target.value; item.updatedAt = new Date().toISOString(); markDirty();
-  });
-  document.getElementById("p-title").addEventListener("change", renderBoard);
-  document.getElementById("p-desc").addEventListener("input", (e)=>{
-    item.description = e.target.value; item.updatedAt = new Date().toISOString(); markDirty();
-  });
-  bindSimple("p-ws","workstreamId");
-  bindSimple("p-inc","incrementId", v=> v || null);
-  bindSimple("p-size","size");
-  bindSimple("p-status","status");
-  document.getElementById("p-ghissue").addEventListener("change",(e)=>{
-    const v = e.target.value.trim();
-    const m = v.match(/^([\w.-]+\/[\w.-]+)#(\d+)$/);
-    item.githubIssue = m ? {repo:m[1], number:parseInt(m[2],10)} : null;
-    markDirty();
+  bindSelect("p-status","status");
+  bindSelect("p-size","size");
+  bindSelect("p-ws","workstreamId");
+  bindSelect("p-ms","milestoneId", v=>v||null);
+  document.getElementById("p-start").addEventListener("change", e=>{ item.start=e.target.value||null; touch(item); saveData(true); renderRoadmap(); });
+  document.getElementById("p-end").addEventListener("change", e=>{ item.end=e.target.value||null; touch(item); saveData(true); renderRoadmap(); });
+
+  if(isFeature){
+    document.querySelectorAll("#p-value .pill").forEach(p=>{
+      p.addEventListener("click", ()=>{
+        document.querySelectorAll("#p-value .pill").forEach(x=>x.classList.remove("active"));
+        p.classList.add("active"); item.value=p.dataset.v; touch(item); saveData(true);
+      });
+    });
+  }
+
+  // embeds
+  function renderEmbeds(){
+    const el = document.getElementById("p-embeds"); el.innerHTML="";
+    (item.embeds||[]).forEach((em,idx)=>{
+      const card = document.createElement("div"); card.className="embed-card";
+      card.innerHTML = `<div class="embed-label"><span>${escapeHtml(em.label)}</span><button data-rm="${idx}" style="background:none;border:none;color:var(--text-faint);">&times;</button></div>
+        <iframe src="${escapeAttr(em.url)}" sandbox="allow-scripts allow-same-origin" loading="lazy"></iframe>`;
+      card.querySelector("[data-rm]").addEventListener("click", ()=>{ item.embeds.splice(idx,1); touch(item); saveData(true); renderEmbeds(); });
+      el.appendChild(card);
+    });
+  }
+  renderEmbeds();
+  document.getElementById("p-add-embed").addEventListener("click", ()=>{
+    const pasted = prompt("Paste an iframe embed snippet or a plain URL:");
+    if(!pasted) return;
+    const m = pasted.match(/<iframe[^>]+src=["']([^"']+)["']/i);
+    let url = m ? m[1] : pasted.trim();
+    if(!/^https?:\/\//i.test(url)){ toast("That doesn't look like a URL.", true); return; }
+    const label = prompt("Label for this embed:", "Embed") || "Embed";
+    item.embeds = item.embeds || [];
+    item.embeds.push({label, url});
+    touch(item); saveData(true); renderEmbeds();
   });
 
-  // stories
-  if(!isStory){
-    const storiesEl = document.getElementById("p-stories");
-    const kids = childrenOf(item.id);
-    if(kids.length===0){
-      storiesEl.innerHTML = `<div class="help-txt">No stories yet.</div>`;
-    }else{
-      storiesEl.innerHTML = "";
-      kids.forEach(k=>{
-        const st = statusMeta(k.status);
-        const row = document.createElement("div");
-        row.className = "story-row";
-        row.style.cursor = "pointer";
-        row.innerHTML = `<span class="status-dot" style="background:${st.color}"></span>
-          <span style="flex:1">${escapeHtml(k.title)}</span>
-          <span class="help-txt">${k.size||""}</span>
-          <button class="rm" title="Remove story">&times;</button>`;
-        row.querySelector(".rm").addEventListener("click",(e)=>{ e.stopPropagation(); deleteItem(k.id); });
-        row.addEventListener("click", ()=> openPanel(k.id));
-        storiesEl.appendChild(row);
-      });
-    }
-    document.getElementById("p-add-story").addEventListener("click", ()=>{
-      createItem(item.workstreamId, item.incrementId, item.id);
+  // comments
+  function renderComments(){
+    const el = document.getElementById("p-comments");
+    if(!item.comments || !item.comments.length){ el.innerHTML = `<div class="help-txt">No comments yet.</div>`; return; }
+    el.innerHTML = item.comments.map(c=>`<div class="comment"><div class="comment-meta">Commented by ${escapeHtml(c.name)}</div>${escapeHtml(c.text)}</div>`).join("");
+  }
+  renderComments();
+  if(pushed){
+    document.getElementById("p-comment-post").addEventListener("click", async ()=>{
+      const name = document.getElementById("p-comment-name").value.trim();
+      const text = document.getElementById("p-comment-text").value.trim();
+      if(!name||!text){ toast("Name and comment are both required.", true); return; }
+      await postComment(item, name, text);
+      document.getElementById("p-comment-text").value="";
+      renderComments();
     });
   }
 
   // dependencies
-  const depsEl = document.getElementById("p-deps");
-  const deps = (item.dependsOn||[]).map(itemById).filter(Boolean);
-  if(deps.length===0){
-    depsEl.innerHTML = `<div class="help-txt">No dependencies.</div>`;
-  }else{
-    depsEl.innerHTML = "";
+  function renderDeps(){
+    const el = document.getElementById("p-deps");
+    const deps = (item.dependsOn||[]).map(itemById).filter(Boolean);
+    el.innerHTML = deps.length ? "" : `<div class="help-txt">No dependencies.</div>`;
     deps.forEach(d=>{
       const st = statusMeta(d.status);
-      const row = document.createElement("div");
-      row.className = "dep-row";
-      row.innerHTML = `<span class="status-dot" style="background:${st.color}"></span>
-        <span>${escapeHtml(d.title)}</span>
-        <button class="rm" title="Remove dependency">&times;</button>`;
-      row.querySelector(".rm").addEventListener("click", ()=>{
-        item.dependsOn = item.dependsOn.filter(x=>x!==d.id);
-        markDirty();
-        renderPanel();
-      });
-      depsEl.appendChild(row);
+      const row = document.createElement("div"); row.className="dep-row";
+      row.innerHTML = `<span class="status-dot" style="background:${st.color}"></span><span>${escapeHtml(d.title)}</span><button class="rm">&times;</button>`;
+      row.querySelector(".rm").addEventListener("click", ()=>{ item.dependsOn=item.dependsOn.filter(x=>x!==d.id); touch(item); saveData(true); renderDeps(); });
+      el.appendChild(row);
+    });
+    const sel = document.getElementById("p-add-dep");
+    sel.innerHTML = `<option value="">+ add dependency…</option>`;
+    const exclude = new Set([item.id, ...(item.dependsOn||[]), ...descendants(item.id).map(x=>x.id)]);
+    DATA.items.filter(i=>!exclude.has(i.id)).forEach(i=>{
+      const opt = document.createElement("option"); opt.value=i.id; opt.textContent=i.title+(i.type!=="feature"?` (${i.type})`:""); sel.appendChild(opt);
     });
   }
-  const addDepSel = document.getElementById("p-add-dep");
-  const excludeIds = new Set([item.id, ...(item.dependsOn||[]), ...childrenOf(item.id).map(c=>c.id)]);
-  DATA.items.filter(i=>!excludeIds.has(i.id)).forEach(i=>{
-    const opt = document.createElement("option");
-    opt.value = i.id;
-    opt.textContent = i.title + (i.type==="story" ? "  (story)" : "");
-    addDepSel.appendChild(opt);
-  });
-  addDepSel.addEventListener("change", (e)=>{
+  renderDeps();
+  document.getElementById("p-add-dep").addEventListener("change", e=>{
     if(!e.target.value) return;
-    item.dependsOn = item.dependsOn || [];
-    item.dependsOn.push(e.target.value);
-    markDirty();
-    renderPanel();
+    item.dependsOn = item.dependsOn||[]; item.dependsOn.push(e.target.value);
+    touch(item); saveData(true); renderDeps();
   });
 
   // attachments
-  const attEl = document.getElementById("p-attachments");
-  if(!item.attachments || item.attachments.length===0){
-    attEl.innerHTML = `<div class="help-txt">No attachments.</div>`;
-  }else{
-    attEl.innerHTML = "";
+  function renderAttachments(){
+    const el = document.getElementById("p-attachments");
+    if(!item.attachments||!item.attachments.length){ el.innerHTML=`<div class="help-txt">No attachments.</div>`; return; }
+    el.innerHTML = "";
     item.attachments.forEach((a,idx)=>{
-      const row = document.createElement("div");
-      row.className = "attach-row";
-      row.innerHTML = `<a href="${escapeHtml(a.downloadUrl||'#')}" target="_blank" rel="noopener">${escapeHtml(a.name)}</a>
-        <button class="rm" title="Remove reference">&times;</button>`;
-      row.querySelector(".rm").addEventListener("click", ()=>{
-        item.attachments.splice(idx,1);
-        markDirty();
-        renderPanel();
-      });
-      attEl.appendChild(row);
+      const row = document.createElement("div"); row.className="attach-row";
+      row.innerHTML = `<a href="${escapeAttr(a.downloadUrl||'#')}" target="_blank" rel="noopener">${escapeHtml(a.name)}</a><button class="rm">&times;</button>`;
+      row.querySelector(".rm").addEventListener("click", ()=>{ item.attachments.splice(idx,1); touch(item); saveData(true); renderAttachments(); });
+      el.appendChild(row);
     });
   }
-  document.getElementById("p-upload").addEventListener("change", async (e)=>{
-    const file = e.target.files[0];
-    if(!file) return;
+  renderAttachments();
+  document.getElementById("p-upload").addEventListener("change", async e=>{
+    const file = e.target.files[0]; if(!file) return;
     const statusEl = document.getElementById("p-upload-status");
-    if(file.size > 20*1024*1024){
-      statusEl.textContent = "File too large (20MB limit for base64 uploads).";
-      return;
-    }
+    if(file.size > 20*1024*1024){ statusEl.textContent="File too large (20MB limit)."; return; }
     statusEl.textContent = "Uploading…";
     try{
       const meta = await uploadAttachment(item.id, file);
-      item.attachments = item.attachments || [];
-      item.attachments.push(meta);
-      markDirty();
-      statusEl.textContent = "";
-      renderPanel();
-    }catch(err){
-      statusEl.textContent = "Upload failed: " + err.message;
-    }
+      item.attachments = item.attachments||[]; item.attachments.push(meta);
+      touch(item); await saveData(true);
+      statusEl.textContent=""; renderAttachments();
+    }catch(err){ statusEl.textContent = "Upload failed: "+err.message; }
   });
+
+  goToPage("detail");
 }
 
 /* ============================================================
-   WORKSTREAM / INCREMENT MODALS
+   GENERIC MODAL
    ============================================================ */
 function openModal(html, onMount){
   document.getElementById("modal-content").innerHTML = html;
   document.getElementById("modal-overlay").classList.remove("hidden");
   if(onMount) onMount();
 }
-function closeModal(){
-  document.getElementById("modal-overlay").classList.add("hidden");
-}
-document.getElementById("modal-overlay").addEventListener("click", (e)=>{
-  if(e.target.id === "modal-overlay") closeModal();
-});
+function closeModal(){ document.getElementById("modal-overlay").classList.add("hidden"); }
+document.getElementById("modal-overlay").addEventListener("click", e=>{ if(e.target.id==="modal-overlay") closeModal(); });
 
-document.getElementById("btn-add-ws").addEventListener("click", ()=>{
+/* ============================================================
+   SETTINGS
+   ============================================================ */
+document.getElementById("btn-settings").addEventListener("click", ()=>{
   openModal(`
-    <h3>New workstream</h3>
-    <div class="field"><label>Name</label><input type="text" id="m-ws-name" placeholder="e.g. Mechanical"></div>
-    <div class="modal-actions">
-      <button class="btn" id="m-cancel">Cancel</button>
-      <button class="btn btn-primary" id="m-save">Add</button>
+    <h3>Settings</h3>
+    <div class="sub">${escapeHtml(CFG.owner)}/${escapeHtml(CFG.repo)} · ${escapeHtml(CFG.branch)}</div>
+    <div class="section-label-sm" style="margin-top:14px;"><span>Workstreams</span></div>
+    <div id="s-ws-list"></div>
+    <div class="field-row" style="display:flex;gap:8px;margin-top:8px;">
+      <input type="text" id="s-ws-new" placeholder="New workstream name" style="flex:1;background:var(--surface-2);border:1px solid var(--border);border-radius:4px;color:var(--text);padding:7px 9px;">
+      <button class="btn btn-sm" id="s-ws-add">Add</button>
+    </div>
+    <div class="modal-actions" style="justify-content:space-between;margin-top:18px;">
+      <button class="btn btn-danger btn-sm" id="s-disconnect">Disconnect</button>
+      <button class="btn btn-primary" id="s-close">Done</button>
     </div>
   `, ()=>{
-    document.getElementById("m-cancel").addEventListener("click", closeModal);
-    document.getElementById("m-save").addEventListener("click", ()=>{
-      const name = document.getElementById("m-ws-name").value.trim();
-      if(!name) return;
-      const color = WS_COLORS[DATA.workstreams.length % WS_COLORS.length];
-      DATA.workstreams.push({id: uid("ws"), name, color});
-      markDirty();
-      closeModal();
-      renderAll();
-    });
-  });
-});
-
-document.getElementById("btn-add-inc").addEventListener("click", ()=>{
-  openModal(`
-    <h3>New increment</h3>
-    <div class="field"><label>Name</label><input type="text" id="m-inc-name" placeholder="e.g. 2026-Q4"></div>
-    <div class="field-row">
-      <div class="field"><label>Start date</label><input type="text" id="m-inc-start" placeholder="YYYY-MM-DD"></div>
-      <div class="field"><label>End date</label><input type="text" id="m-inc-end" placeholder="YYYY-MM-DD"></div>
-    </div>
-    <div class="modal-actions">
-      <button class="btn" id="m-cancel">Cancel</button>
-      <button class="btn btn-primary" id="m-save">Add</button>
-    </div>
-  `, ()=>{
-    document.getElementById("m-cancel").addEventListener("click", closeModal);
-    document.getElementById("m-save").addEventListener("click", ()=>{
-      const name = document.getElementById("m-inc-name").value.trim();
-      if(!name) return;
-      DATA.increments.push({
-        id: uid("inc"),
-        name,
-        start: document.getElementById("m-inc-start").value.trim(),
-        end: document.getElementById("m-inc-end").value.trim()
+    function renderWsList(){
+      const el = document.getElementById("s-ws-list"); el.innerHTML="";
+      DATA.workstreams.forEach(w=>{
+        const row = document.createElement("div"); row.className="ws-row";
+        row.innerHTML = `<span class="chip-dot" style="background:${w.color}"></span><input type="text" value="${escapeAttr(w.name)}" data-id="${w.id}"><button class="rm" data-rm="${w.id}">&times;</button>`;
+        row.querySelector("input").addEventListener("change", e=>{ w.name=e.target.value; markDirty(); saveData(true); renderRoadmap(); renderTree(); });
+        row.querySelector("[data-rm]").addEventListener("click", ()=>{
+          if(DATA.items.some(i=>i.workstreamId===w.id)){ toast("Can't remove a workstream that has items on it.", true); return; }
+          DATA.workstreams = DATA.workstreams.filter(x=>x.id!==w.id);
+          markDirty(); saveData(true); renderWsList();
+        });
+        el.appendChild(row);
       });
-      markDirty();
-      closeModal();
-      renderAll();
+    }
+    renderWsList();
+    document.getElementById("s-ws-add").addEventListener("click", ()=>{
+      const nameEl = document.getElementById("s-ws-new");
+      const name = nameEl.value.trim(); if(!name) return;
+      const idx = DATA.workstreams.length % WS_COLORS.length;
+      DATA.workstreams.push({id:uid("ws"), name, color:WS_COLORS[idx], tint:WS_TINTS[idx]});
+      markDirty(); saveData(true); nameEl.value=""; renderWsList();
+    });
+    document.getElementById("s-close").addEventListener("click", ()=>{ closeModal(); renderAll(); });
+    document.getElementById("s-disconnect").addEventListener("click", ()=>{
+      if(DIRTY && !confirm("You have unsaved changes. Disconnect anyway?")) return;
+      clearCfg(); location.reload();
     });
   });
 });
@@ -1197,10 +1440,10 @@ document.getElementById("btn-add-inc").addEventListener("click", ()=>{
 (function boot(){
   const cfg = loadCfg();
   if(cfg){
-    document.getElementById("cfg-owner").value = cfg.owner || "";
-    document.getElementById("cfg-repo").value = cfg.repo || "";
-    document.getElementById("cfg-branch").value = cfg.branch || "main";
-    document.getElementById("cfg-token").value = cfg.token || "";
+    document.getElementById("cfg-owner").value = cfg.owner||"";
+    document.getElementById("cfg-repo").value = cfg.repo||"";
+    document.getElementById("cfg-branch").value = cfg.branch||"main";
+    document.getElementById("cfg-token").value = cfg.token||"";
     tryConnect(cfg);
   }
 })();
