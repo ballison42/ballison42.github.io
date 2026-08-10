@@ -82,8 +82,14 @@ a{color:var(--accent);text-decoration:none;}
 
 /* ---- roadmap / gantt ---- */
 #roadmap-wrap{display:flex;height:100%;}
-#backlog-gutter{width:220px;flex-shrink:0;border-right:1px solid var(--border);background:var(--surface);padding:14px 12px;overflow-y:auto;}
-#backlog-gutter h4{font-family:var(--mono);font-size:10.5px;text-transform:uppercase;letter-spacing:.08em;color:var(--text-faint);margin:0 0 10px 0;display:flex;justify-content:space-between;}
+#backlog-gutter{width:220px;flex-shrink:0;border-right:1px solid var(--border);background:var(--surface);padding:14px 12px;overflow-y:auto;transition:width .15s;}
+#backlog-gutter.collapsed{width:36px;padding:14px 6px;overflow:hidden;}
+#backlog-gutter.collapsed #backlog-body,#backlog-gutter.collapsed #backlog-title-text{display:none;}
+#backlog-gutter h4{font-family:var(--mono);font-size:10.5px;text-transform:uppercase;letter-spacing:.08em;color:var(--text-faint);margin:0 0 10px 0;display:flex;align-items:center;gap:6px;}
+#gantt-col{flex:1;display:flex;flex-direction:column;min-width:0;}
+#gantt-toolbar{display:flex;align-items:center;gap:6px;padding:8px 14px;border-bottom:1px solid var(--border-soft);background:var(--surface);flex-shrink:0;}
+#gantt-toolbar .btn{padding:4px 10px;font-size:12px;}
+.gz-date{width:100px;background:var(--surface-2);border:1px solid var(--border);border-radius:4px;color:var(--text);padding:5px 7px;font-size:11.5px;}
 .backlog-card{background:var(--surface-2);border:1px solid var(--border);border-left:3px solid var(--text-faint);border-radius:4px;padding:8px 9px;margin-bottom:8px;cursor:pointer;font-size:12.5px;}
 .backlog-card:hover{border-left-color:var(--accent);}
 .backlog-card .ws-tag{font-family:var(--mono);font-size:10px;color:var(--text-faint);margin-top:4px;}
@@ -175,6 +181,7 @@ a{color:var(--accent);text-decoration:none;}
 .embed-card .embed-label{font-size:12px;font-weight:600;margin-bottom:6px;display:flex;justify-content:space-between;gap:8px;}
 .embed-card .embed-label span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 .embed-card iframe{width:100%;height:130px;border:1px solid var(--border-soft);border-radius:3px;background:#fff;}
+.embed-card img{width:100%;max-height:340px;object-fit:contain;border:1px solid var(--border-soft);border-radius:3px;background:#fff;display:block;}
 .add-embed-btn,.upload-btn{border:1px dashed var(--border);border-radius:5px;padding:10px;text-align:center;color:var(--text-faint);font-size:12px;background:transparent;width:100%;}
 .add-embed-btn:hover,.upload-btn:hover{border-color:var(--accent);color:var(--accent);}
 .comment{background:var(--surface-2);border:1px solid var(--border);border-radius:5px;padding:9px 10px;margin-bottom:8px;font-size:12.5px;}
@@ -297,15 +304,31 @@ select.mini-add{background:var(--surface-2);border:1px solid var(--border);color
         <div class="page active" id="page-roadmap">
           <div id="roadmap-wrap">
             <div id="backlog-gutter">
-              <h4>Backlog <span id="backlog-count">0</span></h4>
-              <div id="backlog-list"></div>
-              <button class="add-item-inline" id="btn-add-backlog" style="margin-left:0;width:100%;">+ new feature</button>
+              <h4><button class="expand-chevron" id="backlog-collapse-btn" style="margin-right:2px;">▾</button><span id="backlog-title-text">Backlog</span> <span id="backlog-count">0</span></h4>
+              <div id="backlog-body">
+                <div id="backlog-list"></div>
+                <button class="add-item-inline" id="btn-add-backlog" style="margin-left:0;width:100%;">+ new feature</button>
+              </div>
             </div>
-            <div id="gantt-scroll">
-              <div id="gantt-inner">
-                <div class="gantt-months" id="gantt-months"></div>
-                <div id="milestone-layer"></div>
-                <div id="gantt-body"></div>
+            <div id="gantt-col">
+              <div id="gantt-toolbar">
+                <button class="btn btn-sm" id="gz-out" title="Zoom out">−</button>
+                <button class="btn btn-sm" id="gz-in" title="Zoom in">+</button>
+                <button class="btn btn-sm" id="gz-prev" title="Earlier">◂</button>
+                <button class="btn btn-sm" id="gz-next" title="Later">▸</button>
+                <button class="btn btn-sm" id="gz-fit">Fit to data</button>
+                <span class="spacer"></span>
+                <input type="text" id="gz-from" class="gz-date" placeholder="YYYY-MM-DD">
+                <span class="help-txt">to</span>
+                <input type="text" id="gz-to" class="gz-date" placeholder="YYYY-MM-DD">
+                <button class="btn btn-sm" id="gz-apply">Set range</button>
+              </div>
+              <div id="gantt-scroll">
+                <div id="gantt-inner">
+                  <div class="gantt-months" id="gantt-months"></div>
+                  <div id="milestone-layer"></div>
+                  <div id="gantt-body"></div>
+                </div>
               </div>
             </div>
           </div>
@@ -468,7 +491,8 @@ async function loadData(){
 }
 
 async function saveData(silent){
-  const body = { message: "Update roadmap data — " + nowIso(), content: b64EncodeUnicode(JSON.stringify(DATA, null, 2)), branch: CFG.branch };
+  const payload = Object.assign({}, DATA, { items: DATA.items.filter(i=>!draftItemIds.has(i.id)) });
+  const body = { message: "Update roadmap data — " + nowIso(), content: b64EncodeUnicode(JSON.stringify(payload, null, 2)), branch: CFG.branch };
   if(SHA) body.sha = SHA;
   try{
     const res = await gh(`/repos/${CFG.owner}/${CFG.repo}/contents/${DATA_PATH}`, {method:"PUT", body});
@@ -579,7 +603,7 @@ function itemDepth(item){
 
 function buildPushPlan(){
   const newMilestones = DATA.milestones.filter(m=>!m.githubNumber);
-  const itemsSorted = [...DATA.items].sort((a,b)=>itemDepth(a)-itemDepth(b));
+  const itemsSorted = [...DATA.items].filter(i=>!draftItemIds.has(i.id)).sort((a,b)=>itemDepth(a)-itemDepth(b));
   const newIssues = itemsSorted.filter(i=>!i.github || !i.github.issueNumber);
   const updates = itemsSorted.filter(i=>i.github && i.github.issueNumber && (i.updatedAt||0) > (i.github.lastPushedAt||0));
   const subLinks = itemsSorted.filter(i=>{
@@ -592,7 +616,7 @@ function buildPushPlan(){
     return willHaveIssue && parentWillHaveIssue && !alreadyLinked;
   });
   const depLinks = [];
-  DATA.items.forEach(i=>{
+  DATA.items.filter(i=>!draftItemIds.has(i.id)).forEach(i=>{
     (i.dependsOn||[]).forEach(depId=>{
       const already = i.github && i.github.linkedDeps && i.github.linkedDeps.includes(depId);
       if(already) return;
@@ -603,7 +627,7 @@ function buildPushPlan(){
       if(iWill && tWill) depLinks.push([i, target]);
     });
   });
-  const commentsNeeded = DATA.items.filter(i=>{
+  const commentsNeeded = DATA.items.filter(i=>!draftItemIds.has(i.id)).filter(i=>{
     const hasContent = (i.notes && i.notes.trim()) || (i.embeds && i.embeds.length);
     if(!hasContent) return false;
     const willHaveIssue = (i.github&&i.github.issueNumber) || newIssues.includes(i);
@@ -756,7 +780,11 @@ async function executePush(plan){
       lines.push("");
       lines.push("**Whimsical Materials**");
       if(item.embeds && item.embeds.length){
-        item.embeds.forEach(em=> lines.push(`- [${em.label||"embed"}](${em.url})`));
+        item.embeds.forEach(em=>{
+          const href = em.kind==="image" ? em.imageUrl : em.url;
+          const extra = em.kind==="image" && em.link ? ` — source: ${em.link}` : "";
+          lines.push(`- [${em.label||"embed"}](${href})${extra}`);
+        });
       } else {
         lines.push("_none_");
       }
@@ -818,6 +846,7 @@ async function uploadAttachment(itemId, file){
 /* ============================================================
    ITEM CRUD
    ============================================================ */
+const draftItemIds = new Set(); // items created but never explicitly saved or edited — discarded if abandoned
 function createItem(type, workstreamId, milestoneId, parentId){
   const now = nowIso();
   const item = {
@@ -828,12 +857,22 @@ function createItem(type, workstreamId, milestoneId, parentId){
     github:null, createdAt:now, updatedAt:now
   };
   DATA.items.push(item);
-  markDirty();
-  saveData(true);
+  draftItemIds.add(item.id); // not persisted yet — becomes real on first edit or explicit Save
   updatePushButtonState();
   return item;
 }
-function touch(item){ item.updatedAt = nowIso(); markDirty(); updatePushButtonState(); }
+function touch(item){ item.updatedAt = nowIso(); markDirty(); updatePushButtonState(); draftItemIds.delete(item.id); }
+function discardAbandonedDrafts(keepId){
+  if(!draftItemIds.size) return;
+  let removedAny = false;
+  [...draftItemIds].forEach(id=>{
+    if(id===keepId) return;
+    const idx = DATA.items.findIndex(i=>i.id===id);
+    if(idx>-1){ DATA.items.splice(idx,1); removedAny=true; }
+    draftItemIds.delete(id);
+  });
+  if(removedAny){ renderRoadmap(); renderTree(); renderDelivery(); updatePushButtonState(); }
+}
 
 function deleteItem(id){
   const kids = descendants(id);
@@ -845,6 +884,7 @@ function deleteItem(id){
   const ids = new Set([id, ...kids.map(k=>k.id)]);
   DATA.items = DATA.items.filter(i=>!ids.has(i.id));
   DATA.items.forEach(i=>{ i.dependsOn = (i.dependsOn||[]).filter(d=>!ids.has(d)); });
+  ids.forEach(x=>draftItemIds.delete(x));
   markDirty(); saveData(true);
   updatePushButtonState();
   closeDetailToList();
@@ -902,6 +942,7 @@ window.addEventListener("beforeunload", (e)=>{ if(DIRTY){ e.preventDefault(); e.
 document.querySelectorAll(".nav-item[data-page]").forEach(btn=> btn.addEventListener("click", ()=> goToPage(btn.dataset.page)) );
 function goToPage(page){
   if(page!=="detail") lastPage = page;
+  if(page!=="detail" && document.getElementById("page-detail").classList.contains("active")) discardAbandonedDrafts(null);
   document.querySelectorAll(".nav-item[data-page]").forEach(b=>b.classList.toggle("active", b.dataset.page===page));
   document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
   const target = document.getElementById("page-"+page);
@@ -917,7 +958,10 @@ function renderAll(){ renderRoadmap(); renderTree(); renderDelivery(); renderMil
    ROADMAP / GANTT
    ============================================================ */
 let RANGE_START, RANGE_END, TOTAL_DAYS;
-function computeRange(){
+let manualRange = null; // {start:Date, end:Date} or null for auto-fit
+const MIN_SPAN_DAYS = 14, MAX_SPAN_DAYS = 1095;
+
+function autoRange(){
   const dated = DATA.items.filter(i=>i.start && i.end);
   const msDates = DATA.milestones.filter(m=>m.due);
   let min = null, max = null;
@@ -928,15 +972,62 @@ function computeRange(){
   if(!max) max = new Date(today.getFullYear(), today.getMonth()+4, 1);
   min = new Date(min.getFullYear(), min.getMonth()-1, 1);
   max = new Date(max.getFullYear(), max.getMonth()+2, 1);
-  RANGE_START = min; RANGE_END = max; TOTAL_DAYS = (RANGE_END-RANGE_START)/86400000;
+  return {start:min, end:max};
+}
+function computeRange(){
+  const r = manualRange || autoRange();
+  RANGE_START = r.start; RANGE_END = r.end; TOTAL_DAYS = (RANGE_END-RANGE_START)/86400000;
 }
 function dayOffset(dateStr){ return (new Date(dateStr)-RANGE_START)/86400000; }
 function pct(days){ return (days/TOTAL_DAYS*100).toFixed(2)+"%"; }
+
+function ensureManualRange(){ if(!manualRange){ computeRange(); manualRange = {start:RANGE_START, end:RANGE_END}; } }
+function zoomGantt(factor){
+  ensureManualRange();
+  const mid = (manualRange.start.getTime()+manualRange.end.getTime())/2;
+  let span = (manualRange.end-manualRange.start) * factor;
+  span = Math.max(MIN_SPAN_DAYS*86400000, Math.min(MAX_SPAN_DAYS*86400000, span));
+  manualRange = {start:new Date(mid-span/2), end:new Date(mid+span/2)};
+  renderRoadmap();
+}
+function panGantt(fraction){
+  ensureManualRange();
+  const span = manualRange.end - manualRange.start;
+  const shift = span*fraction;
+  manualRange = {start:new Date(manualRange.start.getTime()+shift), end:new Date(manualRange.end.getTime()+shift)};
+  renderRoadmap();
+}
+function fitGantt(){ manualRange = null; renderRoadmap(); }
+document.getElementById("gz-in").addEventListener("click", ()=> zoomGantt(0.7));
+document.getElementById("gz-out").addEventListener("click", ()=> zoomGantt(1.4));
+document.getElementById("gz-prev").addEventListener("click", ()=> panGantt(-0.3));
+document.getElementById("gz-next").addEventListener("click", ()=> panGantt(0.3));
+document.getElementById("gz-fit").addEventListener("click", fitGantt);
+document.getElementById("gz-apply").addEventListener("click", ()=>{
+  const from = document.getElementById("gz-from").value.trim();
+  const to = document.getElementById("gz-to").value.trim();
+  const s = from ? new Date(from) : null, e = to ? new Date(to) : null;
+  if(!s || !e || isNaN(s) || isNaN(e) || e<=s){ toast("Enter two valid dates, start before end.", true); return; }
+  manualRange = {start:s, end:e}; renderRoadmap();
+});
+document.getElementById("gantt-scroll").addEventListener("wheel", (e)=>{
+  if(!(e.ctrlKey || e.metaKey)) return; // pinch-zoom (trackpad) sends wheel+ctrlKey; also supports ctrl+scroll on a mouse
+  e.preventDefault();
+  zoomGantt(e.deltaY < 0 ? 0.85 : 1.18);
+}, {passive:false});
+document.getElementById("backlog-collapse-btn").addEventListener("click", ()=>{
+  const el = document.getElementById("backlog-gutter");
+  const collapsed = el.classList.toggle("collapsed");
+  document.getElementById("backlog-collapse-btn").textContent = collapsed ? "▸" : "▾";
+});
 
 const expandedFeatures = new Set();
 
 function renderRoadmap(){
   computeRange();
+  const fmt = d => d.toISOString().slice(0,10);
+  document.getElementById("gz-from").value = fmt(RANGE_START);
+  document.getElementById("gz-to").value = fmt(RANGE_END);
   renderBacklogGutter();
   renderGanttMonths();
   const h = renderGanttBody();
@@ -1163,6 +1254,7 @@ document.getElementById("btn-add-milestone").addEventListener("click", ()=> open
 function closeDetailToList(){ goToPage(lastPage); }
 
 function openDetail(id){
+  discardAbandonedDrafts(id);
   SELECTED_ID = id;
   const item = itemById(id);
   if(!item) return;
@@ -1213,7 +1305,7 @@ function openDetail(id){
         <section>
           <h3>Whimsical Materials</h3>
           <div id="p-embeds"></div>
-          <button class="add-embed-btn" id="p-add-embed">+ paste an iframe embed or URL</button>
+          <button class="add-embed-btn" id="p-add-embed">+ paste an iframe embed or URL — or paste (⌘/Ctrl+V) a screenshot</button>
         </section>
         <section>
           <h3>Comments</h3>
@@ -1278,7 +1370,7 @@ function openDetail(id){
   `;
 
   document.getElementById("d-back").addEventListener("click", closeDetailToList);
-  document.getElementById("p-save-btn").addEventListener("click", ()=>{ saveData(false); updatePushButtonState(); });
+  document.getElementById("p-save-btn").addEventListener("click", async ()=>{ draftItemIds.delete(item.id); markDirty(); await saveData(true); updatePushButtonState(); toast("Saved — this item will stick around now."); });
   const parentCrumb = document.getElementById("p-parent-crumb");
   if(parentCrumb) parentCrumb.addEventListener("click", ()=> openDetail(parentItem.id));
   document.getElementById("p-delete").addEventListener("click", ()=> deleteItem(item.id));
@@ -1334,34 +1426,40 @@ function openDetail(id){
   }
   if(item.type!=="task"){
     renderChildren();
-    document.getElementById("p-add-child").addEventListener("click", ()=>{
+    document.getElementById("p-add-child").addEventListener("click", async ()=>{
+      if(draftItemIds.has(item.id)){ draftItemIds.delete(item.id); markDirty(); await saveData(true); }
       const childType = item.type==="feature" ? "story" : "task";
       const child = createItem(childType, item.workstreamId, item.milestoneId, item.id);
       openDetail(child.id);
     });
   }
 
-  // embeds
+  // embeds (iframe links and pasted images/screenshots)
   function renderEmbeds(){
     const el = document.getElementById("p-embeds"); el.innerHTML="";
     (item.embeds||[]).forEach((em,idx)=>{
       const card = document.createElement("div"); card.className="embed-card";
-      card.innerHTML = `<div class="embed-label"><span>${escapeHtml(em.label)}</span><a href="${escapeAttr(em.url)}" target="_blank" rel="noopener" class="help-txt">Open ↗</a><button data-rm="${idx}" style="background:none;border:none;color:var(--text-faint);">&times;</button></div>
-        <iframe src="${escapeAttr(em.url)}" sandbox="allow-scripts allow-same-origin" loading="lazy"></iframe>`;
+      if(em.kind === "image"){
+        card.innerHTML = `<div class="embed-label"><span>${escapeHtml(em.label||"Screenshot")}</span>${em.link?`<a href="${escapeAttr(em.link)}" target="_blank" rel="noopener" class="help-txt">Source ↗</a>`:""}<button data-rm="${idx}" style="background:none;border:none;color:var(--text-faint);">&times;</button></div>
+          <img src="${escapeAttr(em.imageUrl)}" alt="${escapeAttr(em.label||"Screenshot")}">`;
+      }else{
+        card.innerHTML = `<div class="embed-label"><span>${escapeHtml(em.label)}</span><a href="${escapeAttr(em.url)}" target="_blank" rel="noopener" class="help-txt">Open ↗</a><button data-rm="${idx}" style="background:none;border:none;color:var(--text-faint);">&times;</button></div>
+          <iframe src="${escapeAttr(em.url)}" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>`;
+      }
       card.querySelector("[data-rm]").addEventListener("click", ()=>{ item.embeds.splice(idx,1); touch(item); saveData(true); renderEmbeds(); });
       el.appendChild(card);
     });
   }
   renderEmbeds();
   document.getElementById("p-add-embed").addEventListener("click", ()=>{
-    const pasted = prompt("Paste an iframe embed snippet or a plain URL.\n\nFor Whimsical: Share → Embed (not the regular board link) — and enable public access if others need to see it without logging in.");
+    const pasted = prompt("Paste an iframe embed snippet or a plain URL. Or just paste (Ctrl/Cmd+V) an image anywhere on this page to attach a screenshot instead.\n\nFor Whimsical: Share → Embed (not the regular board link) — and enable public access if others need to see it without logging in.");
     if(!pasted) return;
     const m = pasted.match(/<iframe[^>]+src=["']([^"']+)["']/i);
     let url = m ? m[1] : pasted.trim();
     if(!/^https?:\/\//i.test(url)){ toast("That doesn't look like a URL.", true); return; }
     const label = prompt("Label for this embed:", "Embed") || "Embed";
     item.embeds = item.embeds || [];
-    item.embeds.push({label, url});
+    item.embeds.push({kind:"iframe", label, url});
     touch(item); saveData(true); renderEmbeds();
   });
 
@@ -1437,6 +1535,30 @@ function openDetail(id){
 
   goToPage("detail");
 }
+
+document.addEventListener("paste", async (e)=>{
+  if(!CFG || !document.getElementById("page-detail").classList.contains("active")) return;
+  const item = itemById(SELECTED_ID);
+  if(!item) return;
+  const dt = e.clipboardData;
+  if(!dt || !dt.items) return;
+  let file = null;
+  for(const it of dt.items){ if(it.type && it.type.indexOf("image/")===0){ file = it.getAsFile(); break; } }
+  if(!file) return; // not an image paste — let normal text paste behave normally
+  e.preventDefault();
+  const link = prompt("Optional link for this screenshot (e.g. the full Whimsical board). Leave blank to skip:") || "";
+  if(link && !/^https?:\/\//i.test(link)){ toast("That link didn't look like a URL — saved without one.", true); }
+  toast("Uploading screenshot…");
+  try{
+    const meta = await uploadAttachment(item.id, file);
+    item.embeds = item.embeds || [];
+    item.embeds.push({kind:"image", label:"Screenshot", imageUrl: meta.downloadUrl, link: /^https?:\/\//i.test(link) ? link : ""});
+    touch(item);
+    await saveData(true);
+    toast("Screenshot added.");
+    if(SELECTED_ID === item.id) openDetail(item.id);
+  }catch(err){ toast("Screenshot upload failed: "+err.message, true); }
+});
 
 /* ============================================================
    GENERIC MODAL
